@@ -521,6 +521,91 @@ export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedIntNullableFilter<$PrismaModel>
 }
 
+export type EnumContentStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.ContentStatus | Prisma.EnumContentStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.ContentStatus[]
+  notIn?: $Enums.ContentStatus[]
+  not?: Prisma.NestedEnumContentStatusFilter<$PrismaModel> | $Enums.ContentStatus
+}
+
+export type EnumContentStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ContentStatus | Prisma.EnumContentStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.ContentStatus[]
+  notIn?: $Enums.ContentStatus[]
+  not?: Prisma.NestedEnumContentStatusWithAggregatesFilter<$PrismaModel> | $Enums.ContentStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumContentStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumContentStatusFilter<$PrismaModel>
+}
+
+export type BytesFilter<$PrismaModel = never> = {
+  equals?: runtime.Bytes | Prisma.BytesFieldRefInput<$PrismaModel>
+  in?: runtime.Bytes[]
+  notIn?: runtime.Bytes[]
+  not?: Prisma.NestedBytesFilter<$PrismaModel> | runtime.Bytes
+}
+
+export type BytesWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: runtime.Bytes | Prisma.BytesFieldRefInput<$PrismaModel>
+  in?: runtime.Bytes[]
+  notIn?: runtime.Bytes[]
+  not?: Prisma.NestedBytesWithAggregatesFilter<$PrismaModel> | runtime.Bytes
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedBytesFilter<$PrismaModel>
+  _max?: Prisma.NestedBytesFilter<$PrismaModel>
+}
+
+export type EnumDocumentKindFilter<$PrismaModel = never> = {
+  equals?: $Enums.DocumentKind | Prisma.EnumDocumentKindFieldRefInput<$PrismaModel>
+  in?: $Enums.DocumentKind[]
+  notIn?: $Enums.DocumentKind[]
+  not?: Prisma.NestedEnumDocumentKindFilter<$PrismaModel> | $Enums.DocumentKind
+}
+
+export type EnumDocumentOriginFilter<$PrismaModel = never> = {
+  equals?: $Enums.DocumentOrigin | Prisma.EnumDocumentOriginFieldRefInput<$PrismaModel>
+  in?: $Enums.DocumentOrigin[]
+  notIn?: $Enums.DocumentOrigin[]
+  not?: Prisma.NestedEnumDocumentOriginFilter<$PrismaModel> | $Enums.DocumentOrigin
+}
+
+export type EnumDocumentFolderFilter<$PrismaModel = never> = {
+  equals?: $Enums.DocumentFolder | Prisma.EnumDocumentFolderFieldRefInput<$PrismaModel>
+  in?: $Enums.DocumentFolder[]
+  notIn?: $Enums.DocumentFolder[]
+  not?: Prisma.NestedEnumDocumentFolderFilter<$PrismaModel> | $Enums.DocumentFolder
+}
+
+export type EnumDocumentKindWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.DocumentKind | Prisma.EnumDocumentKindFieldRefInput<$PrismaModel>
+  in?: $Enums.DocumentKind[]
+  notIn?: $Enums.DocumentKind[]
+  not?: Prisma.NestedEnumDocumentKindWithAggregatesFilter<$PrismaModel> | $Enums.DocumentKind
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumDocumentKindFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumDocumentKindFilter<$PrismaModel>
+}
+
+export type EnumDocumentOriginWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.DocumentOrigin | Prisma.EnumDocumentOriginFieldRefInput<$PrismaModel>
+  in?: $Enums.DocumentOrigin[]
+  notIn?: $Enums.DocumentOrigin[]
+  not?: Prisma.NestedEnumDocumentOriginWithAggregatesFilter<$PrismaModel> | $Enums.DocumentOrigin
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumDocumentOriginFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumDocumentOriginFilter<$PrismaModel>
+}
+
+export type EnumDocumentFolderWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.DocumentFolder | Prisma.EnumDocumentFolderFieldRefInput<$PrismaModel>
+  in?: $Enums.DocumentFolder[]
+  notIn?: $Enums.DocumentFolder[]
+  not?: Prisma.NestedEnumDocumentFolderWithAggregatesFilter<$PrismaModel> | $Enums.DocumentFolder
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumDocumentFolderFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumDocumentFolderFilter<$PrismaModel>
+}
+
 export type NestedStringFilter<$PrismaModel = never> = {
   equals?: string | Prisma.StringFieldRefInput<$PrismaModel>
   in?: string[]
@@ -989,6 +1074,91 @@ export type NestedFloatNullableFilter<$PrismaModel = never> = {
   gt?: number | Prisma.FloatFieldRefInput<$PrismaModel>
   gte?: number | Prisma.FloatFieldRefInput<$PrismaModel>
   not?: Prisma.NestedFloatNullableFilter<$PrismaModel> | number | null
+}
+
+export type NestedEnumContentStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.ContentStatus | Prisma.EnumContentStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.ContentStatus[]
+  notIn?: $Enums.ContentStatus[]
+  not?: Prisma.NestedEnumContentStatusFilter<$PrismaModel> | $Enums.ContentStatus
+}
+
+export type NestedEnumContentStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ContentStatus | Prisma.EnumContentStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.ContentStatus[]
+  notIn?: $Enums.ContentStatus[]
+  not?: Prisma.NestedEnumContentStatusWithAggregatesFilter<$PrismaModel> | $Enums.ContentStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumContentStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumContentStatusFilter<$PrismaModel>
+}
+
+export type NestedBytesFilter<$PrismaModel = never> = {
+  equals?: runtime.Bytes | Prisma.BytesFieldRefInput<$PrismaModel>
+  in?: runtime.Bytes[]
+  notIn?: runtime.Bytes[]
+  not?: Prisma.NestedBytesFilter<$PrismaModel> | runtime.Bytes
+}
+
+export type NestedBytesWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: runtime.Bytes | Prisma.BytesFieldRefInput<$PrismaModel>
+  in?: runtime.Bytes[]
+  notIn?: runtime.Bytes[]
+  not?: Prisma.NestedBytesWithAggregatesFilter<$PrismaModel> | runtime.Bytes
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedBytesFilter<$PrismaModel>
+  _max?: Prisma.NestedBytesFilter<$PrismaModel>
+}
+
+export type NestedEnumDocumentKindFilter<$PrismaModel = never> = {
+  equals?: $Enums.DocumentKind | Prisma.EnumDocumentKindFieldRefInput<$PrismaModel>
+  in?: $Enums.DocumentKind[]
+  notIn?: $Enums.DocumentKind[]
+  not?: Prisma.NestedEnumDocumentKindFilter<$PrismaModel> | $Enums.DocumentKind
+}
+
+export type NestedEnumDocumentOriginFilter<$PrismaModel = never> = {
+  equals?: $Enums.DocumentOrigin | Prisma.EnumDocumentOriginFieldRefInput<$PrismaModel>
+  in?: $Enums.DocumentOrigin[]
+  notIn?: $Enums.DocumentOrigin[]
+  not?: Prisma.NestedEnumDocumentOriginFilter<$PrismaModel> | $Enums.DocumentOrigin
+}
+
+export type NestedEnumDocumentFolderFilter<$PrismaModel = never> = {
+  equals?: $Enums.DocumentFolder | Prisma.EnumDocumentFolderFieldRefInput<$PrismaModel>
+  in?: $Enums.DocumentFolder[]
+  notIn?: $Enums.DocumentFolder[]
+  not?: Prisma.NestedEnumDocumentFolderFilter<$PrismaModel> | $Enums.DocumentFolder
+}
+
+export type NestedEnumDocumentKindWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.DocumentKind | Prisma.EnumDocumentKindFieldRefInput<$PrismaModel>
+  in?: $Enums.DocumentKind[]
+  notIn?: $Enums.DocumentKind[]
+  not?: Prisma.NestedEnumDocumentKindWithAggregatesFilter<$PrismaModel> | $Enums.DocumentKind
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumDocumentKindFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumDocumentKindFilter<$PrismaModel>
+}
+
+export type NestedEnumDocumentOriginWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.DocumentOrigin | Prisma.EnumDocumentOriginFieldRefInput<$PrismaModel>
+  in?: $Enums.DocumentOrigin[]
+  notIn?: $Enums.DocumentOrigin[]
+  not?: Prisma.NestedEnumDocumentOriginWithAggregatesFilter<$PrismaModel> | $Enums.DocumentOrigin
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumDocumentOriginFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumDocumentOriginFilter<$PrismaModel>
+}
+
+export type NestedEnumDocumentFolderWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.DocumentFolder | Prisma.EnumDocumentFolderFieldRefInput<$PrismaModel>
+  in?: $Enums.DocumentFolder[]
+  notIn?: $Enums.DocumentFolder[]
+  not?: Prisma.NestedEnumDocumentFolderWithAggregatesFilter<$PrismaModel> | $Enums.DocumentFolder
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumDocumentFolderFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumDocumentFolderFilter<$PrismaModel>
 }
 
 

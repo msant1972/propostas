@@ -5,6 +5,7 @@ import { AdminModule } from './admin/admin.module.js';
 import { AuthGuard } from './auth/auth.guard.js';
 import { AuthModule } from './auth/auth.module.js';
 import { AuthzGuard } from './authz/authz.js';
+import { ContentModule } from './content/content.module.js';
 import { ClientsModule } from './clients/clients.module.js';
 import { CpqModule } from './cpq/cpq.module.js';
 import { ProposalsModule } from './proposals/proposals.module.js';
@@ -38,6 +39,7 @@ import { HealthController } from './health.controller.js';
     ClientsModule,
     ProposalsModule,
     AdminModule,
+    ContentModule,
   ],
   controllers: [HealthController],
   providers: [

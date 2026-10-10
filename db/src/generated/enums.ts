@@ -92,3 +92,40 @@ export const QuoteVersionStatus = {
 } as const
 
 export type QuoteVersionStatus = (typeof QuoteVersionStatus)[keyof typeof QuoteVersionStatus]
+
+
+export const ContentStatus = {
+  DRAFT: 'DRAFT',
+  APPROVED: 'APPROVED',
+  RETIRED: 'RETIRED'
+} as const
+
+export type ContentStatus = (typeof ContentStatus)[keyof typeof ContentStatus]
+
+
+export const DocumentKind = {
+  DOCX: 'DOCX',
+  PDF: 'PDF',
+  SIGNED_PDF: 'SIGNED_PDF',
+  ATTACHMENT: 'ATTACHMENT'
+} as const
+
+export type DocumentKind = (typeof DocumentKind)[keyof typeof DocumentKind]
+
+
+export const DocumentOrigin = {
+  GENERATED: 'GENERATED',
+  MANUALLY_EDITED: 'MANUALLY_EDITED',
+  UPLOADED: 'UPLOADED'
+} as const
+
+export type DocumentOrigin = (typeof DocumentOrigin)[keyof typeof DocumentOrigin]
+
+
+export const DocumentFolder = {
+  F01_TRABALHO: 'F01_TRABALHO',
+  F02_ENVIADO: 'F02_ENVIADO',
+  F03_ASSINADO: 'F03_ASSINADO'
+} as const
+
+export type DocumentFolder = (typeof DocumentFolder)[keyof typeof DocumentFolder]

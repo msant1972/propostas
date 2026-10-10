@@ -43,7 +43,7 @@ run('relay do outbox com MariaDB e Redis', () => {
     redis = new Redis(REDIS!, { maxRetriesPerRequest: null });
     queue = new Queue<OutboxJob>(queueName, { connection: redis });
     relay = new OutboxRelay(prisma, queue, cfg);
-    worker = new Worker<OutboxJob>(queueName, async (job) => dispatch(job.data), { connection: redis.duplicate() });
+    worker = new Worker<OutboxJob>(queueName, async (job) => dispatch(job.data, { prisma, repo: undefined as never, cfg }), { connection: redis.duplicate() });
     worker.on('completed', (job) => void relay.markDone(job.data.eventId));
     worker.on('failed', (job, err) => { if (job) void relay.markFailed(job.data.eventId, err); });
   });

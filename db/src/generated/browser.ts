@@ -97,3 +97,38 @@ export type QuoteVersion = Prisma.QuoteVersionModel
  * 
  */
 export type QuoteItem = Prisma.QuoteItemModel
+/**
+ * Model ContentBlock
+ * 
+ */
+export type ContentBlock = Prisma.ContentBlockModel
+/**
+ * Model ContentBlockVersion
+ * 
+ */
+export type ContentBlockVersion = Prisma.ContentBlockVersionModel
+/**
+ * Model Tag
+ * 
+ */
+export type Tag = Prisma.TagModel
+/**
+ * Model ContentBlockTag
+ * 
+ */
+export type ContentBlockTag = Prisma.ContentBlockTagModel
+/**
+ * Model ProposalSection
+ * 
+ */
+export type ProposalSection = Prisma.ProposalSectionModel
+/**
+ * Model SectionDocument
+ * 
+ */
+export type SectionDocument = Prisma.SectionDocumentModel
+/**
+ * Model Document
+ * 
+ */
+export type Document = Prisma.DocumentModel

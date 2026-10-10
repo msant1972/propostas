@@ -66,7 +66,14 @@ export const ModelName = {
   CpqRule: 'CpqRule',
   Proposal: 'Proposal',
   QuoteVersion: 'QuoteVersion',
-  QuoteItem: 'QuoteItem'
+  QuoteItem: 'QuoteItem',
+  ContentBlock: 'ContentBlock',
+  ContentBlockVersion: 'ContentBlockVersion',
+  Tag: 'Tag',
+  ContentBlockTag: 'ContentBlockTag',
+  ProposalSection: 'ProposalSection',
+  SectionDocument: 'SectionDocument',
+  Document: 'Document'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -135,7 +142,8 @@ export const OutboxEventScalarFieldEnum = {
   status: 'status',
   attempts: 'attempts',
   nextAttemptAt: 'nextAttemptAt',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  lastError: 'lastError'
 } as const
 
 export type OutboxEventScalarFieldEnum = (typeof OutboxEventScalarFieldEnum)[keyof typeof OutboxEventScalarFieldEnum]
@@ -283,8 +291,7 @@ export const ProposalScalarFieldEnum = {
   currency: 'currency',
   language: 'language',
   validUntil: 'validUntil',
-  spDriveId: 'spDriveId',
-  spFolderItemId: 'spFolderItemId',
+  folderPath: 'folderPath',
   rowVersion: 'rowVersion',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
@@ -343,6 +350,92 @@ export const QuoteItemScalarFieldEnum = {
 } as const
 
 export type QuoteItemScalarFieldEnum = (typeof QuoteItemScalarFieldEnum)[keyof typeof QuoteItemScalarFieldEnum]
+
+
+export const ContentBlockScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  title: 'title',
+  isLegal: 'isLegal',
+  ownerUserId: 'ownerUserId',
+  createdAt: 'createdAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type ContentBlockScalarFieldEnum = (typeof ContentBlockScalarFieldEnum)[keyof typeof ContentBlockScalarFieldEnum]
+
+
+export const ContentBlockVersionScalarFieldEnum = {
+  id: 'id',
+  blockId: 'blockId',
+  language: 'language',
+  versionNumber: 'versionNumber',
+  status: 'status',
+  bodyHtml: 'bodyHtml',
+  reviewDueDate: 'reviewDueDate',
+  createdBy: 'createdBy',
+  createdAt: 'createdAt'
+} as const
+
+export type ContentBlockVersionScalarFieldEnum = (typeof ContentBlockVersionScalarFieldEnum)[keyof typeof ContentBlockVersionScalarFieldEnum]
+
+
+export const TagScalarFieldEnum = {
+  id: 'id',
+  name: 'name'
+} as const
+
+export type TagScalarFieldEnum = (typeof TagScalarFieldEnum)[keyof typeof TagScalarFieldEnum]
+
+
+export const ContentBlockTagScalarFieldEnum = {
+  blockId: 'blockId',
+  tagId: 'tagId'
+} as const
+
+export type ContentBlockTagScalarFieldEnum = (typeof ContentBlockTagScalarFieldEnum)[keyof typeof ContentBlockTagScalarFieldEnum]
+
+
+export const ProposalSectionScalarFieldEnum = {
+  id: 'id',
+  proposalId: 'proposalId',
+  position: 'position',
+  title: 'title',
+  blockVersionId: 'blockVersionId',
+  isModified: 'isModified',
+  rowVersion: 'rowVersion'
+} as const
+
+export type ProposalSectionScalarFieldEnum = (typeof ProposalSectionScalarFieldEnum)[keyof typeof ProposalSectionScalarFieldEnum]
+
+
+export const SectionDocumentScalarFieldEnum = {
+  sectionId: 'sectionId',
+  ydocState: 'ydocState',
+  htmlCache: 'htmlCache',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SectionDocumentScalarFieldEnum = (typeof SectionDocumentScalarFieldEnum)[keyof typeof SectionDocumentScalarFieldEnum]
+
+
+export const DocumentScalarFieldEnum = {
+  id: 'id',
+  proposalId: 'proposalId',
+  quoteVersionId: 'quoteVersionId',
+  kind: 'kind',
+  origin: 'origin',
+  folder: 'folder',
+  fileName: 'fileName',
+  storageKey: 'storageKey',
+  sha256: 'sha256',
+  sizeBytes: 'sizeBytes',
+  generatedFrom: 'generatedFrom',
+  createdBy: 'createdBy',
+  createdAt: 'createdAt'
+} as const
+
+export type DocumentScalarFieldEnum = (typeof DocumentScalarFieldEnum)[keyof typeof DocumentScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -430,7 +523,8 @@ export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
 export const OutboxEventOrderByRelevanceFieldEnum = {
   id: 'id',
   aggregateId: 'aggregateId',
-  eventType: 'eventType'
+  eventType: 'eventType',
+  lastError: 'lastError'
 } as const
 
 export type OutboxEventOrderByRelevanceFieldEnum = (typeof OutboxEventOrderByRelevanceFieldEnum)[keyof typeof OutboxEventOrderByRelevanceFieldEnum]
@@ -542,8 +636,7 @@ export const ProposalOrderByRelevanceFieldEnum = {
   region: 'region',
   currency: 'currency',
   language: 'language',
-  spDriveId: 'spDriveId',
-  spFolderItemId: 'spFolderItemId'
+  folderPath: 'folderPath'
 } as const
 
 export type ProposalOrderByRelevanceFieldEnum = (typeof ProposalOrderByRelevanceFieldEnum)[keyof typeof ProposalOrderByRelevanceFieldEnum]
@@ -570,4 +663,73 @@ export const QuoteItemOrderByRelevanceFieldEnum = {
 } as const
 
 export type QuoteItemOrderByRelevanceFieldEnum = (typeof QuoteItemOrderByRelevanceFieldEnum)[keyof typeof QuoteItemOrderByRelevanceFieldEnum]
+
+
+export const ContentBlockOrderByRelevanceFieldEnum = {
+  id: 'id',
+  code: 'code',
+  title: 'title',
+  ownerUserId: 'ownerUserId'
+} as const
+
+export type ContentBlockOrderByRelevanceFieldEnum = (typeof ContentBlockOrderByRelevanceFieldEnum)[keyof typeof ContentBlockOrderByRelevanceFieldEnum]
+
+
+export const ContentBlockVersionOrderByRelevanceFieldEnum = {
+  id: 'id',
+  blockId: 'blockId',
+  language: 'language',
+  bodyHtml: 'bodyHtml',
+  createdBy: 'createdBy'
+} as const
+
+export type ContentBlockVersionOrderByRelevanceFieldEnum = (typeof ContentBlockVersionOrderByRelevanceFieldEnum)[keyof typeof ContentBlockVersionOrderByRelevanceFieldEnum]
+
+
+export const TagOrderByRelevanceFieldEnum = {
+  id: 'id',
+  name: 'name'
+} as const
+
+export type TagOrderByRelevanceFieldEnum = (typeof TagOrderByRelevanceFieldEnum)[keyof typeof TagOrderByRelevanceFieldEnum]
+
+
+export const ContentBlockTagOrderByRelevanceFieldEnum = {
+  blockId: 'blockId',
+  tagId: 'tagId'
+} as const
+
+export type ContentBlockTagOrderByRelevanceFieldEnum = (typeof ContentBlockTagOrderByRelevanceFieldEnum)[keyof typeof ContentBlockTagOrderByRelevanceFieldEnum]
+
+
+export const ProposalSectionOrderByRelevanceFieldEnum = {
+  id: 'id',
+  proposalId: 'proposalId',
+  title: 'title',
+  blockVersionId: 'blockVersionId'
+} as const
+
+export type ProposalSectionOrderByRelevanceFieldEnum = (typeof ProposalSectionOrderByRelevanceFieldEnum)[keyof typeof ProposalSectionOrderByRelevanceFieldEnum]
+
+
+export const SectionDocumentOrderByRelevanceFieldEnum = {
+  sectionId: 'sectionId',
+  htmlCache: 'htmlCache'
+} as const
+
+export type SectionDocumentOrderByRelevanceFieldEnum = (typeof SectionDocumentOrderByRelevanceFieldEnum)[keyof typeof SectionDocumentOrderByRelevanceFieldEnum]
+
+
+export const DocumentOrderByRelevanceFieldEnum = {
+  id: 'id',
+  proposalId: 'proposalId',
+  quoteVersionId: 'quoteVersionId',
+  fileName: 'fileName',
+  storageKey: 'storageKey',
+  sha256: 'sha256',
+  generatedFrom: 'generatedFrom',
+  createdBy: 'createdBy'
+} as const
+
+export type DocumentOrderByRelevanceFieldEnum = (typeof DocumentOrderByRelevanceFieldEnum)[keyof typeof DocumentOrderByRelevanceFieldEnum]
 

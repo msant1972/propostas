@@ -1,5 +1,6 @@
 import { ValidationPipe, type INestApplication } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { raw } from 'express';
 import helmet from 'helmet';
 import { ENV } from './config/config.module.js';
 import type { Env } from './config/env.js';
@@ -14,6 +15,8 @@ export function configureApp(app: INestApplication): void {
     }),
   );
   app.enableCors({ origin: env.WEB_ORIGIN, credentials: false });
+  // Carregamento de documentos editados: corpo binário (até 25 MB), só nesta rota.
+  app.use('/api/v1/proposals/:id/documents/upload', raw({ type: 'application/octet-stream', limit: '25mb' }));
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }));
 }
 

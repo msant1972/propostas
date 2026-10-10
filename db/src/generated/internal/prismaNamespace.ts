@@ -412,7 +412,14 @@ export const ModelName = {
   CpqRule: 'CpqRule',
   Proposal: 'Proposal',
   QuoteVersion: 'QuoteVersion',
-  QuoteItem: 'QuoteItem'
+  QuoteItem: 'QuoteItem',
+  ContentBlock: 'ContentBlock',
+  ContentBlockVersion: 'ContentBlockVersion',
+  Tag: 'Tag',
+  ContentBlockTag: 'ContentBlockTag',
+  ProposalSection: 'ProposalSection',
+  SectionDocument: 'SectionDocument',
+  Document: 'Document'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -428,7 +435,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "team" | "user" | "product" | "outboxEvent" | "auditLog" | "client" | "productAttribute" | "productBundleItem" | "taxRate" | "fxRate" | "priceList" | "priceListItem" | "cpqRule" | "proposal" | "quoteVersion" | "quoteItem"
+    modelProps: "team" | "user" | "product" | "outboxEvent" | "auditLog" | "client" | "productAttribute" | "productBundleItem" | "taxRate" | "fxRate" | "priceList" | "priceListItem" | "cpqRule" | "proposal" | "quoteVersion" | "quoteItem" | "contentBlock" | "contentBlockVersion" | "tag" | "contentBlockTag" | "proposalSection" | "sectionDocument" | "document"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1488,6 +1495,468 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ContentBlock: {
+      payload: Prisma.$ContentBlockPayload<ExtArgs>
+      fields: Prisma.ContentBlockFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ContentBlockFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentBlockPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ContentBlockFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentBlockPayload>
+        }
+        findFirst: {
+          args: Prisma.ContentBlockFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentBlockPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ContentBlockFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentBlockPayload>
+        }
+        findMany: {
+          args: Prisma.ContentBlockFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentBlockPayload>[]
+        }
+        create: {
+          args: Prisma.ContentBlockCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentBlockPayload>
+        }
+        createMany: {
+          args: Prisma.ContentBlockCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.ContentBlockDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentBlockPayload>
+        }
+        update: {
+          args: Prisma.ContentBlockUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentBlockPayload>
+        }
+        deleteMany: {
+          args: Prisma.ContentBlockDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ContentBlockUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.ContentBlockUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentBlockPayload>
+        }
+        aggregate: {
+          args: Prisma.ContentBlockAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateContentBlock>
+        }
+        groupBy: {
+          args: Prisma.ContentBlockGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ContentBlockGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ContentBlockCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ContentBlockCountAggregateOutputType> | number
+        }
+      }
+    }
+    ContentBlockVersion: {
+      payload: Prisma.$ContentBlockVersionPayload<ExtArgs>
+      fields: Prisma.ContentBlockVersionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ContentBlockVersionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentBlockVersionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ContentBlockVersionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentBlockVersionPayload>
+        }
+        findFirst: {
+          args: Prisma.ContentBlockVersionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentBlockVersionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ContentBlockVersionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentBlockVersionPayload>
+        }
+        findMany: {
+          args: Prisma.ContentBlockVersionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentBlockVersionPayload>[]
+        }
+        create: {
+          args: Prisma.ContentBlockVersionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentBlockVersionPayload>
+        }
+        createMany: {
+          args: Prisma.ContentBlockVersionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.ContentBlockVersionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentBlockVersionPayload>
+        }
+        update: {
+          args: Prisma.ContentBlockVersionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentBlockVersionPayload>
+        }
+        deleteMany: {
+          args: Prisma.ContentBlockVersionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ContentBlockVersionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.ContentBlockVersionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentBlockVersionPayload>
+        }
+        aggregate: {
+          args: Prisma.ContentBlockVersionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateContentBlockVersion>
+        }
+        groupBy: {
+          args: Prisma.ContentBlockVersionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ContentBlockVersionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ContentBlockVersionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ContentBlockVersionCountAggregateOutputType> | number
+        }
+      }
+    }
+    Tag: {
+      payload: Prisma.$TagPayload<ExtArgs>
+      fields: Prisma.TagFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.TagFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TagPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.TagFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TagPayload>
+        }
+        findFirst: {
+          args: Prisma.TagFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TagPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.TagFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TagPayload>
+        }
+        findMany: {
+          args: Prisma.TagFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TagPayload>[]
+        }
+        create: {
+          args: Prisma.TagCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TagPayload>
+        }
+        createMany: {
+          args: Prisma.TagCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.TagDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TagPayload>
+        }
+        update: {
+          args: Prisma.TagUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TagPayload>
+        }
+        deleteMany: {
+          args: Prisma.TagDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.TagUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.TagUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TagPayload>
+        }
+        aggregate: {
+          args: Prisma.TagAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTag>
+        }
+        groupBy: {
+          args: Prisma.TagGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TagGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.TagCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TagCountAggregateOutputType> | number
+        }
+      }
+    }
+    ContentBlockTag: {
+      payload: Prisma.$ContentBlockTagPayload<ExtArgs>
+      fields: Prisma.ContentBlockTagFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ContentBlockTagFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentBlockTagPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ContentBlockTagFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentBlockTagPayload>
+        }
+        findFirst: {
+          args: Prisma.ContentBlockTagFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentBlockTagPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ContentBlockTagFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentBlockTagPayload>
+        }
+        findMany: {
+          args: Prisma.ContentBlockTagFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentBlockTagPayload>[]
+        }
+        create: {
+          args: Prisma.ContentBlockTagCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentBlockTagPayload>
+        }
+        createMany: {
+          args: Prisma.ContentBlockTagCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.ContentBlockTagDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentBlockTagPayload>
+        }
+        update: {
+          args: Prisma.ContentBlockTagUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentBlockTagPayload>
+        }
+        deleteMany: {
+          args: Prisma.ContentBlockTagDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ContentBlockTagUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.ContentBlockTagUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ContentBlockTagPayload>
+        }
+        aggregate: {
+          args: Prisma.ContentBlockTagAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateContentBlockTag>
+        }
+        groupBy: {
+          args: Prisma.ContentBlockTagGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ContentBlockTagGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ContentBlockTagCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ContentBlockTagCountAggregateOutputType> | number
+        }
+      }
+    }
+    ProposalSection: {
+      payload: Prisma.$ProposalSectionPayload<ExtArgs>
+      fields: Prisma.ProposalSectionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ProposalSectionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProposalSectionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ProposalSectionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProposalSectionPayload>
+        }
+        findFirst: {
+          args: Prisma.ProposalSectionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProposalSectionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ProposalSectionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProposalSectionPayload>
+        }
+        findMany: {
+          args: Prisma.ProposalSectionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProposalSectionPayload>[]
+        }
+        create: {
+          args: Prisma.ProposalSectionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProposalSectionPayload>
+        }
+        createMany: {
+          args: Prisma.ProposalSectionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.ProposalSectionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProposalSectionPayload>
+        }
+        update: {
+          args: Prisma.ProposalSectionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProposalSectionPayload>
+        }
+        deleteMany: {
+          args: Prisma.ProposalSectionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ProposalSectionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.ProposalSectionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProposalSectionPayload>
+        }
+        aggregate: {
+          args: Prisma.ProposalSectionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateProposalSection>
+        }
+        groupBy: {
+          args: Prisma.ProposalSectionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProposalSectionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ProposalSectionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProposalSectionCountAggregateOutputType> | number
+        }
+      }
+    }
+    SectionDocument: {
+      payload: Prisma.$SectionDocumentPayload<ExtArgs>
+      fields: Prisma.SectionDocumentFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.SectionDocumentFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SectionDocumentPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.SectionDocumentFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SectionDocumentPayload>
+        }
+        findFirst: {
+          args: Prisma.SectionDocumentFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SectionDocumentPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.SectionDocumentFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SectionDocumentPayload>
+        }
+        findMany: {
+          args: Prisma.SectionDocumentFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SectionDocumentPayload>[]
+        }
+        create: {
+          args: Prisma.SectionDocumentCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SectionDocumentPayload>
+        }
+        createMany: {
+          args: Prisma.SectionDocumentCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.SectionDocumentDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SectionDocumentPayload>
+        }
+        update: {
+          args: Prisma.SectionDocumentUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SectionDocumentPayload>
+        }
+        deleteMany: {
+          args: Prisma.SectionDocumentDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.SectionDocumentUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.SectionDocumentUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$SectionDocumentPayload>
+        }
+        aggregate: {
+          args: Prisma.SectionDocumentAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateSectionDocument>
+        }
+        groupBy: {
+          args: Prisma.SectionDocumentGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SectionDocumentGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.SectionDocumentCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.SectionDocumentCountAggregateOutputType> | number
+        }
+      }
+    }
+    Document: {
+      payload: Prisma.$DocumentPayload<ExtArgs>
+      fields: Prisma.DocumentFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.DocumentFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.DocumentFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentPayload>
+        }
+        findFirst: {
+          args: Prisma.DocumentFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.DocumentFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentPayload>
+        }
+        findMany: {
+          args: Prisma.DocumentFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentPayload>[]
+        }
+        create: {
+          args: Prisma.DocumentCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentPayload>
+        }
+        createMany: {
+          args: Prisma.DocumentCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.DocumentDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentPayload>
+        }
+        update: {
+          args: Prisma.DocumentUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentPayload>
+        }
+        deleteMany: {
+          args: Prisma.DocumentDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.DocumentUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.DocumentUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$DocumentPayload>
+        }
+        aggregate: {
+          args: Prisma.DocumentAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateDocument>
+        }
+        groupBy: {
+          args: Prisma.DocumentGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DocumentGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.DocumentCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.DocumentCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1577,7 +2046,8 @@ export const OutboxEventScalarFieldEnum = {
   status: 'status',
   attempts: 'attempts',
   nextAttemptAt: 'nextAttemptAt',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  lastError: 'lastError'
 } as const
 
 export type OutboxEventScalarFieldEnum = (typeof OutboxEventScalarFieldEnum)[keyof typeof OutboxEventScalarFieldEnum]
@@ -1725,8 +2195,7 @@ export const ProposalScalarFieldEnum = {
   currency: 'currency',
   language: 'language',
   validUntil: 'validUntil',
-  spDriveId: 'spDriveId',
-  spFolderItemId: 'spFolderItemId',
+  folderPath: 'folderPath',
   rowVersion: 'rowVersion',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
@@ -1785,6 +2254,92 @@ export const QuoteItemScalarFieldEnum = {
 } as const
 
 export type QuoteItemScalarFieldEnum = (typeof QuoteItemScalarFieldEnum)[keyof typeof QuoteItemScalarFieldEnum]
+
+
+export const ContentBlockScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  title: 'title',
+  isLegal: 'isLegal',
+  ownerUserId: 'ownerUserId',
+  createdAt: 'createdAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type ContentBlockScalarFieldEnum = (typeof ContentBlockScalarFieldEnum)[keyof typeof ContentBlockScalarFieldEnum]
+
+
+export const ContentBlockVersionScalarFieldEnum = {
+  id: 'id',
+  blockId: 'blockId',
+  language: 'language',
+  versionNumber: 'versionNumber',
+  status: 'status',
+  bodyHtml: 'bodyHtml',
+  reviewDueDate: 'reviewDueDate',
+  createdBy: 'createdBy',
+  createdAt: 'createdAt'
+} as const
+
+export type ContentBlockVersionScalarFieldEnum = (typeof ContentBlockVersionScalarFieldEnum)[keyof typeof ContentBlockVersionScalarFieldEnum]
+
+
+export const TagScalarFieldEnum = {
+  id: 'id',
+  name: 'name'
+} as const
+
+export type TagScalarFieldEnum = (typeof TagScalarFieldEnum)[keyof typeof TagScalarFieldEnum]
+
+
+export const ContentBlockTagScalarFieldEnum = {
+  blockId: 'blockId',
+  tagId: 'tagId'
+} as const
+
+export type ContentBlockTagScalarFieldEnum = (typeof ContentBlockTagScalarFieldEnum)[keyof typeof ContentBlockTagScalarFieldEnum]
+
+
+export const ProposalSectionScalarFieldEnum = {
+  id: 'id',
+  proposalId: 'proposalId',
+  position: 'position',
+  title: 'title',
+  blockVersionId: 'blockVersionId',
+  isModified: 'isModified',
+  rowVersion: 'rowVersion'
+} as const
+
+export type ProposalSectionScalarFieldEnum = (typeof ProposalSectionScalarFieldEnum)[keyof typeof ProposalSectionScalarFieldEnum]
+
+
+export const SectionDocumentScalarFieldEnum = {
+  sectionId: 'sectionId',
+  ydocState: 'ydocState',
+  htmlCache: 'htmlCache',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SectionDocumentScalarFieldEnum = (typeof SectionDocumentScalarFieldEnum)[keyof typeof SectionDocumentScalarFieldEnum]
+
+
+export const DocumentScalarFieldEnum = {
+  id: 'id',
+  proposalId: 'proposalId',
+  quoteVersionId: 'quoteVersionId',
+  kind: 'kind',
+  origin: 'origin',
+  folder: 'folder',
+  fileName: 'fileName',
+  storageKey: 'storageKey',
+  sha256: 'sha256',
+  sizeBytes: 'sizeBytes',
+  generatedFrom: 'generatedFrom',
+  createdBy: 'createdBy',
+  createdAt: 'createdAt'
+} as const
+
+export type DocumentScalarFieldEnum = (typeof DocumentScalarFieldEnum)[keyof typeof DocumentScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1872,7 +2427,8 @@ export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
 export const OutboxEventOrderByRelevanceFieldEnum = {
   id: 'id',
   aggregateId: 'aggregateId',
-  eventType: 'eventType'
+  eventType: 'eventType',
+  lastError: 'lastError'
 } as const
 
 export type OutboxEventOrderByRelevanceFieldEnum = (typeof OutboxEventOrderByRelevanceFieldEnum)[keyof typeof OutboxEventOrderByRelevanceFieldEnum]
@@ -1984,8 +2540,7 @@ export const ProposalOrderByRelevanceFieldEnum = {
   region: 'region',
   currency: 'currency',
   language: 'language',
-  spDriveId: 'spDriveId',
-  spFolderItemId: 'spFolderItemId'
+  folderPath: 'folderPath'
 } as const
 
 export type ProposalOrderByRelevanceFieldEnum = (typeof ProposalOrderByRelevanceFieldEnum)[keyof typeof ProposalOrderByRelevanceFieldEnum]
@@ -2012,6 +2567,75 @@ export const QuoteItemOrderByRelevanceFieldEnum = {
 } as const
 
 export type QuoteItemOrderByRelevanceFieldEnum = (typeof QuoteItemOrderByRelevanceFieldEnum)[keyof typeof QuoteItemOrderByRelevanceFieldEnum]
+
+
+export const ContentBlockOrderByRelevanceFieldEnum = {
+  id: 'id',
+  code: 'code',
+  title: 'title',
+  ownerUserId: 'ownerUserId'
+} as const
+
+export type ContentBlockOrderByRelevanceFieldEnum = (typeof ContentBlockOrderByRelevanceFieldEnum)[keyof typeof ContentBlockOrderByRelevanceFieldEnum]
+
+
+export const ContentBlockVersionOrderByRelevanceFieldEnum = {
+  id: 'id',
+  blockId: 'blockId',
+  language: 'language',
+  bodyHtml: 'bodyHtml',
+  createdBy: 'createdBy'
+} as const
+
+export type ContentBlockVersionOrderByRelevanceFieldEnum = (typeof ContentBlockVersionOrderByRelevanceFieldEnum)[keyof typeof ContentBlockVersionOrderByRelevanceFieldEnum]
+
+
+export const TagOrderByRelevanceFieldEnum = {
+  id: 'id',
+  name: 'name'
+} as const
+
+export type TagOrderByRelevanceFieldEnum = (typeof TagOrderByRelevanceFieldEnum)[keyof typeof TagOrderByRelevanceFieldEnum]
+
+
+export const ContentBlockTagOrderByRelevanceFieldEnum = {
+  blockId: 'blockId',
+  tagId: 'tagId'
+} as const
+
+export type ContentBlockTagOrderByRelevanceFieldEnum = (typeof ContentBlockTagOrderByRelevanceFieldEnum)[keyof typeof ContentBlockTagOrderByRelevanceFieldEnum]
+
+
+export const ProposalSectionOrderByRelevanceFieldEnum = {
+  id: 'id',
+  proposalId: 'proposalId',
+  title: 'title',
+  blockVersionId: 'blockVersionId'
+} as const
+
+export type ProposalSectionOrderByRelevanceFieldEnum = (typeof ProposalSectionOrderByRelevanceFieldEnum)[keyof typeof ProposalSectionOrderByRelevanceFieldEnum]
+
+
+export const SectionDocumentOrderByRelevanceFieldEnum = {
+  sectionId: 'sectionId',
+  htmlCache: 'htmlCache'
+} as const
+
+export type SectionDocumentOrderByRelevanceFieldEnum = (typeof SectionDocumentOrderByRelevanceFieldEnum)[keyof typeof SectionDocumentOrderByRelevanceFieldEnum]
+
+
+export const DocumentOrderByRelevanceFieldEnum = {
+  id: 'id',
+  proposalId: 'proposalId',
+  quoteVersionId: 'quoteVersionId',
+  fileName: 'fileName',
+  storageKey: 'storageKey',
+  sha256: 'sha256',
+  generatedFrom: 'generatedFrom',
+  createdBy: 'createdBy'
+} as const
+
+export type DocumentOrderByRelevanceFieldEnum = (typeof DocumentOrderByRelevanceFieldEnum)[keyof typeof DocumentOrderByRelevanceFieldEnum]
 
 
 
@@ -2129,6 +2753,41 @@ export type EnumProposalStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$P
  * Reference to a field of type 'QuoteVersionStatus'
  */
 export type EnumQuoteVersionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QuoteVersionStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'ContentStatus'
+ */
+export type EnumContentStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ContentStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'Bytes'
+ */
+export type BytesFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Bytes'>
+    
+
+
+/**
+ * Reference to a field of type 'DocumentKind'
+ */
+export type EnumDocumentKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DocumentKind'>
+    
+
+
+/**
+ * Reference to a field of type 'DocumentOrigin'
+ */
+export type EnumDocumentOriginFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DocumentOrigin'>
+    
+
+
+/**
+ * Reference to a field of type 'DocumentFolder'
+ */
+export type EnumDocumentFolderFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DocumentFolder'>
     
 
 
@@ -2305,6 +2964,13 @@ export type GlobalOmitConfig = {
   proposal?: Prisma.ProposalOmit
   quoteVersion?: Prisma.QuoteVersionOmit
   quoteItem?: Prisma.QuoteItemOmit
+  contentBlock?: Prisma.ContentBlockOmit
+  contentBlockVersion?: Prisma.ContentBlockVersionOmit
+  tag?: Prisma.TagOmit
+  contentBlockTag?: Prisma.ContentBlockTagOmit
+  proposalSection?: Prisma.ProposalSectionOmit
+  sectionDocument?: Prisma.SectionDocumentOmit
+  document?: Prisma.DocumentOmit
 }
 
 /* Types for Logging */

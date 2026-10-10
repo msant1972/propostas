@@ -1,0 +1,36 @@
+{
+  "name": "@cpq/documents",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./content": {
+      "types": "./dist/content.d.ts",
+      "default": "./dist/content.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@cpq/db": "workspace:*",
+    "@cpq/shared": "workspace:*",
+    "docx": "^9.9.0",
+    "docxtemplater": "^3.71.0",
+    "node-html-parser": "^9.0.4",
+    "pdfkit": "^0.20.2",
+    "pizzip": "^3.3.0"
+  },
+  "devDependencies": {
+    "@types/pdfkit": "^0.17.6",
+    "fast-xml-parser": "^5.11.2"
+  }
+}

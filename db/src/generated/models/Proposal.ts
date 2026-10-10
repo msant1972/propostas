@@ -46,8 +46,7 @@ export type ProposalMinAggregateOutputType = {
   currency: string | null
   language: string | null
   validUntil: Date | null
-  spDriveId: string | null
-  spFolderItemId: string | null
+  folderPath: string | null
   rowVersion: number | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -66,8 +65,7 @@ export type ProposalMaxAggregateOutputType = {
   currency: string | null
   language: string | null
   validUntil: Date | null
-  spDriveId: string | null
-  spFolderItemId: string | null
+  folderPath: string | null
   rowVersion: number | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -86,8 +84,7 @@ export type ProposalCountAggregateOutputType = {
   currency: number
   language: number
   validUntil: number
-  spDriveId: number
-  spFolderItemId: number
+  folderPath: number
   rowVersion: number
   createdAt: number
   updatedAt: number
@@ -116,8 +113,7 @@ export type ProposalMinAggregateInputType = {
   currency?: true
   language?: true
   validUntil?: true
-  spDriveId?: true
-  spFolderItemId?: true
+  folderPath?: true
   rowVersion?: true
   createdAt?: true
   updatedAt?: true
@@ -136,8 +132,7 @@ export type ProposalMaxAggregateInputType = {
   currency?: true
   language?: true
   validUntil?: true
-  spDriveId?: true
-  spFolderItemId?: true
+  folderPath?: true
   rowVersion?: true
   createdAt?: true
   updatedAt?: true
@@ -156,8 +151,7 @@ export type ProposalCountAggregateInputType = {
   currency?: true
   language?: true
   validUntil?: true
-  spDriveId?: true
-  spFolderItemId?: true
+  folderPath?: true
   rowVersion?: true
   createdAt?: true
   updatedAt?: true
@@ -263,8 +257,7 @@ export type ProposalGroupByOutputType = {
   currency: string
   language: string
   validUntil: Date | null
-  spDriveId: string | null
-  spFolderItemId: string | null
+  folderPath: string | null
   rowVersion: number
   createdAt: Date
   updatedAt: Date
@@ -306,8 +299,7 @@ export type ProposalWhereInput = {
   currency?: Prisma.StringFilter<"Proposal"> | string
   language?: Prisma.StringFilter<"Proposal"> | string
   validUntil?: Prisma.DateTimeNullableFilter<"Proposal"> | Date | string | null
-  spDriveId?: Prisma.StringNullableFilter<"Proposal"> | string | null
-  spFolderItemId?: Prisma.StringNullableFilter<"Proposal"> | string | null
+  folderPath?: Prisma.StringNullableFilter<"Proposal"> | string | null
   rowVersion?: Prisma.IntFilter<"Proposal"> | number
   createdAt?: Prisma.DateTimeFilter<"Proposal"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Proposal"> | Date | string
@@ -328,8 +320,7 @@ export type ProposalOrderByWithRelationInput = {
   currency?: Prisma.SortOrder
   language?: Prisma.SortOrder
   validUntil?: Prisma.SortOrderInput | Prisma.SortOrder
-  spDriveId?: Prisma.SortOrderInput | Prisma.SortOrder
-  spFolderItemId?: Prisma.SortOrderInput | Prisma.SortOrder
+  folderPath?: Prisma.SortOrderInput | Prisma.SortOrder
   rowVersion?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -354,8 +345,7 @@ export type ProposalWhereUniqueInput = Prisma.AtLeast<{
   currency?: Prisma.StringFilter<"Proposal"> | string
   language?: Prisma.StringFilter<"Proposal"> | string
   validUntil?: Prisma.DateTimeNullableFilter<"Proposal"> | Date | string | null
-  spDriveId?: Prisma.StringNullableFilter<"Proposal"> | string | null
-  spFolderItemId?: Prisma.StringNullableFilter<"Proposal"> | string | null
+  folderPath?: Prisma.StringNullableFilter<"Proposal"> | string | null
   rowVersion?: Prisma.IntFilter<"Proposal"> | number
   createdAt?: Prisma.DateTimeFilter<"Proposal"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Proposal"> | Date | string
@@ -376,8 +366,7 @@ export type ProposalOrderByWithAggregationInput = {
   currency?: Prisma.SortOrder
   language?: Prisma.SortOrder
   validUntil?: Prisma.SortOrderInput | Prisma.SortOrder
-  spDriveId?: Prisma.SortOrderInput | Prisma.SortOrder
-  spFolderItemId?: Prisma.SortOrderInput | Prisma.SortOrder
+  folderPath?: Prisma.SortOrderInput | Prisma.SortOrder
   rowVersion?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -404,8 +393,7 @@ export type ProposalScalarWhereWithAggregatesInput = {
   currency?: Prisma.StringWithAggregatesFilter<"Proposal"> | string
   language?: Prisma.StringWithAggregatesFilter<"Proposal"> | string
   validUntil?: Prisma.DateTimeNullableWithAggregatesFilter<"Proposal"> | Date | string | null
-  spDriveId?: Prisma.StringNullableWithAggregatesFilter<"Proposal"> | string | null
-  spFolderItemId?: Prisma.StringNullableWithAggregatesFilter<"Proposal"> | string | null
+  folderPath?: Prisma.StringNullableWithAggregatesFilter<"Proposal"> | string | null
   rowVersion?: Prisma.IntWithAggregatesFilter<"Proposal"> | number
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Proposal"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Proposal"> | Date | string
@@ -423,8 +411,7 @@ export type ProposalCreateInput = {
   currency?: string
   language?: string
   validUntil?: Date | string | null
-  spDriveId?: string | null
-  spFolderItemId?: string | null
+  folderPath?: string | null
   rowVersion?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -445,8 +432,7 @@ export type ProposalUncheckedCreateInput = {
   currency?: string
   language?: string
   validUntil?: Date | string | null
-  spDriveId?: string | null
-  spFolderItemId?: string | null
+  folderPath?: string | null
   rowVersion?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -465,8 +451,7 @@ export type ProposalUpdateInput = {
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   language?: Prisma.StringFieldUpdateOperationsInput | string
   validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  spDriveId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  spFolderItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  folderPath?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rowVersion?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -487,8 +472,7 @@ export type ProposalUncheckedUpdateInput = {
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   language?: Prisma.StringFieldUpdateOperationsInput | string
   validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  spDriveId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  spFolderItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  folderPath?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rowVersion?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -508,8 +492,7 @@ export type ProposalCreateManyInput = {
   currency?: string
   language?: string
   validUntil?: Date | string | null
-  spDriveId?: string | null
-  spFolderItemId?: string | null
+  folderPath?: string | null
   rowVersion?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -527,8 +510,7 @@ export type ProposalUpdateManyMutationInput = {
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   language?: Prisma.StringFieldUpdateOperationsInput | string
   validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  spDriveId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  spFolderItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  folderPath?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rowVersion?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -547,8 +529,7 @@ export type ProposalUncheckedUpdateManyInput = {
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   language?: Prisma.StringFieldUpdateOperationsInput | string
   validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  spDriveId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  spFolderItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  folderPath?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rowVersion?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -583,8 +564,7 @@ export type ProposalCountOrderByAggregateInput = {
   currency?: Prisma.SortOrder
   language?: Prisma.SortOrder
   validUntil?: Prisma.SortOrder
-  spDriveId?: Prisma.SortOrder
-  spFolderItemId?: Prisma.SortOrder
+  folderPath?: Prisma.SortOrder
   rowVersion?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -607,8 +587,7 @@ export type ProposalMaxOrderByAggregateInput = {
   currency?: Prisma.SortOrder
   language?: Prisma.SortOrder
   validUntil?: Prisma.SortOrder
-  spDriveId?: Prisma.SortOrder
-  spFolderItemId?: Prisma.SortOrder
+  folderPath?: Prisma.SortOrder
   rowVersion?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -627,8 +606,7 @@ export type ProposalMinOrderByAggregateInput = {
   currency?: Prisma.SortOrder
   language?: Prisma.SortOrder
   validUntil?: Prisma.SortOrder
-  spDriveId?: Prisma.SortOrder
-  spFolderItemId?: Prisma.SortOrder
+  folderPath?: Prisma.SortOrder
   rowVersion?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -715,8 +693,7 @@ export type ProposalCreateWithoutClientInput = {
   currency?: string
   language?: string
   validUntil?: Date | string | null
-  spDriveId?: string | null
-  spFolderItemId?: string | null
+  folderPath?: string | null
   rowVersion?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -735,8 +712,7 @@ export type ProposalUncheckedCreateWithoutClientInput = {
   currency?: string
   language?: string
   validUntil?: Date | string | null
-  spDriveId?: string | null
-  spFolderItemId?: string | null
+  folderPath?: string | null
   rowVersion?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -785,8 +761,7 @@ export type ProposalScalarWhereInput = {
   currency?: Prisma.StringFilter<"Proposal"> | string
   language?: Prisma.StringFilter<"Proposal"> | string
   validUntil?: Prisma.DateTimeNullableFilter<"Proposal"> | Date | string | null
-  spDriveId?: Prisma.StringNullableFilter<"Proposal"> | string | null
-  spFolderItemId?: Prisma.StringNullableFilter<"Proposal"> | string | null
+  folderPath?: Prisma.StringNullableFilter<"Proposal"> | string | null
   rowVersion?: Prisma.IntFilter<"Proposal"> | number
   createdAt?: Prisma.DateTimeFilter<"Proposal"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Proposal"> | Date | string
@@ -804,8 +779,7 @@ export type ProposalCreateWithoutQuoteVersionsInput = {
   currency?: string
   language?: string
   validUntil?: Date | string | null
-  spDriveId?: string | null
-  spFolderItemId?: string | null
+  folderPath?: string | null
   rowVersion?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -825,8 +799,7 @@ export type ProposalUncheckedCreateWithoutQuoteVersionsInput = {
   currency?: string
   language?: string
   validUntil?: Date | string | null
-  spDriveId?: string | null
-  spFolderItemId?: string | null
+  folderPath?: string | null
   rowVersion?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -860,8 +833,7 @@ export type ProposalUpdateWithoutQuoteVersionsInput = {
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   language?: Prisma.StringFieldUpdateOperationsInput | string
   validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  spDriveId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  spFolderItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  folderPath?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rowVersion?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -881,8 +853,7 @@ export type ProposalUncheckedUpdateWithoutQuoteVersionsInput = {
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   language?: Prisma.StringFieldUpdateOperationsInput | string
   validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  spDriveId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  spFolderItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  folderPath?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rowVersion?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -900,8 +871,7 @@ export type ProposalCreateManyClientInput = {
   currency?: string
   language?: string
   validUntil?: Date | string | null
-  spDriveId?: string | null
-  spFolderItemId?: string | null
+  folderPath?: string | null
   rowVersion?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -919,8 +889,7 @@ export type ProposalUpdateWithoutClientInput = {
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   language?: Prisma.StringFieldUpdateOperationsInput | string
   validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  spDriveId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  spFolderItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  folderPath?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rowVersion?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -939,8 +908,7 @@ export type ProposalUncheckedUpdateWithoutClientInput = {
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   language?: Prisma.StringFieldUpdateOperationsInput | string
   validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  spDriveId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  spFolderItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  folderPath?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rowVersion?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -959,8 +927,7 @@ export type ProposalUncheckedUpdateManyWithoutClientInput = {
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   language?: Prisma.StringFieldUpdateOperationsInput | string
   validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  spDriveId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  spFolderItemId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  folderPath?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rowVersion?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1010,8 +977,7 @@ export type ProposalSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   currency?: boolean
   language?: boolean
   validUntil?: boolean
-  spDriveId?: boolean
-  spFolderItemId?: boolean
+  folderPath?: boolean
   rowVersion?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -1035,15 +1001,14 @@ export type ProposalSelectScalar = {
   currency?: boolean
   language?: boolean
   validUntil?: boolean
-  spDriveId?: boolean
-  spFolderItemId?: boolean
+  folderPath?: boolean
   rowVersion?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   deletedAt?: boolean
 }
 
-export type ProposalOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "code" | "title" | "clientId" | "ownerUserId" | "ownerTeamId" | "region" | "status" | "currency" | "language" | "validUntil" | "spDriveId" | "spFolderItemId" | "rowVersion" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["proposal"]>
+export type ProposalOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "code" | "title" | "clientId" | "ownerUserId" | "ownerTeamId" | "region" | "status" | "currency" | "language" | "validUntil" | "folderPath" | "rowVersion" | "createdAt" | "updatedAt" | "deletedAt", ExtArgs["result"]["proposal"]>
 export type ProposalInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   client?: boolean | Prisma.ClientDefaultArgs<ExtArgs>
   quoteVersions?: boolean | Prisma.Proposal$quoteVersionsArgs<ExtArgs>
@@ -1068,8 +1033,7 @@ export type $ProposalPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     currency: string
     language: string
     validUntil: Date | null
-    spDriveId: string | null
-    spFolderItemId: string | null
+    folderPath: string | null
     rowVersion: number
     createdAt: Date
     updatedAt: Date
@@ -1456,8 +1420,7 @@ export interface ProposalFieldRefs {
   readonly currency: Prisma.FieldRef<"Proposal", 'String'>
   readonly language: Prisma.FieldRef<"Proposal", 'String'>
   readonly validUntil: Prisma.FieldRef<"Proposal", 'DateTime'>
-  readonly spDriveId: Prisma.FieldRef<"Proposal", 'String'>
-  readonly spFolderItemId: Prisma.FieldRef<"Proposal", 'String'>
+  readonly folderPath: Prisma.FieldRef<"Proposal", 'String'>
   readonly rowVersion: Prisma.FieldRef<"Proposal", 'Int'>
   readonly createdAt: Prisma.FieldRef<"Proposal", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Proposal", 'DateTime'>

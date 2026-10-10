@@ -3,6 +3,7 @@ import { Logger } from '@nestjs/common';
 import { Queue, Worker } from 'bullmq';
 import { Redis } from 'ioredis';
 import { createPrisma } from '@cpq/db';
+import { LocalDocumentRepository } from '@cpq/documents';
 import { loadConfig } from './config.js';
 import { dispatch, type OutboxJob } from './queues/handlers.js';
 import { OutboxRelay } from './relay/relay.service.js';
@@ -14,11 +15,12 @@ const connection = new Redis(cfg.REDIS_URL, { maxRetriesPerRequest: null });
 
 const queue = new Queue<OutboxJob>('events', { connection });
 const relay = new OutboxRelay(prisma, queue, cfg);
+const ctx = { prisma, repo: new LocalDocumentRepository(cfg.DOCUMENT_STORAGE_DIR), cfg };
 
 const worker = new Worker<OutboxJob>(
   'events',
   async (job) => {
-    await dispatch(job.data);
+    await dispatch(job.data, ctx);
   },
   { connection, concurrency: 5 },
 );

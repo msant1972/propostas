@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@cpq/db": "workspace:*",
+    "@cpq/documents": "workspace:*",
     "@cpq/shared": "workspace:*",
     "@nestjs/common": "^12.1.2",
     "@nestjs/core": "^12.1.2",

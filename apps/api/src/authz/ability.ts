@@ -1,7 +1,7 @@
 import { AbilityBuilder, createMongoAbility, type MongoAbility } from '@casl/ability';
 import type { Role } from '@cpq/shared';
 
-export type Action = 'manage' | 'create' | 'read' | 'update' | 'delete';
+export type Action = 'manage' | 'create' | 'read' | 'update' | 'delete' | 'approve';
 export type Subject =
   | 'Product'
   | 'Client'
@@ -11,6 +11,8 @@ export type Subject =
   | 'TaxRate'
   | 'FxRate'
   | 'Rule'
+  | 'ContentBlock'
+  | 'Document'
   | 'Cost'
   | 'AuditLog'
   | 'User'
@@ -42,6 +44,7 @@ export function defineAbilityFor(actor: Actor): AppAbility {
   // Catálogo e clientes: leitura para qualquer utilizador autenticado.
   can('read', 'Product');
   can('read', 'Client');
+  can('read', 'ContentBlock');
   can('read', 'TaxRate');
   can('read', 'FxRate');
 
@@ -55,6 +58,7 @@ export function defineAbilityFor(actor: Actor): AppAbility {
   // Custos e margens: informação restrita (a aprovação por margem exige que alguém a veja).
   if (has('Gestor_Comercial') || has('Aprovador_Financeiro')) can('read', 'Cost');
 
+  if (has('Gestor_Comercial') || has('Juridico')) can(['create', 'update'], 'ContentBlock');
   if (has('Gestor_Comercial')) {
     can(['read', 'update'], 'Proposal', { ownerUserId: actor.userId }); // um gestor também cota
   }

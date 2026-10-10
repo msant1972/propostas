@@ -80,6 +80,7 @@ model OutboxEvent {
   attempts      Int          @default(0) @db.SmallInt
   nextAttemptAt DateTime     @default(now()) @map("next_attempt_at") @db.DateTime(6)
   createdAt     DateTime     @default(now()) @map("created_at") @db.DateTime(6)
+  lastError     String?      @map("last_error") @db.Text
 
   @@index([status, nextAttemptAt], map: "ix_outbox_pending")
   @@map("outbox_events")
@@ -276,8 +277,7 @@ model Proposal {
   currency        String         @default("EUR") @db.Char(3)
   language        String         @default("pt-PT") @db.Char(5)
   validUntil      DateTime?      @map("valid_until") @db.Date
-  spDriveId       String?        @map("sp_drive_id") @db.VarChar(255)
-  spFolderItemId  String?        @map("sp_folder_item_id") @db.VarChar(255)
+  folderPath      String?        @map("folder_path") @db.VarChar(500)
   rowVersion      Int            @default(1) @map("row_version")
   createdAt       DateTime       @default(now()) @map("created_at") @db.DateTime(6)
   updatedAt       DateTime       @default(now()) @updatedAt @map("updated_at") @db.DateTime(6)
@@ -341,4 +341,124 @@ model QuoteItem {
 
   @@unique([quoteVersionId, lineNumber], map: "uq_qi_line")
   @@map("quote_items")
+}
+
+// ---------------------------------------------------------------------------------------------
+// Fase 3 — Conteúdos, secções e documentos (migração 0004)
+// ---------------------------------------------------------------------------------------------
+
+enum ContentStatus {
+  DRAFT
+  APPROVED
+  RETIRED
+}
+
+enum DocumentKind {
+  DOCX
+  PDF
+  SIGNED_PDF
+  ATTACHMENT
+}
+
+enum DocumentOrigin {
+  GENERATED
+  MANUALLY_EDITED
+  UPLOADED
+}
+
+enum DocumentFolder {
+  F01_TRABALHO @map("01_Trabalho")
+  F02_ENVIADO  @map("02_Enviado")
+  F03_ASSINADO @map("03_Assinado")
+}
+
+model ContentBlock {
+  id          String                @id @db.Char(36)
+  code        String                @unique @db.VarChar(50)
+  title       String                @db.VarChar(255)
+  isLegal     Boolean               @default(false) @map("is_legal")
+  ownerUserId String                @map("owner_user_id") @db.Char(36)
+  createdAt   DateTime              @default(now()) @map("created_at") @db.DateTime(6)
+  deletedAt   DateTime?             @map("deleted_at") @db.DateTime(6)
+  versions    ContentBlockVersion[]
+  tags        ContentBlockTag[]
+
+  @@map("content_blocks")
+}
+
+model ContentBlockVersion {
+  id            String        @id @db.Char(36)
+  blockId       String        @map("block_id") @db.Char(36)
+  language      String        @db.Char(5)
+  versionNumber Int           @map("version_number")
+  status        ContentStatus @default(DRAFT)
+  bodyHtml      String        @map("body_html") @db.MediumText
+  reviewDueDate DateTime      @map("review_due_date") @db.Date
+  createdBy     String        @map("created_by") @db.Char(36)
+  createdAt     DateTime      @default(now()) @map("created_at") @db.DateTime(6)
+  block         ContentBlock  @relation(fields: [blockId], references: [id])
+
+  @@unique([blockId, language, versionNumber], map: "uq_cbv")
+  @@map("content_block_versions")
+}
+
+model Tag {
+  id     String            @id @db.Char(36)
+  name   String            @unique @db.VarChar(50)
+  blocks ContentBlockTag[]
+
+  @@map("tags")
+}
+
+model ContentBlockTag {
+  blockId String       @map("block_id") @db.Char(36)
+  tagId   String       @map("tag_id") @db.Char(36)
+  block   ContentBlock @relation(fields: [blockId], references: [id])
+  tag     Tag          @relation(fields: [tagId], references: [id])
+
+  @@id([blockId, tagId])
+  @@map("content_block_tags")
+}
+
+model ProposalSection {
+  id             String    @id @db.Char(36)
+  proposalId     String    @map("proposal_id") @db.Char(36)
+  position       Int       @db.SmallInt
+  title          String    @db.VarChar(255)
+  blockVersionId String?   @map("block_version_id") @db.Char(36)
+  isModified     Boolean   @default(false) @map("is_modified")
+  rowVersion     Int       @default(1) @map("row_version")
+  document       SectionDocument?
+
+  @@index([proposalId, position], map: "ix_ps_order")
+  @@map("proposal_sections")
+}
+
+model SectionDocument {
+  sectionId  String          @id @map("section_id") @db.Char(36)
+  ydocState  Bytes           @map("ydoc_state")
+  htmlCache  String?         @map("html_cache") @db.MediumText
+  updatedAt  DateTime        @default(now()) @updatedAt @map("updated_at") @db.DateTime(6)
+  section    ProposalSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+
+  @@map("section_documents")
+}
+
+model Document {
+  id             String         @id @db.Char(36)
+  proposalId     String         @map("proposal_id") @db.Char(36)
+  quoteVersionId String?        @map("quote_version_id") @db.Char(36)
+  kind           DocumentKind
+  origin         DocumentOrigin
+  folder         DocumentFolder
+  fileName       String         @map("file_name") @db.VarChar(255)
+  storageKey     String         @unique @map("storage_key") @db.VarChar(500)
+  sha256         String         @db.Char(64)
+  sizeBytes      BigInt         @map("size_bytes")
+  generatedFrom  String?        @map("generated_from") @db.Char(36)
+  createdBy      String?        @map("created_by") @db.Char(36)
+  createdAt      DateTime       @default(now()) @map("created_at") @db.DateTime(6)
+
+  @@index([proposalId, createdAt], map: "ix_doc_proposal")
+  @@map("documents")
 }

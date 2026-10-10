@@ -85,7 +85,7 @@ export class OutboxRelay {
   }
 
   async markDone(eventId: string): Promise<void> {
-    await this.prisma.outboxEvent.update({ where: { id: eventId }, data: { status: 'DONE' } });
+    await this.prisma.outboxEvent.update({ where: { id: eventId }, data: { status: 'DONE', lastError: null } });
   }
 
   /** Falha: incrementa tentativas e agenda com *backoff*; esgotadas, o evento passa a FAILED (gera alerta). */
@@ -99,6 +99,7 @@ export class OutboxRelay {
       where: { id: eventId },
       data: {
         attempts,
+        lastError: (error instanceof Error ? error.message : String(error)).slice(0, 2000),
         status: exhausted ? 'FAILED' : 'PENDING',
         nextAttemptAt: new Date(Date.now() + backoffMs(attempts)),
       },

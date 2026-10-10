@@ -28,7 +28,7 @@ test('comercial cria uma proposta, cota, vê os totais e bloqueia a versão', as
   await expect(page.getByRole('status')).toContainText('Rascunho guardado');
 
   await page.getByRole('button', { name: 'Bloquear versão' }).click();
-  await expect(page.getByText('Versão bloqueada')).toBeVisible();
+  await expect(page.getByText('Versão bloqueada: para alterar')).toBeVisible();
   await expect(page.getByText(/Hash do snapshot: [0-9a-f]{64}/)).toBeVisible();
 
   await page.getByRole('button', { name: 'Verificar integridade' }).click();

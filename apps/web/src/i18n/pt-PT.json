@@ -6,7 +6,8 @@
     "catalog": "Catálogo",
     "logout": "Terminar sessão",
     "clients": "Clientes",
-    "proposals": "Propostas"
+    "proposals": "Propostas",
+    "content": "Conteúdos"
   },
   "login": {
     "title": "Iniciar sessão",
@@ -147,5 +148,72 @@
     "notVerified": "Integridade NÃO verificada",
     "verify": "Verificar integridade",
     "noCatalog": "Catálogo indisponível."
+  },
+  "editor": {
+    "bold": "Negrito",
+    "italic": "Itálico",
+    "underline": "Sublinhado",
+    "h2": "Título 2",
+    "h3": "Título 3",
+    "bullets": "Lista com marcas",
+    "numbers": "Lista numerada",
+    "table": "Inserir tabela",
+    "insertTag": "Inserir variável"
+  },
+  "content": {
+    "title": "Biblioteca de conteúdos",
+    "new": "Novo bloco",
+    "code": "Código",
+    "name": "Título",
+    "legal": "Jurídico",
+    "tags": "Etiquetas (separadas por vírgula)",
+    "language": "Língua",
+    "review": "Revisão até",
+    "body": "Texto",
+    "versions": "Versões",
+    "version": "v{{n}}",
+    "approve": "Aprovar",
+    "retire": "Retirar",
+    "newVersion": "Nova versão",
+    "overdue": "Revisão em atraso",
+    "status": {
+      "DRAFT": "Rascunho",
+      "APPROVED": "Aprovada",
+      "RETIRED": "Retirada"
+    },
+    "saved": "Bloco guardado.",
+    "searchTag": "Etiqueta",
+    "none": "Sem blocos."
+  },
+  "doc": {
+    "tabQuote": "Cotação",
+    "tabDocument": "Documento",
+    "sections": "Secções",
+    "addFromLibrary": "Adicionar da biblioteca",
+    "addBlank": "Secção em branco",
+    "blankTitle": "Título da nova secção",
+    "pick": "Escolha um bloco aprovado",
+    "moveUp": "Subir",
+    "moveDown": "Descer",
+    "saveSection": "Guardar secção",
+    "modified": "Alterada face ao bloco",
+    "legalModified": "Bloco jurídico alterado: exigirá aprovação do Jurídico",
+    "generate": "Gerar documento",
+    "generating": "A gerar…",
+    "generated": "Documento gerado.",
+    "failed": "A geração falhou",
+    "documents": "Documentos gerados",
+    "download": "Descarregar",
+    "upload": "Carregar versão editada",
+    "uploadKind": "Tipo",
+    "origin": {
+      "GENERATED": "Gerado",
+      "MANUALLY_EDITED": "Editado à mão",
+      "UPLOADED": "Carregado"
+    },
+    "issues": "Variáveis por resolver",
+    "noSections": "Sem secções: adicione pelo menos uma.",
+    "conflict": "Esta secção foi alterada por outra pessoa. Recarregue antes de gravar.",
+    "readonlyHint": "As secções só se editam com a proposta em rascunho."
   }
 }

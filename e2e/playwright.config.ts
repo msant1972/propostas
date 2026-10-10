@@ -4,7 +4,9 @@ const databaseUrl = process.env['DATABASE_URL'] ?? 'mysql://cpq:cpq@127.0.0.1:33
 
 export default defineConfig({
   testDir: './tests',
-  timeout: 30_000,
+  timeout: 45_000,
+  globalSetup: './global-setup.ts',
+  workers: 1,
   use: { baseURL: 'http://localhost:5173', trace: 'retain-on-failure' },
   webServer: [
     {

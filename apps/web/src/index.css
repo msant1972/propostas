@@ -25,3 +25,13 @@ body {
   color: var(--foreground);
   font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
 }
+
+.prose-editor h1, .prose-view h1 { font-size: 1.5rem; font-weight: 600; margin: .8rem 0 .4rem; }
+.prose-editor h2, .prose-view h2 { font-size: 1.25rem; font-weight: 600; margin: .8rem 0 .4rem; }
+.prose-editor h3, .prose-view h3 { font-size: 1.1rem; font-weight: 600; margin: .6rem 0 .3rem; }
+.prose-editor p, .prose-view p { margin: .4rem 0; }
+.prose-editor ul, .prose-view ul { list-style: disc; padding-left: 1.4rem; }
+.prose-editor ol, .prose-view ol { list-style: decimal; padding-left: 1.4rem; }
+.prose-editor table, .prose-view table { border-collapse: collapse; margin: .5rem 0; }
+.prose-editor td, .prose-editor th, .prose-view td, .prose-view th { border: 1px solid var(--border); padding: .25rem .5rem; min-width: 3rem; }
+.prose-editor th, .prose-view th { background: var(--muted); font-weight: 600; }

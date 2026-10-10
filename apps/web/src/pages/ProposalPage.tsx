@@ -6,6 +6,7 @@ import type { components } from '@cpq/api-client';
 import type { Catalog } from '@cpq/rules-engine';
 import { useAuth } from '../auth/store';
 import { evaluate, QuoteEditor, type EditorState } from '../components/QuoteEditor';
+import { DocumentPanel } from '../components/DocumentPanel';
 import { Button } from '../components/ui';
 import { ApiError, apiGet, apiPost, apiPut } from '../lib/api';
 
@@ -47,6 +48,7 @@ export function ProposalPage() {
   const [message, setMessage] = useState<string | null>(null);
   const [errors, setErrors] = useState<string[]>([]);
   const [verify, setVerify] = useState<Verify | null>(null);
+  const [tab, setTab] = useState<'quote' | 'document'>('quote');
 
   useEffect(() => {
     if (quote.data) setState(fromQuote(quote.data));
@@ -109,6 +111,18 @@ export function ProposalPage() {
         <p className="text-sm opacity-70">{p.code} · {client.data?.name} · {t(`status.${p.status}`)}</p>
       </div>
 
+      <div role="tablist" className="flex gap-1 border-b border-[var(--border)]">
+        {(['quote', 'document'] as const).map((k) => (
+          <button key={k} role="tab" aria-selected={tab === k} onClick={() => setTab(k)}
+            className={`px-4 py-2 text-sm ${tab === k ? 'border-b-2 border-[var(--primary)] font-semibold' : 'opacity-70'}`}>
+            {t(k === 'quote' ? 'doc.tabQuote' : 'doc.tabDocument')}
+          </button>
+        ))}
+      </div>
+
+      {tab === 'document' && <DocumentPanel proposalId={id} status={p.status} />}
+
+      <div className={tab === 'quote' ? 'space-y-6' : 'hidden'}>
       <div className="flex flex-wrap items-center gap-3 text-sm">
         <span className="font-medium">{t('quote.version', { n: q.versionNumber })} — {t(`quote.status.${q.status}`)}</span>
         {versions.data && versions.data.length > 1 && (
@@ -143,6 +157,7 @@ export function ProposalPage() {
         <p className="break-all font-mono text-xs opacity-70">{t('quote.hash')}: {q.snapshotHash}</p>
       )}
       {verify && <p role="status" className={verify.valid ? 'text-sm text-green-700' : 'text-sm text-red-600'}>{verify.valid ? t('quote.verified') : t('quote.notVerified')}</p>}
+      </div>
     </section>
   );
 }

@@ -28,6 +28,9 @@ export function Layout() {
           <Link to="/clientes" className="text-sm hover:underline">
             {t('nav.clients')}
           </Link>
+          <Link to="/conteudos" className="text-sm hover:underline">
+            {t('nav.content')}
+          </Link>
           <Link to="/catalogo" className="text-sm hover:underline">
             {t('nav.catalog')}
           </Link>

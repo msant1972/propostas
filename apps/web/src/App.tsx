@@ -3,6 +3,7 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { RequireAuth } from './auth/RequireAuth';
 import { Layout } from './components/Layout';
 import { CatalogPage } from './pages/CatalogPage';
+import { ContentPage } from './pages/ContentPage';
 import { ClientsPage } from './pages/ClientsPage';
 import { ProposalPage } from './pages/ProposalPage';
 import { ProposalsPage } from './pages/ProposalsPage';
@@ -28,6 +29,7 @@ export function App() {
           >
             <Route path="/catalogo" element={<CatalogPage />} />
             <Route path="/catalogo/:id" element={<ProductPage />} />
+            <Route path="/conteudos" element={<ContentPage />} />
             <Route path="/clientes" element={<ClientsPage />} />
             <Route path="/propostas" element={<ProposalsPage />} />
             <Route path="/propostas/:id" element={<ProposalPage />} />

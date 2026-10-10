@@ -13,6 +13,10 @@
     "./roles": {
       "types": "./dist/roles.d.ts",
       "default": "./dist/roles.js"
+    },
+    "./workflow": {
+      "types": "./dist/workflow.d.ts",
+      "default": "./dist/workflow.js"
     }
   },
   "scripts": {

@@ -3,25 +3,9 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { Button } from '../components/ui';
+import type { ProductPage } from '@cpq/api-client';
 import { apiGet } from '../lib/api';
 
-export interface Product {
-  id: string;
-  sku: string;
-  name: string;
-  description: string | null;
-  unitOfMeasure: string;
-  billingModel: 'ONE_TIME' | 'RECURRING' | 'USAGE_BASED' | 'MILESTONE';
-  billingPeriod: 'MONTH' | 'QUARTER' | 'YEAR' | null;
-  isActive: boolean;
-}
-
-interface Page<T> {
-  items: T[];
-  total: number;
-  page: number;
-  pageSize: number;
-}
 
 export function CatalogPage() {
   const { t } = useTranslation();
@@ -29,7 +13,7 @@ export function CatalogPage() {
   const pageSize = 20;
   const { data, isPending, isError } = useQuery({
     queryKey: ['products', page],
-    queryFn: () => apiGet<Page<Product>>(`/catalog/products?page=${page}&pageSize=${pageSize}`),
+    queryFn: () => apiGet<ProductPage>(`/catalog/products?page=${page}&pageSize=${pageSize}`),
   });
 
   const pages = data ? Math.max(1, Math.ceil(data.total / pageSize)) : 1;

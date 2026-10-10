@@ -1,0 +1,63 @@
+import 'dotenv/config';
+import { DEV_USER_OIDS, ROLES, uuidv7 } from '@cpq/shared';
+import { createPrisma } from '../src/index.js';
+
+const url = process.env['DATABASE_URL'];
+if (!url) throw new Error('DATABASE_URL em falta');
+const prisma = createPrisma(url);
+
+const products: Array<[string, string, 'ONE_TIME' | 'RECURRING' | 'USAGE_BASED' | 'MILESTONE', 'MONTH' | 'YEAR' | null, string, string]> = [
+  ['LIC-CORE', 'Licença Plataforma Core', 'RECURRING', 'MONTH', 'UN', '12.0000'],
+  ['LIC-PRO', 'Licença Plataforma Pro', 'RECURRING', 'MONTH', 'UN', '25.0000'],
+  ['LIC-ENT', 'Licença Plataforma Enterprise', 'RECURRING', 'YEAR', 'UN', '600.0000'],
+  ['SUP-STD', 'Suporte Standard', 'RECURRING', 'MONTH', 'UN', '3.0000'],
+  ['SUP-PRM', 'Suporte Premium', 'RECURRING', 'MONTH', 'UN', '8.0000'],
+  ['IMP-BAS', 'Implementação Base', 'ONE_TIME', null, 'H', '45.0000'],
+  ['IMP-INT', 'Integração com ERP', 'MILESTONE', null, 'H', '55.0000'],
+  ['CON-SEN', 'Consultoria Sénior', 'ONE_TIME', null, 'H', '70.0000'],
+  ['CON-JUN', 'Consultoria Júnior', 'ONE_TIME', null, 'H', '35.0000'],
+  ['FOR-ONL', 'Formação Online', 'ONE_TIME', null, 'H', '30.0000'],
+  ['FOR-PRE', 'Formação Presencial', 'ONE_TIME', null, 'H', '50.0000'],
+  ['API-USO', 'Chamadas API (milhares)', 'USAGE_BASED', null, 'MIL', '0.4000'],
+  ['ARM-GB', 'Armazenamento adicional', 'USAGE_BASED', null, 'GB', '0.0200'],
+  ['MOD-REL', 'Módulo de Relatórios', 'RECURRING', 'MONTH', 'UN', '6.0000'],
+  ['MOD-WFL', 'Módulo de Workflow', 'RECURRING', 'MONTH', 'UN', '9.0000'],
+  ['MOD-SEG', 'Módulo de Segurança Avançada', 'RECURRING', 'MONTH', 'UN', '11.0000'],
+  ['SLA-99', 'SLA 99,9 %', 'RECURRING', 'YEAR', 'UN', '900.0000'],
+  ['AUD-SEG', 'Auditoria de Segurança', 'ONE_TIME', null, 'UN', '2500.0000'],
+  ['MIG-DAD', 'Migração de Dados', 'MILESTONE', null, 'H', '50.0000'],
+  ['HOS-GER', 'Alojamento Gerido', 'RECURRING', 'MONTH', 'UN', '150.0000'],
+];
+
+const teamIds = { norte: '00000000-0000-4000-8000-0000000000a1', sul: '00000000-0000-4000-8000-0000000000a2' };
+
+async function main() {
+  for (const [name, id] of [['Norte', teamIds.norte], ['Sul', teamIds.sul]] as const) {
+    await prisma.team.upsert({ where: { id }, update: { name }, create: { id, name } });
+  }
+  for (const role of ROLES) {
+    const entraOid = DEV_USER_OIDS[role];
+    await prisma.user.upsert({
+      where: { entraOid },
+      update: {},
+      create: {
+        id: uuidv7(),
+        entraOid,
+        email: `${role.toLowerCase()}@exemplo.pt`,
+        displayName: `Utilizador ${role}`,
+        teamId: teamIds.norte,
+        region: 'PT',
+      },
+    });
+  }
+  for (const [sku, name, billingModel, billingPeriod, unitOfMeasure, unitCost] of products) {
+    await prisma.product.upsert({
+      where: { sku },
+      update: {},
+      create: { id: uuidv7(), sku, name, billingModel, billingPeriod, unitOfMeasure, unitCost },
+    });
+  }
+  console.log(`seed: ${products.length} produtos, ${ROLES.length} utilizadores, 2 equipas`);
+}
+
+await main().finally(() => prisma.$disconnect());

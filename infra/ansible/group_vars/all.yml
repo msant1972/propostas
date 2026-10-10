@@ -1,0 +1,11 @@
+environment_name: qa
+aws_region: eu-west-1
+mariadb_version: "12.3"
+mariadb_data_device: /dev/nvme1n1       # volume EBS dedicado (/dev/sdf na AWS)
+mariadb_data_dir: /var/lib/mysql
+mariadb_buffer_pool_size: 4G
+mariadb_key_dir: /run/mariadb-keys       # tmpfs: a chave nunca vai para disco persistente
+secrets_key_id: "cpq/{{ environment_name }}/mariadb-encryption-key"
+backups_bucket: "{{ lookup('env', 'CPQ_BACKUPS_BUCKET') }}"
+app_dir: /opt/cpq
+app_image_tag: latest

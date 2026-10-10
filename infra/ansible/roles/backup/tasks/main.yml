@@ -1,0 +1,25 @@
+- name: Scripts de backup
+  ansible.builtin.template:
+    src: "{{ item }}.j2"
+    dest: "/usr/local/sbin/{{ item }}"
+    mode: "0750"
+  loop: [cpq-backup-full, cpq-backup-binlogs]
+
+- name: Temporizadores systemd
+  ansible.builtin.template:
+    src: "{{ item.src }}"
+    dest: "/etc/systemd/system/{{ item.dest }}"
+    mode: "0644"
+  loop:
+    - { src: backup-full.service.j2, dest: cpq-backup-full.service }
+    - { src: backup-full.timer.j2, dest: cpq-backup-full.timer }
+    - { src: backup-binlogs.service.j2, dest: cpq-backup-binlogs.service }
+    - { src: backup-binlogs.timer.j2, dest: cpq-backup-binlogs.timer }
+
+- name: Ativar temporizadores
+  ansible.builtin.systemd_service:
+    name: "{{ item }}"
+    enabled: true
+    state: started
+    daemon_reload: true
+  loop: [cpq-backup-full.timer, cpq-backup-binlogs.timer]

@@ -1,0 +1,18 @@
+- name: Nginx
+  ansible.builtin.apt:
+    name: nginx
+    state: present
+
+- name: Site da aplicação
+  ansible.builtin.template:
+    src: cpq.conf.j2
+    dest: /etc/nginx/sites-available/cpq
+    mode: "0644"
+  notify: reload nginx
+
+- name: Ativar o site e desativar o por omissão
+  ansible.builtin.file:
+    src: /etc/nginx/sites-available/cpq
+    dest: /etc/nginx/sites-enabled/cpq
+    state: link
+  notify: reload nginx

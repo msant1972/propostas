@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
 import { ApiError, apiGet } from '../lib/api';
-import type { Product } from './CatalogPage';
+import type { Product } from '@cpq/api-client';
 
 export function ProductPage() {
   const { t } = useTranslation();

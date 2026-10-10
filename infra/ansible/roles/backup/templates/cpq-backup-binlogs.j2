@@ -1,0 +1,5 @@
+#!/bin/sh
+# Envia os binlogs fechados para o S3 a cada 5 minutos (permite recuperação para um ponto no tempo).
+set -eu
+mariadb --socket=/run/mysqld/mysqld.sock -e 'FLUSH BINARY LOGS'
+aws s3 sync /var/lib/mysql/ "s3://{{ backups_bucket }}/binlogs/" --exclude '*' --include 'binlog.[0-9]*' --sse aws:kms

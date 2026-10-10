@@ -1,0 +1,10 @@
+- name: Servidor CPQ (aplicação, MariaDB e Redis)
+  hosts: cpq
+  become: true
+  roles:
+    - base
+    - docker
+    - mariadb
+    - nginx
+    - backup
+    - app

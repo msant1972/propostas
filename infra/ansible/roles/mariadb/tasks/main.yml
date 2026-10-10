@@ -1,0 +1,59 @@
+- name: Chave GPG da MariaDB
+  ansible.builtin.get_url:
+    url: https://supplychain.mariadb.com/mariadb-keyring-2019.gpg
+    dest: /etc/apt/keyrings/mariadb.gpg
+    mode: "0644"
+
+- name: Repositório oficial da MariaDB {{ mariadb_version }}
+  ansible.builtin.apt_repository:
+    repo: "deb [signed-by=/etc/apt/keyrings/mariadb.gpg] https://dlm.mariadb.com/repo/mariadb-server/{{ mariadb_version }}/repo/ubuntu {{ ansible_distribution_release }} main"
+    state: present
+
+- name: Formatar o volume de dados (só se estiver vazio)
+  community.general.filesystem:
+    fstype: xfs
+    dev: "{{ mariadb_data_device }}"
+
+- name: Montar o volume de dados
+  ansible.posix.mount:
+    path: "{{ mariadb_data_dir }}"
+    src: "{{ mariadb_data_device }}"
+    fstype: xfs
+    opts: noatime
+    state: mounted
+
+- name: Instalar MariaDB e mariabackup
+  ansible.builtin.apt:
+    name: [mariadb-server, mariadb-backup]
+    state: present
+    update_cache: true
+
+- name: Serviço que escreve a chave de encriptação em tmpfs antes do arranque da MariaDB
+  ansible.builtin.template:
+    src: mariadb-keys.service.j2
+    dest: /etc/systemd/system/mariadb-keys.service
+    mode: "0644"
+  notify: reload systemd
+
+- name: A MariaDB depende do serviço de chaves
+  ansible.builtin.copy:
+    dest: /etc/systemd/system/mariadb.service.d/keys.conf
+    content: |
+      [Unit]
+      Requires=mariadb-keys.service
+      After=mariadb-keys.service
+    mode: "0644"
+  notify: reload systemd
+
+- name: Configuração da MariaDB
+  ansible.builtin.template:
+    src: cpq.cnf.j2
+    dest: /etc/mysql/mariadb.conf.d/90-cpq.cnf
+    mode: "0644"
+  notify: restart mariadb
+
+- name: MariaDB ativa
+  ansible.builtin.systemd_service:
+    name: mariadb
+    enabled: true
+    state: started

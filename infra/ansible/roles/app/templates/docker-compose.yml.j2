@@ -1,0 +1,35 @@
+# Aplicação e Redis em contentores; a MariaDB corre no anfitrião (só aceita ligações locais).
+services:
+  redis:
+    image: redis:8
+    command: ["redis-server", "--appendonly", "yes", "--appendfsync", "everysec"]
+    volumes: ["redis-data:/data"]
+    network_mode: host
+    restart: unless-stopped
+    mem_limit: 1g
+
+  api:
+    image: cpq/api:{{ app_image_tag }}
+    network_mode: host
+    restart: unless-stopped
+    mem_limit: 2g
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      AUTH_MODE: entra
+    env_file: ["{{ app_dir }}/api.env"]   # preenchido a partir do Secrets Manager no deploy
+
+  worker:
+    image: cpq/worker:{{ app_image_tag }}
+    network_mode: host
+    restart: unless-stopped
+    mem_limit: 1g
+    env_file: ["{{ app_dir }}/worker.env"]
+
+  web:
+    image: cpq/web:{{ app_image_tag }}
+    ports: ["127.0.0.1:8081:80"]
+    restart: unless-stopped
+
+volumes:
+  redis-data:

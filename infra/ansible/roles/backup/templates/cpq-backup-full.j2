@@ -1,0 +1,11 @@
+#!/bin/sh
+# Backup completo diário com mariabackup, enviado para o S3 (encriptado com KMS).
+set -eu
+STAMP=$(date -u +%Y%m%dT%H%M%SZ)
+DEST=/var/backups/cpq/full-$STAMP
+mkdir -p "$DEST"
+mariadb-backup --backup --target-dir="$DEST" --user=backup --socket=/run/mysqld/mysqld.sock
+mariadb-backup --prepare --target-dir="$DEST"
+tar -C /var/backups/cpq -czf "/var/backups/cpq/full-$STAMP.tar.gz" "full-$STAMP"
+aws s3 cp "/var/backups/cpq/full-$STAMP.tar.gz" "s3://{{ backups_bucket }}/full/full-$STAMP.tar.gz" --sse aws:kms
+rm -rf "$DEST" "/var/backups/cpq/full-$STAMP.tar.gz"

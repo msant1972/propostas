@@ -1,0 +1,101 @@
+// O esquema físico é gerido por migrações SQL (db/migrations): colunas UUID nativas, triggers e
+// colunas geradas não são expressáveis em Prisma. Este ficheiro descreve o mesmo esquema para o
+// cliente tipado e tem de ser mantido em sincronia com as migrações.
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+enum BillingModel {
+  ONE_TIME
+  RECURRING
+  USAGE_BASED
+  MILESTONE
+}
+
+enum BillingPeriod {
+  MONTH
+  QUARTER
+  YEAR
+}
+
+enum OutboxStatus {
+  PENDING
+  PROCESSING
+  DONE
+  FAILED
+}
+
+model Team {
+  id         String  @id @db.Char(36)
+  name       String  @unique @db.VarChar(100)
+  leadUserId String? @map("lead_user_id") @db.Char(36)
+  users      User[]
+
+  @@map("teams")
+}
+
+model User {
+  id          String   @id @db.Char(36)
+  entraOid    String   @unique @map("entra_oid") @db.Char(36)
+  email       String   @db.VarChar(255)
+  displayName String   @map("display_name") @db.VarChar(255)
+  teamId      String?  @map("team_id") @db.Char(36)
+  region      String?  @db.VarChar(50)
+  isActive    Boolean  @default(true) @map("is_active")
+  team        Team?    @relation(fields: [teamId], references: [id])
+
+  @@map("users")
+}
+
+model Product {
+  id            String         @id @db.Char(36)
+  sku           String         @unique @db.VarChar(50)
+  name          String         @db.VarChar(255)
+  description   String?        @db.Text
+  unitOfMeasure String         @default("UN") @map("unit_of_measure") @db.VarChar(20)
+  billingModel  BillingModel   @map("billing_model")
+  billingPeriod BillingPeriod? @map("billing_period")
+  unitCost      Decimal        @default(0) @map("unit_cost") @db.Decimal(15, 4)
+  costCurrency  String         @default("EUR") @map("cost_currency") @db.Char(3)
+  taxCategory   String         @default("STANDARD") @map("tax_category") @db.VarChar(30)
+  isActive      Boolean        @default(true) @map("is_active")
+  rowVersion    Int            @default(1) @map("row_version")
+  createdAt     DateTime       @default(now()) @map("created_at") @db.DateTime(6)
+  updatedAt     DateTime       @default(now()) @updatedAt @map("updated_at") @db.DateTime(6)
+
+  @@map("products")
+}
+
+model OutboxEvent {
+  id            String       @id @db.Char(36)
+  aggregateId   String       @map("aggregate_id") @db.Char(36)
+  eventType     String       @map("event_type") @db.VarChar(100)
+  payload       Json
+  status        OutboxStatus @default(PENDING)
+  attempts      Int          @default(0) @db.SmallInt
+  nextAttemptAt DateTime     @default(now()) @map("next_attempt_at") @db.DateTime(6)
+  createdAt     DateTime     @default(now()) @map("created_at") @db.DateTime(6)
+
+  @@index([status, nextAttemptAt], map: "ix_outbox_pending")
+  @@map("outbox_events")
+}
+
+model AuditLog {
+  seq         BigInt   @id @default(autoincrement())
+  occurredAt  DateTime @default(now()) @map("occurred_at") @db.DateTime(6)
+  actorUserId String?  @map("actor_user_id") @db.Char(36)
+  entityType  String   @map("entity_type") @db.VarChar(50)
+  entityId    String   @map("entity_id") @db.Char(36)
+  action      String   @db.VarChar(50)
+  diffJson    Json     @map("diff_json")
+  prevHash    String   @map("prev_hash") @db.Char(64)
+  rowHash     String   @map("row_hash") @db.Char(64)
+
+  @@index([entityType, entityId], map: "ix_audit_entity")
+  @@map("audit_log")
+}

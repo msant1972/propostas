@@ -1,0 +1,6 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": { "outDir": "dist", "rootDir": ".", "types": ["node"] },
+  "include": ["src", "scripts", "seed", "spikes", "prisma.config.ts"],
+  "exclude": ["src/**/*.test.ts", "spikes/**/*.test.ts"]
+}

@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
-import { ROLES, type Role } from '@cpq/shared/roles';
+import { DEV_USER_OIDS, ROLES, type Role } from '@cpq/shared/roles';
 import { useAuth } from '../auth/store';
 import { Button, Input, Label, Select } from '../components/ui';
 import { env } from '../lib/env';
@@ -25,7 +25,7 @@ export function LoginPage() {
     const res = await fetch(`${env.apiBase}/api/v1/dev/token`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ oid: `dev-${role}`, email, name, roles: [role] }),
+      body: JSON.stringify({ oid: DEV_USER_OIDS[role], email, name, roles: [role] }),
     });
     if (!res.ok) return setError(true);
     const { accessToken } = (await res.json()) as { accessToken: string };

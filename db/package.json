@@ -7,7 +7,9 @@
     "generate": "prisma generate",
     "migrate": "node --import @swc-node/register/esm-register scripts/migrate.ts",
     "seed": "node --import @swc-node/register/esm-register seed/seed.ts",
-    "test": "vitest run"
+    "test": "vitest run",
+    "build": "prisma generate && tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
     "@cpq/shared": "workspace:*",
@@ -19,6 +21,14 @@
   "devDependencies": {
     "@swc-node/register": "^1.12.1",
     "@swc/core": "^1.16.13",
-    "prisma": "8.0.0-rc.22"
+    "prisma": "~7.10.0"
+  },
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "default": "./dist/src/index.js"
+    }
   }
 }

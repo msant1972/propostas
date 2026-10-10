@@ -8,7 +8,7 @@ export class ProblemFilter implements ExceptionFilter {
 
   catch(exception: unknown, host: ArgumentsHost): void {
     const res = host.switchToHttp().getResponse<Response>();
-    const req = host.switchToHttp().getRequest<{ url: string }>();
+    const req = host.switchToHttp().getRequest<{ originalUrl: string }>();
 
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
     let detail = 'Erro interno';
@@ -32,6 +32,6 @@ export class ProblemFilter implements ExceptionFilter {
     res
       .status(status)
       .type('application/problem+json')
-      .json({ type: 'about:blank', title: HttpStatus[status] ?? 'Erro', status, detail, instance: req.url, ...(errors ? { errors } : {}) });
+      .json({ type: 'about:blank', title: HttpStatus[status] ?? 'Erro', status, detail, instance: req.originalUrl, ...(errors ? { errors } : {}) });
   }
 }

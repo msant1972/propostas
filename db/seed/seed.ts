@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import { DEV_USER_OIDS, ROLES, uuidv7 } from '@cpq/shared';
 import { createPrisma } from '../src/index.js';
+import { SEED_BLOCKS, SEED_PRODUCTS } from './content.js';
 
 const url = process.env['DATABASE_URL'];
 if (!url) throw new Error('DATABASE_URL em falta');
@@ -90,7 +91,37 @@ async function main() {
       data: { id: uuidv7(), code: 'CLI-001', name: 'Cliente Exemplo, Lda.', vatNumber: '500000000', countryCode: 'PT', vatValid: true },
     });
   }
-  console.log(`seed: ${products.length} produtos, ${ROLES.length} utilizadores, 2 equipas`);
+
+  // Produtos de rede e segurança (idempotente por SKU), com preço na lista geral.
+  const list = await prisma.priceList.findFirst({ where: { name: 'Geral EUR' } });
+  for (const p of SEED_PRODUCTS) {
+    const prod = await prisma.product.upsert({
+      where: { sku: p.sku },
+      update: {},
+      create: { id: uuidv7(), sku: p.sku, name: p.name, description: p.description, billingModel: p.billingModel, billingPeriod: p.billingPeriod, unitCost: p.unitCost },
+    });
+    if (list && !(await prisma.priceListItem.count({ where: { priceListId: list.id, productId: prod.id } }))) {
+      await prisma.priceListItem.create({ data: { id: uuidv7(), priceListId: list.id, productId: prod.id, minQuantity: '0', unitPrice: p.price } });
+    }
+  }
+
+  // Biblioteca de conteúdos de exemplo: versões já aprovadas, para se poderem usar de imediato.
+  const owner = await prisma.user.findFirstOrThrow({ where: { entraOid: DEV_USER_OIDS.Administrador } });
+  const reviewDue = new Date(Date.now() + 365 * 864e5);
+  for (const b of SEED_BLOCKS) {
+    if (await prisma.contentBlock.findUnique({ where: { code: b.code } })) continue;
+    const blockId = uuidv7();
+    await prisma.contentBlock.create({ data: { id: blockId, code: b.code, title: b.title, isLegal: b.isLegal, ownerUserId: owner.id } });
+    await prisma.contentBlockVersion.create({
+      data: { id: uuidv7(), blockId, language: 'pt-PT', versionNumber: 1, status: 'APPROVED', bodyHtml: b.html.trim(), reviewDueDate: reviewDue, createdBy: owner.id },
+    });
+    for (const name of b.tags) {
+      const tag = (await prisma.tag.findUnique({ where: { name } })) ?? (await prisma.tag.create({ data: { id: uuidv7(), name } }));
+      await prisma.contentBlockTag.create({ data: { blockId, tagId: tag.id } });
+    }
+  }
+
+  console.log(`seed: ${products.length + SEED_PRODUCTS.length} produtos, ${SEED_BLOCKS.length} blocos de conteúdo, ${ROLES.length} utilizadores, 2 equipas`);
 }
 
 await main().finally(() => prisma.$disconnect());

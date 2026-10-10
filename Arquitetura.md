@@ -4,75 +4,76 @@
 
 ## Sumário executivo
 
-Este documento define a arquitetura da plataforma de CPQ (configurar, preçar, cotar) e gestão de propostas: stack, modelo de dados, integrações, segurança e operação. Todas as escolhas tecnológicas estão decididas, e o sistema garante que o documento enviado ao cliente corresponde à cotação aprovada.
+Este documento define a arquitetura da plataforma de CPQ (configurar, preçar, cotar) e gestão de propostas: stack, modelo de dados, repositório de documentos, segurança e operação. Todas as escolhas tecnológicas estão decididas, e o sistema garante que o documento enviado ao cliente corresponde à cotação aprovada.
 
 Decisões principais:
 
-1. **Stack decidida**: TypeScript ponta-a-ponta (React + NestJS), com o motor de regras CPQ num pacote partilhado que corre no browser (resposta imediata) e no servidor (fonte de verdade).
-2. **Monólito modular + worker assíncrono**: todas as chamadas ao Microsoft Graph, geração de DOCX/PDF e notificações passam para filas (BullMQ/Redis) com padrão *outbox*, eliminando inconsistências entre MariaDB e SharePoint.
+1. **Stack decidida**: TypeScript ponta-a-ponta (React + NestJS), com o motor de regras e preços CPQ num pacote partilhado que corre no browser (resposta imediata) e no servidor (fonte de verdade).
+2. **Monólito modular + worker assíncrono**: a geração de DOCX/PDF, as notificações e a auditoria passam para filas (BullMQ/Redis) com padrão *outbox*, eliminando inconsistências entre a base de dados e os ficheiros.
 3. **Snapshots imutáveis**: cada versão de cotação é congelada com hash; a aprovação fica ligada a esse hash e ao hash do documento gerado. Qualquer alteração posterior invalida a aprovação.
 4. **Modelo de dados completo**: clientes, utilizadores, listas de preços, custos, impostos, políticas de aprovação, versões de conteúdo, documentos e auditoria encadeada.
-5. **Segurança de menor privilégio**: `Sites.Selected` (nunca `Sites.ReadWrite.All` nem `Files.ReadWrite.All`), segredos em AWS Secrets Manager, RBAC complementado com regras por registo (dono, equipa, região).
-6. **Produção em AWS**: um único servidor Ubuntu em Amazon EC2 com a aplicação, a MariaDB 12.3 e o Redis, apoiado por serviços AWS para segredos, backups imutáveis e observabilidade.
+5. **Repositório de documentos numa pasta local do servidor**, com a estrutura `Clientes/{cliente}/{proposta}/{01_Trabalho,02_Enviado,03_Assinado}`; o acesso passa sempre pela aplicação.
+6. **Segurança de menor privilégio**: identidade pelo Entra ID, papéis complementados com regras por registo (dono, equipa, região), custos e margens visíveis só a quem tem permissão, segredos fora do repositório.
+7. **Um único servidor Ubuntu** com a aplicação, a MariaDB 12.3 e o Redis, com cópias de segurança contínuas para um disco ou servidor separado e um procedimento de restauro testado.
+8. **Aceitação pelo cliente por portal com ligação segura** (assinatura eletrónica simples, com comprovativo), sem fornecedores externos de assinatura.
 
 ## Visão geral e decisões arquiteturais
 
-O sistema tem duas vertentes — **Motor CPQ** e **Proposal Content Engine** — e uma terceira transversal: **Governança** (aprovações, auditoria, integridade documental). O princípio orientador é simples: a MariaDB é a fonte de verdade para dados estruturados; o SharePoint é a fonte de verdade para ficheiros; nada passa entre os dois sem um evento registado.
+O sistema tem duas vertentes — **Motor CPQ** e **Proposal Content Engine** — e uma terceira transversal: **Governança** (aprovações, auditoria, integridade documental). O princípio orientador é simples: a MariaDB é a fonte de verdade para dados estruturados; a pasta de documentos é a fonte de verdade para ficheiros; nada passa entre os dois sem um evento registado.
 
 | ADR | Decisão | Escolha | Alternativa rejeitada | Porquê |
 | --- | --- | --- | --- | --- |
-| 01 | Linguagem do backend | Node.js + NestJS (TypeScript) | C# .NET 8 | Mesmo código de regras e tipos no browser e no servidor; uma só linguagem para a equipa. .NET seria melhor apenas se a manipulação OpenXML fosse o núcleo do produto |
+| 01 | Linguagem do backend | Node.js + NestJS (TypeScript) | C# .NET 8 | Mesmo código de regras e tipos no browser e no servidor; uma só linguagem para a equipa |
 | 02 | Estilo de arquitetura | Monólito modular + worker separado | Microserviços | Domínio coeso, equipa pequena; módulos com fronteiras claras permitem extrair serviços mais tarde |
-| 03 | Estilo de API | REST + OpenAPI 3.1, cliente TS gerado | GraphQL | Caching HTTP, autorização por endpoint e auditoria mais simples; o frontend recebe tipos gerados |
-| 04 | ORM | Prisma (com migrações versionadas) | TypeORM | Tipagem mais forte, migrações declarativas; SQL nativo para relatórios |
-| 05 | Base de dados | MariaDB 12.3 LTS instalada no servidor Ubuntu (repositório oficial MariaDB), em volume EBS próprio, com mariabackup e binlogs enviados para S3 | Amazon RDS for MariaDB | Um só servidor reduz custo e peças a gerir. A contrapartida é a equipa assumir backups, upgrades e monitorização da BD. A RDS, que suporta a 12.3 desde agosto de 2026 ([AWS](https://www.amazonaws.cn/en/new/2026/amazon-rds-for-mariadb-12-3/)), fica como caminho de migração se a carga ou a exigência de disponibilidade crescerem |
-| 06 | Identidade | Microsoft Entra ID apenas (MSAL no frontend, validação JWT no backend) | IdentityServer | Os utilizadores já estão no M365; um segundo IdP só acrescenta custo |
-| 07 | Editor de texto | TipTap + Yjs + Hocuspocus | SlateJS | Colaboração em tempo real pronta a usar; extensões para *merge tags* |
-| 08 | Motor de documentos | Docxtemplater (com módulo HTML) para DOCX; conversão PDF via Graph | OpenXML SDK | Coerente com ADR-01; a conversão nativa do SharePoint dá fidelidade Word. O módulo HTML do Docxtemplater é pago: confirmar licença e custo antes da fase 3 |
-| 09 | Processamento assíncrono | BullMQ sobre Redis + tabela *outbox* | Chamadas síncronas | Retries, *throttling* do Graph, idempotência |
+| 03 | Estilo de API | REST + OpenAPI (3.0 exportado pelo NestJS), cliente TS gerado | GraphQL | Caching HTTP, autorização por endpoint e auditoria mais simples; o frontend recebe tipos gerados |
+| 04 | ORM | Prisma como cliente tipado; migrações SQL manuais com executor próprio | TypeORM | Tipagem mais forte; triggers, colunas geradas e `UUID` nativo não se exprimem em Prisma |
+| 05 | Base de dados | MariaDB 12.3 LTS instalada no servidor Ubuntu, em disco próprio, com mariabackup e binlogs copiados para um destino separado | Base de dados gerida externa | Um só servidor reduz custo e peças a gerir. A contrapartida é a equipa assumir backups, upgrades e monitorização da BD |
+| 06 | Identidade | Microsoft Entra ID apenas (MSAL no frontend, validação JWT no backend) | IdentityServer | Os utilizadores já estão no Microsoft 365; um segundo IdP só acrescenta custo |
+| 07 | Editor de texto | TipTap, com bloqueio otimista por secção | Edição simultânea em tempo real (Yjs) | Redação por uma pessoa de cada vez é o caso comum; o conflito é detetado e comunicado, sem infraestrutura de tempo real |
+| 08 | Motor de documentos | Docxtemplater (núcleo) + modelo base `.docx` + conversão própria de HTML para OOXML; PDF gerado pela aplicação (pdfkit) | OpenXML SDK; módulo HTML pago | Coerente com ADR-01; sem licenças adicionais. O PDF não tem a fidelidade de uma conversão pelo Word |
+| 09 | Processamento assíncrono | BullMQ sobre Redis + tabela *outbox* | Chamadas síncronas | Retries, idempotência, isolamento do pedido HTTP |
 | 10 | Regras CPQ | Pacote `@cpq/rules-engine` em TS puro, sem I/O | Regras só no frontend ou só no backend | Validação instantânea na UI, mas o servidor revalida sempre antes de gravar |
+| 11 | Repositório de documentos | Pasta local do servidor, atrás da interface `DocumentRepository` | Serviço de ficheiros externo | Simples, rápido e fácil de copiar; a interface permite trocar o repositório mais tarde |
+| 12 | Aceitação do cliente | Portal com ligação segura e comprovativo (assinatura eletrónica simples) | Fornecedores de assinatura externos | Sem dependências externas nem custos por envelope; a prova é o hash do documento, a identificação do signatário, a data e o IP |
 
 ## Arquitetura tecnológica
 
-A estrutura assenta na separação entre o caminho síncrono (utilizador → API → MariaDB) e o caminho assíncrono (outbox → fila → worker → serviços externos). O utilizador nunca espera por uma chamada ao SharePoint.
+A estrutura assenta na separação entre o caminho síncrono (utilizador → API → MariaDB) e o caminho assíncrono (outbox → fila → worker → ficheiros e notificações). O utilizador nunca espera pela geração de um documento.
 
-**Caminho síncrono**: Browser → ALB (WAF) → Nginx → API NestJS (REST) → MariaDB. A edição colaborativa segue Browser → Hocuspocus (WebSocket) → MariaDB.
+**Caminho síncrono**: Browser → Nginx (TLS) → API NestJS (REST) → MariaDB.
 
-**Caminho assíncrono**: a API grava a alteração de negócio e o registo em `outbox_events` na mesma transação → o *relay* do worker publica o evento no BullMQ (Redis) → os processadores do worker falam com o Microsoft Graph, o fornecedor de assinatura e o Teams/Exchange.
+**Caminho assíncrono**: a API grava a alteração de negócio e o registo em `outbox_events` na mesma transação → o *relay* do worker publica o evento no BullMQ (Redis) → os processadores do worker geram documentos, enviam notificações e acrescentam a auditoria.
 
-**Eventos externos**: os *webhooks* do Graph e do fornecedor de assinatura chegam a `/webhooks/*` no ALB (rota pública, validada por `clientState` ou assinatura HMAC), são recebidos pela API, gravados em `outbox_events` e processados pelo worker.
-
-O browser fala com a API por REST e com o Hocuspocus por WebSocket; ambos gravam na MariaDB. A API regista cada alteração e o respetivo evento outbox na mesma transação, e só o worker contacta o Microsoft Graph e o fornecedor de assinatura.
+**Acesso do cliente**: o portal de aceitação é servido pela mesma API, em rotas públicas `/portal/*` protegidas por um token aleatório de uso limitado (ver «Aceitação pelo cliente»).
 
 | Camada | Tecnologia | Responsabilidade |
 | --- | --- | --- |
-| Frontend | React 18+, TypeScript, Vite, shadcn/ui, TailwindCSS, TanStack Query, Zustand, TipTap + Yjs, MSAL | UI, validação local de regras, edição colaborativa |
-| API | NestJS, Prisma, CASL, OpenAPI 3.1 | Regras de negócio, autorização, transações, outbox |
-| Colaboração | Hocuspocus | Sincronização Yjs e persistência de secções |
-| Worker | NestJS + BullMQ | Documentos, Graph, assinatura, notificações, renovação de subscrições |
+| Frontend | React 18+, TypeScript, Vite, TailwindCSS, TanStack Query, Zustand, TipTap, MSAL | UI, validação local de regras e preços, edição de secções |
+| API | NestJS, Prisma, CASL, OpenAPI | Regras de negócio, autorização, transações, outbox |
+| Worker | NestJS + BullMQ | Documentos, notificações, auditoria encadeada, SLA e expiração, exportações |
 | Dados | MariaDB 12.3 LTS (InnoDB) e Redis, no mesmo servidor | Fonte de verdade estruturada; cache e filas |
-| Ficheiros | SharePoint (via Graph), Amazon S3 com Object Lock | Documentos de proposta; cópia WORM da auditoria |
-| Plataforma | AWS Secrets Manager, AWS KMS, CloudWatch, AWS WAF | Segredos, observabilidade, proteção de perímetro |
+| Ficheiros | Pasta local do servidor (`DOCUMENT_STORAGE_DIR`) | Documentos de proposta e comprovativos; cópia da auditoria |
+| Plataforma | Nginx, Docker Compose, systemd, OpenTelemetry Collector | Entrada TLS, processos, observabilidade |
 
-### Implantação em produção (AWS)
+### Implantação em produção
 
-Toda a plataforma corre num único servidor Ubuntu Server LTS em Amazon EC2: aplicação, MariaDB e Redis. É a opção mais simples e barata; o preço é que o servidor é um ponto único de falha, por isso a arquitetura compensa com backups contínuos fora do servidor, recuperação automática da instância e um procedimento de restauro testado.
+Toda a plataforma corre num único servidor Ubuntu Server LTS: aplicação, MariaDB e Redis. É a opção mais simples e barata; o preço é que o servidor é um ponto único de falha, por isso a arquitetura compensa com cópias de segurança contínuas para fora do servidor, reinício automático dos serviços e um procedimento de restauro testado.
 
 | Componente | Onde corre | Notas |
 | --- | --- | --- |
-| Entrada HTTPS | Application Load Balancer com certificado ACM e AWS WAF | O servidor fica numa subnet privada, sem IP público. Regras do listener: `/webhooks/*` é público (Graph e assinatura, validados por `clientState` ou HMAC); tudo o resto exige JWT do Entra ID. O WAF aplica limites de pedidos por IP |
-| SPA, API, Hocuspocus, Worker | Servidor Ubuntu, contentores Docker Compose atrás de Nginx | Processos separados, com limites de memória e CPU por contentor |
-| MariaDB 12.3 LTS | Servidor Ubuntu, pacote oficial MariaDB, volume EBS gp3 dedicado | Só aceita ligações locais; memória do *buffer pool* reservada para não competir com a aplicação |
+| Entrada HTTPS | Nginx no servidor, com certificado da CA da empresa ou Let's Encrypt | Redireciona HTTP para HTTPS, HSTS, limites de pedidos por IP (`limit_req`); só as portas 443 e 22 (esta, a partir da rede de administração) ficam abertas |
+| API, Worker, Web | Contentores Docker Compose atrás do Nginx | Processos separados, com limites de memória e CPU por contentor e `restart: unless-stopped` |
+| MariaDB 12.3 LTS | Servidor Ubuntu, pacote oficial, disco dedicado cifrado (LUKS) | Só aceita ligações locais; memória do *buffer pool* reservada para não competir com a aplicação |
 | Redis | Servidor Ubuntu, contentor com persistência AOF | Guarda as filas do worker, por isso a persistência é obrigatória |
-| Backups | mariabackup diário completo + binlogs enviados para S3 a cada 5 minutos; snapshots EBS diários com AWS Backup | Restauro testado trimestralmente noutra instância |
-| Recuperação | Recuperação automática do EC2 em falha de hardware; alarmes CloudWatch | Os volumes EBS mantêm-se, por isso a instância volta com os dados. Se falhar uma zona de disponibilidade, o Terraform recria o servidor noutra zona a partir do último snapshot EBS e dos binlogs em S3, dentro do RTO de 4 h |
-| Saída para a Internet | NAT Gateway (uma zona) para Graph, Entra ID, fornecedor de assinatura e Teams; *VPC endpoints* para S3, Secrets Manager, KMS e CloudWatch | Sem NAT o servidor privado não alcança o Microsoft 365; o custo do NAT entra no orçamento |
-| Segredos | AWS Secrets Manager, lido pelo papel IAM da instância | Inclui o certificado da aplicação Entra ID e as credenciais da MariaDB |
-| Cópia imutável da auditoria | Amazon S3 com Object Lock (modo compliance) | Exportação diária pelo worker |
-| Logs e métricas | OpenTelemetry Collector → Amazon CloudWatch | Alarmes para disco, memória, filas, erros 5xx e respostas 429 do Graph |
-| Infraestrutura | Terraform ou CloudFormation + Ansible | Servidor reconstruível a partir de código em caso de perda total |
+| Repositório de documentos | Pasta `DOCUMENT_STORAGE_DIR` num disco dedicado, fora da raiz do Nginx | Nunca é servida diretamente: a API verifica a permissão a cada descarga |
+| Backups | mariabackup diário completo + binlogs copiados a cada 5 minutos; cópia incremental dos documentos (restic ou rsync) | Para um disco ou servidor separado (NFS ou SSH); retenção de 35 dias; restauro testado trimestralmente |
+| Recuperação | `systemd` reinicia os serviços; em perda do servidor, reconstrução por Ansible e restauro das cópias | RTO de 4 h |
+| Segredos | Ficheiros `/etc/cpq/*.env` com dono `root` e permissão `0640`, criados pelo Ansible (cofre `ansible-vault`) | Nunca no repositório; a chave de encriptação da MariaDB fica num ficheiro cifrado cuja palavra-passe só `root` lê |
+| Cópia da auditoria | Exportação diária do `audit_log` para `AUDIT_EXPORT_DIR`, ficheiros só de leitura, replicados para o destino de backup | A cadeia de hashes deteta alterações; a cópia fora do servidor impede reescrever a história |
+| Logs e métricas | OpenTelemetry Collector → ficheiros locais e Prometheus/Grafana (opcional) | Alarmes por email para disco, memória, filas, erros 5xx e falhas de backup |
+| Infraestrutura | Ansible | Servidor reconstruível a partir de código em caso de perda total |
 
-O Microsoft 365 e o Entra ID continuam a ser os serviços de identidade e documentos: o servidor na AWS fala com eles por HTTPS através do Graph. O bot do Teams precisa apenas de um registo no Azure Bot Service; o código corre na AWS.
+O Microsoft Entra ID continua a ser o serviço de identidade: a aplicação valida os tokens JWT por HTTPS. As notificações saem por email (SMTP) e, opcionalmente, para um canal do Teams através de um *webhook* de entrada; nenhuma das duas precisa de registo de aplicações adicionais.
 
 ## Módulos funcionais
 
@@ -120,15 +121,17 @@ Custos, preços de lista, taxas de imposto e câmbio são **copiados para a linh
 - **Biblioteca de conteúdos versionada**: cada bloco tem versões (`content_block_versions`), estado (rascunho, aprovado, retirado), idioma, *tags* (relação N:N), responsável e data de revisão obrigatória.
 - **Secções de proposta**: referenciam uma versão concreta do bloco. Se o comercial alterar um bloco marcado como jurídico, a secção fica `is_modified` e a proposta exige aprovação do perfil Jurídico.
 - **Merge tags tipadas**: catálogo fechado de variáveis (`{{cliente.nome}}`, `{{cotacao.total_tcv}}`, `{{proposta.validade}}`), validadas na compilação; uma variável em falta bloqueia a geração em vez de produzir texto vazio. A tabela de preços entra como elemento estruturado, não como texto.
-- **Colaboração**: TipTap + Yjs; cada secção é um documento Yjs, persistido pelo Hocuspocus na MariaDB.
-- **Compilação** (job assíncrono): montar secções → preencher o modelo `.docx` do SharePoint com Docxtemplater → carregar para a pasta da proposta → converter para PDF via Graph → calcular hash do DOCX e do PDF → registar em `documents`.
+- **Edição**: TipTap, limitado ao subconjunto de formatação que o documento suporta; cada secção tem `row_version` (bloqueio otimista): quem grava com uma versão antiga recebe um aviso de conflito e recarrega.
+- **Compilação** (job assíncrono): montar secções → sanitizar o HTML e resolver as *merge tags* → preencher o modelo base `.docx` com Docxtemplater (o corpo entra em OOXML gerado pela aplicação) → gerar o PDF → gravar ambos em `01_Trabalho` → calcular o SHA-256 → registar em `documents`, com a impressão digital dos dados da cotação usados.
 
-### Documentos e SharePoint
+### Documentos (repositório local)
 
-- **Estrutura**: um site "Propostas" com biblioteca única e pastas `/Clientes/{codigo_cliente}/{codigo_proposta}/` com subpastas `01_Trabalho`, `02_Enviado` e `03_Assinado`. Usa-se uma biblioteca única com pastas, porque milhares de bibliotecas (uma por oportunidade) não escalam.
-- **Permissões**: herdadas da biblioteca, evitando permissões únicas por pasta (degradam desempenho e gestão). O acesso fino é mediado pela aplicação; partilhas externas só a partir de `02_Enviado`.
-- **Identificadores**: guardar `driveItem.id` e `eTag`, nunca caminhos — caminhos mudam quando alguém renomeia uma pasta.
-- **Fonte de verdade em edições Word Online**: os dados comerciais vivem no CPQ; o texto final pode ser afinado no Word Online. Uma subscrição Graph (*webhook* + *delta query*) deteta edições manuais e marca o documento como `MANUALLY_EDITED`. A partir daí, regenerar exige confirmação explícita e cria nova versão, sem apagar a anterior.
+- **Estrutura**: pasta `Clientes/{codigo_cliente}/{codigo_proposta}/` com subpastas `01_Trabalho`, `02_Enviado` e `03_Assinado`. Os nomes são normalizados (sem acentos, separadores nem pontos iniciais) e a aplicação recusa qualquer caminho fora da raiz.
+- **Imutabilidade**: um ficheiro nunca é sobrescrito. Cada geração cria ficheiros novos (`{proposta}_v{versão}_{data}_{id}.docx|pdf`) e o histórico fica na pasta e na tabela `documents`.
+- **Permissões**: a pasta não é servida diretamente. Quem descarrega passa pela API, que verifica a permissão sobre a proposta. O sistema operativo só permite o acesso ao utilizador do serviço.
+- **Identificadores**: a base de dados guarda a `storage_key` (caminho relativo) e o `sha256`; o ficheiro em disco é sempre confrontado com o hash registado.
+- **Edições manuais** (fonte de verdade): os dados comerciais vivem no CPQ; o texto final pode ser afinado fora da aplicação (descarregar, editar no Word, carregar de volta). O carregamento fica registado como `MANUALLY_EDITED`, com ligação ao documento de origem. Uma verificação periódica compara o hash em disco com o registado e assinala também alterações feitas diretamente na pasta. Regenerar cria sempre ficheiros novos, sem apagar os anteriores.
+- **Envio**: ao enviar, o PDF e o DOCX aprovados são copiados para `02_Enviado` e é essa cópia que o cliente recebe pelo portal.
 
 ### Workflow e aprovações
 
@@ -144,30 +147,31 @@ Estados: `DRAFT`, `IN_REVIEW`, `PENDING_APPROVAL`, `APPROVED`, `SENT`, `ACCEPTED
 | `IN_REVIEW` | `APPROVED` | Submeter (comercial) | Nenhuma política aplicável | Aprovação automática registada em `audit_log` |
 | `PENDING_APPROVAL` | `APPROVED` | Último nível aprovado (aprovador) | Todos os pedidos `APPROVED` com hashes iguais aos atuais | Notifica o comercial |
 | `PENDING_APPROVAL` | `DRAFT` | Rejeitar ou devolver (aprovador); retirar (comercial) | Comentário obrigatório | Pedidos abertos passam a `REJECTED`, `RETURNED` ou `CANCELLED`; nova versão de cotação ao editar |
-| `APPROVED` | `SENT` | Enviar (comercial) | `snapshot_hash` e `sha256` do documento iguais aos aprovados; proposta dentro da validade | Copia o PDF para `02_Enviado`, cria envelope no fornecedor de assinatura |
+| `APPROVED` | `SENT` | Enviar (comercial) | `snapshot_hash` e `sha256` do documento iguais aos aprovados; proposta dentro da validade | Copia o PDF e o DOCX para `02_Enviado` e cria a ligação do portal de aceitação |
 | `APPROVED` | `DRAFT` | Editar (comercial) | Confirmação explícita | A aprovação deixa de valer; nova versão de cotação |
-| `SENT` | `ACCEPTED` ou `REJECTED` | Webhook do fornecedor de assinatura, ou registo manual com evidência (comercial) | — | PDF assinado em `03_Assinado` |
+| `SENT` | `ACCEPTED` ou `REJECTED` | Resposta do cliente no portal, ou registo manual com evidência (comercial) | — | Comprovativo de aceitação em `03_Assinado` |
 | `SENT` | `EXPIRED` | Job diário | `valid_until` ultrapassada | Notifica o comercial |
-| `SENT` | `DRAFT` | Rever após envio (comercial) | Confirmação explícita | Cancela o envelope; a versão enviada passa a `SUPERSEDED`; nova versão de cotação |
+| `SENT` | `DRAFT` | Rever após envio (comercial) | Confirmação explícita | Revoga a ligação do portal; a versão enviada passa a `SUPERSEDED`; nova versão de cotação |
 | `EXPIRED` | `DRAFT` | Reabrir (comercial) | Nova data de validade | Nova versão de cotação |
-| `DRAFT`, `IN_REVIEW`, `PENDING_APPROVAL`, `APPROVED`, `SENT` | `CANCELLED` | Cancelar (dono ou gestor) | Motivo obrigatório | Cancela pedidos abertos e envelopes |
+| `DRAFT`, `IN_REVIEW`, `PENDING_APPROVAL`, `APPROVED`, `SENT` | `CANCELLED` | Cancelar (dono ou gestor) | Motivo obrigatório | Cancela pedidos abertos e revoga a ligação do portal |
 
 Cada retorno a `DRAFT` a partir de uma versão `LOCKED` cria uma nova versão de cotação; a versão anterior e as aprovações que recebeu ficam no histórico.
 
 - **Políticas de aprovação** configuráveis: condição (ex.: desconto > 15 % ou margem < 25 % ou total > 100 000 €), níveis, modo sequencial ou paralelo, SLA por nível com escalonamento, e delegação durante ausências. Os valores do exemplo são ilustrativos e devem ser definidos pela direção financeira.
 - **Ligação ao snapshot**: cada decisão regista o `snapshot_hash` da cotação e o hash do documento aprovado. Antes de enviar ao cliente, o sistema verifica que ambos coincidem com o que vai sair; se não coincidirem, o envio é bloqueado.
 - **Âmbito do pedido**: `approval_requests.scope` é `COMMERCIAL` (desconto, margem, valor) ou `LEGAL` (secções jurídicas modificadas). Ambos referenciam a versão de cotação e o documento compilado, e guardam o `snapshot_hash` e o `sha256` do documento no momento do pedido. O envio exige todos os pedidos que as políticas determinam em `APPROVED`, com hashes iguais aos atuais.
-- **Notificações**: email e cartões adaptativos no Teams. Os botões abrem a página de decisão da aplicação (ligação direta, autenticação MSAL), onde o aprovador decide com o seu próprio token — nunca com uma conta de serviço. Decidir diretamente no cartão (Action.Execute com SSO do bot) fica como melhoria posterior.
+- **Notificações**: email (SMTP) e, opcionalmente, mensagem num canal do Teams por *webhook* de entrada. As mensagens trazem uma ligação direta para a página de decisão da aplicação (autenticação MSAL), onde o aprovador decide com o seu próprio token, nunca com uma conta de serviço. Os destinatários são os utilizadores cujo papel (último conhecido, guardado em `users.roles_json`) coincide com o nível pendente.
 
-### Assinatura eletrónica e acompanhamento
+### Aceitação pelo cliente e acompanhamento
 
-- Interface `SignatureProvider` com adaptadores para DocuSign e Adobe Sign; para assinatura qualificada eIDAS, um prestador qualificado da lista de confiança da UE.
-- O PDF assinado é guardado em `03_Assinado` e o *webhook* do fornecedor move a proposta para `ACCEPTED` ou `REJECTED`.
-- O acompanhamento de abertura usa os eventos do fornecedor de assinatura ou um portal de cliente com link; píxeis de rastreio em email ficam fora, por questões de RGPD.
+- **Portal de aceitação**: ao enviar, a aplicação gera uma ligação com um token aleatório (256 bits). Só o *hash* do token fica na base de dados (`share_links`), com validade e possibilidade de revogação. O cliente abre a ligação, vê o PDF aprovado e aceita ou recusa, indicando nome e email e confirmando que leu o documento. Não requer conta nem instalação.
+- **Assinatura eletrónica simples**: a prova de aceitação é o conjunto *hash do documento + nome e email do signatário + data + endereço IP + agente de utilizador*, guardado em `customer_responses` e na auditoria. A aplicação gera um comprovativo em PDF, guardado em `03_Assinado`. É uma assinatura eletrónica simples, adequada à aceitação comercial de uma proposta.
+- **Acompanhamento de abertura**: cada abertura da ligação regista data, contagem e primeira abertura em `share_links`, e um evento de auditoria. Não se usam píxeis de rastreio em email, por questões de RGPD.
+- **Efeito no estado**: a aceitação move a proposta para `ACCEPTED` e a recusa para `REJECTED`; a ligação deixa de aceitar respostas.
 
 ## Modelo de dados (MariaDB)
 
-O modelo passa de 6 para 28 tabelas, todas com FKs reais. Convenções: chaves `UUID` nativas (MariaDB 10.7+) com valores UUIDv7 gerados na aplicação, para índices ordenados no tempo; datas em `DATETIME(6)` UTC (ligações com `time_zone='+00:00'` e valores por omissão `CURRENT_TIMESTAMP(6)`, porque `ON UPDATE` só aceita essa família de funções); valores monetários `DECIMAL(15,4)` em cálculo e `DECIMAL(15,2)` em totais; *soft delete* com `deleted_at`; bloqueio otimista com `row_version`. A base de dados é criada com `CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci` e InnoDB por omissão. Na fase 1, um teste de inserção ordenada confirma que o tipo `UUID` mantém a ordem temporal dos UUIDv7; se não mantiver, usa-se `BINARY(16)`.
+O modelo tem mais de 30 tabelas, todas com FKs reais. Convenções: chaves `UUID` nativas (MariaDB 10.7+) com valores UUIDv7 gerados na aplicação, para índices ordenados no tempo; datas em `DATETIME(6)` UTC (ligações com `time_zone='+00:00'` e valores por omissão `CURRENT_TIMESTAMP(6)`, porque `ON UPDATE` só aceita essa família de funções); valores monetários `DECIMAL(15,4)` em cálculo e `DECIMAL(15,2)` em totais; *soft delete* com `deleted_at`; bloqueio otimista com `row_version`. A base de dados é criada com `CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci` e InnoDB por omissão. Na fase 1, um teste de inserção ordenada confirma que o tipo `UUID` mantém a ordem temporal dos UUIDv7; se não mantiver, usa-se `BINARY(16)`.
 
 | Domínio | Tabela | Propósito | Relações principais |
 | --- | --- | --- | --- |
@@ -181,19 +185,19 @@ O modelo passa de 6 para 28 tabelas, todas com FKs reais. Convenções: chaves `
 | Catálogo | `tax_rates` | IVA por país, categoria fiscal e regime | — |
 | Catálogo | `fx_rates` | Taxas de câmbio diárias com fonte | — |
 | Catálogo | `cpq_rules` | Regras com condição JSONLogic | N:1 `products` (origem e alvo) |
-| Propostas | `proposals` | Cabeçalho, estado, validade, idioma, pasta SharePoint | N:1 `clients`, `users` |
+| Propostas | `proposals` | Cabeçalho, estado, validade, idioma, pasta no repositório | N:1 `clients`, `users` |
 | Propostas | `quote_versions` | Versões com snapshot e hash | N:1 `proposals` |
 | Propostas | `quote_items` | Linhas com preços e custos congelados | N:1 `quote_versions`, `products` |
 | Conteúdo | `content_blocks` / `content_block_versions` | Biblioteca versionada | 1:N versões |
 | Conteúdo | `tags` / `content_block_tags` | Categorização N:N | — |
 | Conteúdo | `proposal_sections` | Ordem das secções, versão de bloco usada, alterações | N:1 `proposals`, `content_block_versions` |
-| Conteúdo | `section_documents` | Estado Yjs e cache HTML de cada secção (Hocuspocus) | 1:1 `proposal_sections` |
+| Conteúdo | `section_documents` | HTML de cada secção | 1:1 `proposal_sections` |
 | Documentos | `documents` | DOCX/PDF gerados, `driveItem.id`, `eTag`, hash, origem | N:1 `proposals`, `quote_versions` |
-| Documentos | `signature_envelopes` | Envelope no fornecedor de assinatura e estado | N:1 `proposals`, `documents` |
+| Documentos | `share_links` | Ligações do portal de aceitação (só o hash do token), validade e aberturas | N:1 `proposals`, `documents` |
+| Documentos | `customer_responses` | Aceitação ou recusa do cliente, com a prova | N:1 `share_links` |
 | Governança | `approval_policies` | Condições, níveis, modo, SLA | — |
 | Governança | `approval_requests` / `approval_decisions` | Pedido por versão e âmbito (comercial ou jurídico), decisão por aprovador | N:1 `quote_versions`, `documents`, `approval_policies` |
 | Governança | `audit_log` | Registo append-only com cadeia de hashes | — |
-| Infraestrutura | `graph_subscriptions` | Subscrições Graph, `deltaLink` e expiração | — |
 | Infraestrutura | `outbox_events` | Eventos a processar pelo worker | — |
 
 **Resultado do teste da tarefa 1.2 (MariaDB 12.3.3):** o tipo nativo `UUID` mantém a ordem temporal dos UUIDv7, o Prisma lê e escreve-o sem perdas (declarado como `CHAR(36)` no schema) e `ON UPDATE CURRENT_TIMESTAMP(6)` funciona. Mantém-se `UUID`; `BINARY(16)` não é necessário. As migrações são SQL manual, aplicadas por um executor próprio (`db/src/migrate.ts`), e o `schema.prisma` é mantido em sincronia à mão. O OpenAPI exportado pelo NestJS é 3.0 (não 3.1): o cliente TypeScript é gerado a partir dele sem diferenças práticas.
@@ -298,8 +302,9 @@ CREATE TABLE proposals (
     currency       CHAR(3)      NOT NULL DEFAULT 'EUR',
     language       CHAR(5)      NOT NULL DEFAULT 'pt-PT',
     valid_until    DATE,
-    sp_drive_id    VARCHAR(255),
-    sp_folder_item_id VARCHAR(255),
+    folder_path    VARCHAR(500),
+    sent_at        DATETIME(6),
+    status_reason  VARCHAR(500),
     row_version    INT NOT NULL DEFAULT 1,
     created_at     DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
     updated_at     DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
@@ -365,17 +370,25 @@ CREATE TABLE quote_items (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE documents (
-    id               UUID PRIMARY KEY,
-    proposal_id      UUID NOT NULL,
-    quote_version_id UUID,
-    kind             ENUM('DOCX','PDF','SIGNED_PDF','ATTACHMENT') NOT NULL,
-    origin           ENUM('GENERATED','MANUALLY_EDITED','UPLOADED') NOT NULL,
-    sp_item_id       VARCHAR(255) NOT NULL,
-    sp_etag          VARCHAR(255),
-    sha256           CHAR(64) NOT NULL,
-    created_at       DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+    id                UUID PRIMARY KEY,
+    proposal_id       UUID NOT NULL,
+    quote_version_id  UUID,
+    kind              ENUM('DOCX','PDF','SIGNED_PDF','ATTACHMENT') NOT NULL,
+    origin            ENUM('GENERATED','MANUALLY_EDITED','UPLOADED') NOT NULL,
+    folder            ENUM('01_Trabalho','02_Enviado','03_Assinado') NOT NULL,
+    file_name         VARCHAR(255) NOT NULL,
+    storage_key       VARCHAR(500) NOT NULL UNIQUE,   -- caminho relativo à raiz do repositório
+    sha256            CHAR(64)     NOT NULL,
+    size_bytes        BIGINT       NOT NULL,
+    generated_from    UUID,
+    source_fingerprint CHAR(64),                      -- impressão digital da cotação usada no documento
+    created_by        UUID,
+    created_at        DATETIME(6)  NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+    KEY ix_doc_proposal (proposal_id, created_at),
     FOREIGN KEY (proposal_id)      REFERENCES proposals(id),
-    FOREIGN KEY (quote_version_id) REFERENCES quote_versions(id)
+    FOREIGN KEY (quote_version_id) REFERENCES quote_versions(id),
+    FOREIGN KEY (generated_from)   REFERENCES documents(id),
+    FOREIGN KEY (created_by)       REFERENCES users(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE approval_policies (
@@ -572,37 +585,44 @@ CREATE TABLE proposal_sections (
 
 CREATE TABLE section_documents (
     section_id UUID PRIMARY KEY,
-    ydoc_state LONGBLOB NOT NULL,                -- estado Yjs persistido pelo Hocuspocus
+    ydoc_state LONGBLOB NOT NULL,                -- reservado (edição em tempo real); hoje vazio
     html_cache MEDIUMTEXT,                       -- HTML derivado, usado na compilação
     updated_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
     FOREIGN KEY (section_id) REFERENCES proposal_sections(id) ON DELETE CASCADE
 );
 
-CREATE TABLE graph_subscriptions (
+CREATE TABLE share_links (
     id               UUID PRIMARY KEY,
-    subscription_id  VARCHAR(100) NOT NULL UNIQUE,
-    drive_id         VARCHAR(255) NOT NULL,
-    client_state_hash CHAR(64)    NOT NULL,
-    delta_link       TEXT,
-    expires_at       DATETIME(6)  NOT NULL,
-    last_synced_at   DATETIME(6),
-    KEY ix_gs_expiry (expires_at)
-);
-
-CREATE TABLE signature_envelopes (
-    id            UUID PRIMARY KEY,
-    proposal_id   UUID NOT NULL,
-    document_id   UUID NOT NULL,
-    provider      ENUM('DOCUSIGN','ADOBE_SIGN','QES') NOT NULL,
-    external_id   VARCHAR(100) NOT NULL UNIQUE,
-    status        ENUM('CREATED','SENT','VIEWED','SIGNED','DECLINED','VOIDED') NOT NULL DEFAULT 'CREATED',
-    sent_at       DATETIME(6),
-    viewed_at     DATETIME(6),
-    completed_at  DATETIME(6),
-    last_event_at DATETIME(6),
+    proposal_id      UUID NOT NULL,
+    document_id      UUID NOT NULL,                   -- o PDF enviado, em 02_Enviado
+    token_hash       CHAR(64) NOT NULL UNIQUE,        -- SHA-256 do token; o token só existe no URL entregue ao cliente
+    expires_at       DATETIME(6) NOT NULL,
+    revoked_at       DATETIME(6),
+    first_opened_at  DATETIME(6),
+    last_opened_at   DATETIME(6),
+    open_count       INT NOT NULL DEFAULT 0,
+    created_by       UUID NOT NULL,
+    created_at       DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
     FOREIGN KEY (proposal_id) REFERENCES proposals(id),
-    FOREIGN KEY (document_id) REFERENCES documents(id)
-);
+    FOREIGN KEY (document_id) REFERENCES documents(id),
+    FOREIGN KEY (created_by)  REFERENCES users(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE customer_responses (
+    id              UUID PRIMARY KEY,
+    share_link_id   UUID NOT NULL UNIQUE,             -- uma só resposta por ligação
+    proposal_id     UUID NOT NULL,
+    decision        ENUM('ACCEPTED','DECLINED') NOT NULL,
+    signer_name     VARCHAR(255) NOT NULL,
+    signer_email    VARCHAR(255) NOT NULL,
+    comment         TEXT,
+    document_sha256 CHAR(64) NOT NULL,
+    ip_address      VARCHAR(45),
+    user_agent      VARCHAR(500),
+    decided_at      DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+    FOREIGN KEY (share_link_id) REFERENCES share_links(id),
+    FOREIGN KEY (proposal_id)   REFERENCES proposals(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 ```
 
 *Triggers* de imutabilidade (migração SQL manual, fora do Prisma):
@@ -658,39 +678,25 @@ Notas de implementação:
 - O utilizador de base de dados da aplicação só tem `INSERT` e `SELECT` em `audit_log`; cada `row_hash` = SHA-256(`prev_hash` + conteúdo da linha), pelo que alterar uma linha quebra a cadeia. A API não escreve na cadeia diretamente: cada alteração gera um evento `audit.record` no outbox (na mesma transação) e uma fila dedicada, com concorrência 1, acrescenta-o à cadeia (lê o último `row_hash` e insere). Isto serializa a cadeia sem bloquear os pedidos; o atraso esperado é de segundos.
 - O esquema Prisma é gerado a partir deste DDL, que é a referência. *Triggers* e colunas geradas não são expressáveis em Prisma e entram como migrações SQL manuais.
 
-## Integração Microsoft Graph
+## Repositório de documentos e processamento assíncrono
 
-Todas as chamadas usam a API `v1.0`; nenhum endpoint `beta` entra em produção. Separam-se dois contextos de identidade, porque o worker trabalha sem utilizador presente e não pode depender de tokens delegados que expiram.
+Toda a escrita de ficheiros e todas as notificações são feitas pelo worker, a partir de eventos gravados em `outbox_events` na mesma transação da alteração de negócio. Se o disco estiver cheio ou o SMTP indisponível, a proposta fica gravada e o trabalho repete-se.
 
-### Autenticação e permissões
+### Interface do repositório
 
-| Contexto | Fluxo | Permissões | Usado para |
-| --- | --- | --- | --- |
-| Utilizador no browser | Authorization Code + PKCE (MSAL), API com *On-Behalf-Of* | Delegadas: `User.Read`, `Sites.Selected` | Abrir documentos no Word Online, ações em nome do utilizador |
-| Worker (sem utilizador) | Client credentials com certificado ou *workload identity federation* — nunca segredo em texto | Aplicação: `Sites.Selected`, com papel `write` concedido só ao site "Propostas" | Criar pastas, carregar DOCX, converter PDF, subscrições |
-| Notificações | Bot do Teams (registo no Azure Bot Service, código na AWS) e envio de email limitado por política de acesso a caixas do Exchange | `Mail.Send` restrito a uma caixa de serviço | Pedidos de aprovação e alertas |
-
-Com `Sites.Selected`, a aplicação não acede a nenhum site até um administrador lhe conceder acesso explícito; a permissão é GA e funciona tanto no Graph como nas APIs SharePoint ([Microsoft 365 Developer Blog](https://devblogs.microsoft.com/microsoft365dev/?p=11229)). As permissões `Sites.ReadWrite.All` e `Files.ReadWrite.All` não são usadas.
-
-### Operações
-
-| Operação | Endpoint (`v1.0`) | Notas |
-| --- | --- | --- |
-| Criar pasta | `POST /drives/{drive-id}/items/{parent-id}/children` | `@microsoft.graph.conflictBehavior: fail` e verificação prévia, para a operação ser idempotente em retries |
-| Carregar DOCX | `PUT /drives/{drive-id}/items/{parent-id}:/{nome}:/content` | Para ficheiros grandes ou anexos, `createUploadSession` com envio em blocos |
-| Converter para PDF | `GET /drives/{drive-id}/items/{item-id}/content?format=pdf` | Resposta é um redirecionamento para o ficheiro; o worker descarrega, calcula o hash e grava em `01_Trabalho`. Só no envio ao cliente (proposta `APPROVED`, hashes verificados) o PDF é copiado para `02_Enviado`, a única pasta com partilha externa |
-| Abrir no Word Online | `webUrl` do `driveItem` | Não se usa `createLink`: utilizadores internos abrem com as suas próprias permissões, sem criar links de partilha |
-| Partilha externa | `POST /drives/{drive-id}/items/{item-id}/invite` | Só em `02_Enviado`, destinatários nominais, só leitura, com expiração |
-| Detetar edições | `POST /subscriptions` sobre a raiz da drive + `GET /drives/{drive-id}/root/delta` | O *webhook* só avisa que algo mudou; a *delta query* com o `deltaLink` guardado diz o quê. A subscrição é renovada por job antes de expirar |
+| Operação | Comportamento |
+| --- | --- |
+| `put` | Cria o ficheiro em `Clientes/{cliente}/{proposta}/{pasta}/{nome}` com abertura exclusiva: nunca sobrescreve; sincroniza em disco antes de devolver o SHA-256 e o tamanho |
+| `get` | Lê pela `storage_key`; recusa caminhos fora da raiz |
+| `copyTo` | Copia para outra pasta da mesma proposta (ex.: `01_Trabalho` → `02_Enviado`), também sem sobrescrever |
+| `currentHash` | SHA-256 do ficheiro tal como está em disco agora, ou nulo se desapareceu |
 
 ### Resiliência
 
-- Todas as operações Graph são jobs disparados por `outbox_events`, gravados na mesma transação que a alteração de negócio. Se o SharePoint estiver indisponível, a proposta fica gravada e o job tenta de novo.
-- **Relay do outbox**: um processo do worker consulta `outbox_events` a cada segundo (`status = 'PENDING' AND next_attempt_at <= CURRENT_TIMESTAMP(6)`, `ORDER BY created_at LIMIT 100 FOR UPDATE SKIP LOCKED`), marca `PROCESSING` e cria o job no BullMQ com `jobId` igual ao ID do evento, o que o torna idempotente. Ao terminar, o processador marca `DONE`; em falha, incrementa `attempts` e fixa `next_attempt_at`. Eventos em `PROCESSING` há mais de 10 minutos voltam a `PENDING`.
-- Respostas `429` e `503` respeitam o cabeçalho `Retry-After`; restantes falhas usam *backoff* exponencial com *jitter* e passam a `FAILED` após o limite de tentativas, com alerta.
-- Cada job tem chave de idempotência (ID do evento), para que repetir nunca crie pastas ou ficheiros duplicados.
-- Pedidos independentes agrupam-se com JSON batching (`POST /$batch`) para reduzir chamadas.
-- O SDK oficial Microsoft Graph para TypeScript fica atrás de uma interface `DocumentRepository`, para testes com *mocks* e eventual troca de repositório.
+- Todas as operações assíncronas são jobs disparados por `outbox_events`, gravados na mesma transação que a alteração de negócio. Se uma geração falhar, a proposta fica gravada e o job tenta de novo; a mensagem do último erro guarda-se em `outbox_events.last_error` e a UI mostra-a.
+- **Relay do outbox**: um processo do worker consulta `outbox_events` a cada segundo (`status = 'PENDING' AND next_attempt_at <= CURRENT_TIMESTAMP(6)`, `ORDER BY created_at LIMIT 100 FOR UPDATE SKIP LOCKED`), marca `PROCESSING` e cria o job no BullMQ com `jobId` igual ao ID do evento, o que o torna idempotente. Ao terminar, o processador marca `DONE`; em falha, incrementa `attempts` e fixa `next_attempt_at` com *backoff* exponencial e *jitter*, passando a `FAILED` após o limite, com alerta. Eventos em `PROCESSING` há mais de 10 minutos voltam a `PENDING`.
+- Os eventos `audit.record` seguem para uma fila própria com concorrência 1, que serializa a cadeia de hashes.
+- O acesso aos ficheiros fica atrás da interface `DocumentRepository`, para testes e para uma eventual troca de repositório.
 
 ## Requisitos não-funcionais, segurança e operação
 
@@ -701,72 +707,73 @@ As metas abaixo são propostas de partida, a validar com o negócio; cada uma é
 | Requisito | Meta proposta | Como se garante |
 | --- | --- | --- |
 | Validação de regras na UI | p95 < 50 ms para cotações até 200 linhas | Motor de regras local no browser, catálogo em cache |
-| Recalcular e gravar cotação (servidor) | p95 < 500 ms para 200 linhas | Catálogo e listas de preços em Redis, invalidação por evento |
-| Geração DOCX + PDF | p95 < 60 s, assíncrona com progresso na UI | Worker com filas; UI informa via WebSocket |
-| Disponibilidade | 99,5 % em horário de expediente | Uma instância EC2 com recuperação automática, alarmes, *health checks* |
-| RPO / RTO | 15 min / 4 h | mariabackup diário + binlogs para S3 a cada 5 min, permitindo *point-in-time recovery*; teste de restauro trimestral |
+| Recalcular e gravar cotação (servidor) | p95 < 500 ms para 200 linhas | Catálogo e listas de preços em cache com invalidação ao alterar |
+| Geração DOCX + PDF | p95 < 60 s, assíncrona com progresso na UI | Worker com filas; a UI consulta o estado do pedido |
+| Disponibilidade | 99,5 % em horário de expediente | Reinício automático dos serviços, *health checks* e alarmes; servidor único |
+| RPO / RTO | 15 min / 4 h | mariabackup diário + binlogs copiados a cada 5 min, permitindo *point-in-time recovery*; teste de restauro trimestral |
 
 ### Segurança
 
-- **Identidade**: apenas Entra ID; papéis de aplicação (`Comercial`, `Gestor_Comercial`, `Aprovador_Financeiro`, `Juridico`, `Administrador`) atribuídos via grupos Entra.
-- **Autorização por registo**: além do papel, regras de visibilidade — o comercial vê as suas propostas, o gestor vê as da equipa, o aprovador vê as que lhe estão atribuídas. Implementado com CASL num *guard* NestJS, aplicado também aos filtros de consulta.
-- **Segredos**: AWS Secrets Manager, lido através do papel IAM da instância EC2; nenhum segredo em variáveis de ambiente ou repositório.
-- **Transporte**: TLS 1.2 no mínimo, 1.3 preferido; HSTS; WAF à frente da API.
-- **Repouso**: encriptação InnoDB de tabelas, *redo* e *binlogs* com o plugin file\_key\_management, cuja chave é obtida do Secrets Manager no arranque por um serviço systemd que a escreve em tmpfs (`/run/mariadb/keys`), nunca em disco persistente (não se usa o termo "TDE", que é do SQL Server). Volumes EBS do servidor e backups também encriptados com KMS.
+- **Identidade**: apenas Entra ID; papéis de aplicação (`Comercial`, `Gestor_Comercial`, `Aprovador_Financeiro`, `Juridico`, `Administrador`) atribuídos via grupos Entra. Em desenvolvimento, um modo local com tokens assinados por um segredo, recusado em produção.
+- **Autorização por registo**: além do papel, regras de visibilidade — o comercial vê as suas propostas, o gestor vê as da equipa, o aprovador vê as que lhe estão atribuídas. Implementado com CASL num *guard* NestJS, aplicado também aos filtros de consulta. Custos e margens só são visíveis a quem tem permissão.
+- **Segredos**: ficheiros de ambiente com permissões restritas, geridos pelo Ansible (`ansible-vault`); nada no repositório.
+- **Transporte**: TLS 1.2 no mínimo, 1.3 preferido; HSTS; limites de pedidos no Nginx e na API.
+- **Repouso**: disco de dados cifrado (LUKS) e encriptação InnoDB de tabelas, *redo* e *binlogs* com o plugin `file_key_management`; o ficheiro de chaves é cifrado e a sua palavra-passe só `root` lê. As cópias de segurança herdam a cifra (mariabackup lê tabelas já cifradas; o destino também é cifrado).
+- **Portal do cliente**: token aleatório de 256 bits (só o hash fica guardado), validade, revogação, limite de tentativas por IP e resposta única por ligação.
 - **Aplicação**: validação de entrada com DTOs, sanitização do HTML do editor antes de entrar no DOCX, CSP rigorosa, proteção contra *mass assignment*, *rate limiting* por utilizador.
-- **Cadeia de fornecimento**: análise de dependências e SAST no CI, imagens de contentor assinadas.
+- **Cadeia de fornecimento**: análise de dependências e SAST no CI.
 
 ### Auditoria e conformidade
 
-- Todos os eventos relevantes (preço, desconto, transição de estado, aprovação, alteração de bloco jurídico, envio) entram em `audit_log` com cadeia de hashes.
-- Exportação diária do `audit_log` para Amazon S3 com Object Lock em modo compliance (WORM), para que nem um administrador de base de dados o possa reescrever.
+- Todos os eventos relevantes (preço, desconto, transição de estado, aprovação, alteração de bloco jurídico, envio, resposta do cliente) entram em `audit_log` com cadeia de hashes, imutável também por *triggers* na base de dados.
+- Exportação diária do `audit_log` para ficheiros só de leitura (`AUDIT_EXPORT_DIR`), replicados para o destino de backup, para que nem um administrador de base de dados reescreva a história sem deixar rasto.
 - Job noturno verifica a integridade da cadeia e alerta em caso de quebra.
-- **RGPD**: dados de contacto minimizados, prazos de retenção por tipo de dado, base legal documentada para acompanhamento de abertura, e exportação/eliminação por titular a partir do módulo de clientes (respeitando obrigações legais de conservação de propostas aceites).
+- **RGPD**: dados de contacto minimizados, prazos de retenção por tipo de dado, base legal documentada para o acompanhamento de abertura, e exportação/anonimização por titular a partir do módulo de clientes (respeitando obrigações legais de conservação de propostas aceites).
 
 ### Observabilidade e entrega
 
-- OpenTelemetry em frontend, API e worker, com envio para Amazon CloudWatch através do OpenTelemetry Collector; um ID de correlação acompanha cada pedido até ao job Graph que dele resulta.
-- Painéis e alertas: latência p95, erros 5xx, profundidade das filas, jobs `FAILED`, respostas `429` do Graph, expiração de subscrições.
-- Ambientes: desenvolvimento, teste/QA e produção, cada um com o seu site SharePoint e registo de aplicação Entra.
-- CI/CD com testes unitários (motor de preços com casos de referência), testes de contrato à API, testes end-to-end (Playwright) e migrações de base de dados aplicadas automaticamente com *rollback* testado.
+- OpenTelemetry em frontend, API e worker, com envio para o OpenTelemetry Collector local; um ID de correlação acompanha cada pedido até ao job que dele resulta.
+- Painéis e alertas: latência p95, erros 5xx, profundidade das filas, jobs `FAILED`, espaço em disco, falhas de backup, quebra da cadeia de auditoria.
+- Ambientes: desenvolvimento, teste/QA e produção, cada um com a sua base de dados, pasta de documentos e registo de aplicação Entra.
+- CI/CD com testes unitários (motor de preços com casos de referência), de integração com MariaDB e Redis, de contrato à API e *end-to-end* (Playwright); migrações aplicadas automaticamente com *rollback* testado.
 
 ## Roadmap e riscos
 
-A ordem proposta entrega primeiro o núcleo que dá valor sozinho (cotar com preços corretos) e deixa as integrações mais arriscadas para quando a base estiver estável. Cada fase termina com um critério de saída verificável.
+A ordem proposta entrega primeiro o núcleo que dá valor sozinho (cotar com preços corretos) e deixa as partes mais dependentes de terceiros para quando a base estiver estável. Cada fase termina com um critério de saída verificável.
 
-1. **Fundações** — repositório monorepo (frontend, API, worker, `@cpq/rules-engine`), Entra ID, MariaDB com migrações, servidor Ubuntu na AWS criado por código, CI/CD, observabilidade, ambientes.
-   - Saída: utilizador autentica-se e vê o catálogo em QA, com traces ponta-a-ponta.
+1. **Fundações** — monorepo (frontend, API, worker, `@cpq/rules-engine`), Entra ID, MariaDB com migrações, servidor Ubuntu configurado por Ansible, CI/CD, observabilidade, ambientes.
+   - Saída: utilizador autentica-se e vê o catálogo, com traces ponta-a-ponta e um restauro de backup testado.
 2. **CPQ** — catálogo, listas de preços, regras, motor de preços, versões e snapshots.
    - Saída: 50 cotações de referência calculadas pelo motor coincidem ao cêntimo com o cálculo da área financeira.
-3. **Proposal Engine + SharePoint** — biblioteca de conteúdos, editor colaborativo, compilação DOCX/PDF, outbox e worker Graph.
-   - Saída: proposta completa gerada e guardada no SharePoint com `Sites.Selected`, sem permissões tenant-wide.
-4. **Workflow e governança** — máquina de estados, políticas de aprovação, Teams, auditoria encadeada.
+3. **Proposal Engine** — biblioteca de conteúdos, editor, compilação DOCX/PDF, outbox e worker, repositório local.
+   - Saída: proposta completa gerada e guardada no repositório, com hashes registados e edições manuais detetadas.
+4. **Workflow e governança** — máquina de estados, políticas de aprovação, notificações, auditoria encadeada.
    - Saída: nenhum documento pode ser enviado se o hash não corresponder ao aprovado (teste automatizado).
-5. **Assinatura e integrações** — fornecedor de assinatura, integração com o CRM interno, acompanhamento de abertura.
-   - Saída: proposta assinada muda para `ACCEPTED` sem intervenção manual.
+5. **Aceitação e integrações** — portal de aceitação, acompanhamento de abertura, integração com o CRM interno, RGPD.
+   - Saída: proposta aceite pelo cliente no portal muda para `ACCEPTED` sem intervenção manual, com comprovativo.
+6. **Endurecimento** — testes de carga, ensaio de restauro, revisão de segurança, migração de dados, formação e manual de operação.
+   - Saída: metas de desempenho e disponibilidade medidas; restauro validado.
 
 ### Riscos principais
 
 | Risco | Probabilidade | Impacto | Mitigação |
 | --- | --- | --- | --- |
-| Conversão HTML do editor → DOCX perde formatação | Alta | Médio | Limitar o editor a um subconjunto de formatação suportado; testes visuais com documentos de referência na fase 3 |
-| Servidor único na AWS como ponto único de falha | Média | Alto | Backups contínuos para S3, recuperação automática do EC2, restauro testado; migrar a BD para RDS se a exigência crescer |
-| Equipa de segurança não aprova permissões Graph | Média | Alto | `Sites.Selected` desde o início e pedido de aprovação na fase 1 |
+| O PDF gerado pela aplicação não reproduz tudo o que o Word faz | Média | Médio | Limitar o editor a um subconjunto de formatação suportado; permitir carregar um PDF/DOCX revisto à mão |
+| Servidor único como ponto único de falha | Média | Alto | Backups contínuos para fora do servidor, reinício automático, reconstrução por Ansible, restauro testado |
+| Perda do disco de documentos | Baixa | Alto | Cópia incremental frequente para o destino de backup e verificação periódica dos hashes |
 | Regras de preço do negócio mais complexas do que o modelo prevê | Média | Alto | Workshop com financeiro antes da fase 2; condições JSONLogic dão margem de extensão |
-| Edições no Word Online divergem da cotação | Média | Alto | Deteção via delta query + bloqueio de envio por hash |
-| *Throttling* do Graph em picos de geração | Baixa | Médio | Filas com concorrência limitada, `Retry-After`, batching |
+| Edições fora da aplicação divergem da cotação | Média | Alto | Deteção por hash e bloqueio de envio |
+| Notificações não chegam a quem aprova (papéis só conhecidos após o primeiro login) | Média | Médio | Sincronização de utilizadores e papéis a partir do Entra ID, e administrador pode registar utilizadores |
 
 ### Questões em aberto
 
 - [ ] Que API ou eventos o CRM interno vai expor, e qual dos dois sistemas é dono dos dados de cliente?
 - [ ] Há necessidade de multi-empresa (várias entidades legais a emitir propostas)?
 - [ ] Que limites de desconto e margem disparam cada nível de aprovação?
-- [ ] As propostas precisam de assinatura qualificada (QES) ou basta assinatura avançada?
 - [ ] Em que línguas são emitidas as propostas?
+- [ ] Onde ficam as cópias de segurança (disco externo, outro servidor, partilha de rede)?
 
 ### Fontes
 
-- [Amazon RDS for MariaDB passa a suportar a 12.3 (AWS)](https://www.amazonaws.cn/en/new/2026/amazon-rds-for-mariadb-12-3/)
 - [MariaDB 10.6 EOL e ciclo de LTS atual (mariadb.org)](https://mariadb.org/mariadb-server-10-6-reaches-end-of-life-on-july-6th/)
 - [Calendário de versões LTS da MariaDB (mariadb.com)](https://mariadb.com/?p=40845)
-- [Sites.Selected — estado GA e uso (Microsoft 365 Developer Blog)](https://devblogs.microsoft.com/microsoft365dev/?p=11229)

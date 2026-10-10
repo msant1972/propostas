@@ -1,6 +1,6 @@
 - name: Pacotes essenciais (sem o agente)
   ansible.builtin.apt:
-    name: [unattended-upgrades, chrony, curl, jq, awscli, ca-certificates, gnupg]
+    name: [unattended-upgrades, chrony, curl, jq, rsync, ca-certificates, gnupg, ufw, fail2ban, openssl]
     state: present
 
 - name: Atualizações de segurança automáticas

@@ -8,7 +8,7 @@ Baseado em [Arquitetura.md](Arquitetura.md), que é a fonte de verdade para deci
 2. **Contrato primeiro.** A API é desenhada em OpenAPI 3.1; o cliente TypeScript do frontend é gerado a partir dela. Nenhum tipo é escrito à mão nos dois lados.
 3. **Regras de negócio só em código partilhado.** Motor de regras e cálculo de preços vivem em `@cpq/rules-engine` (TS puro, sem I/O). O browser usa-o para resposta imediata, o servidor reavalia sempre antes de gravar.
 4. **Testes com casos de referência** para preços e regras antes de construir a UI correspondente.
-5. **Nada de Graph síncrono** dentro de um pedido HTTP: tudo passa por `outbox_events` e pelo worker.
+5. **Nada de geração de ficheiros nem notificações síncronas** dentro de um pedido HTTP: tudo passa por `outbox_events` e pelo worker.
 6. **Migrações versionadas e reversíveis**; triggers e colunas geradas entram como migrações SQL manuais.
 7. **Cada fase termina com o critério de saída verificável** da secção respetiva. Não se começa a fase seguinte sem ele.
 
@@ -20,8 +20,7 @@ Esforço: **S** ≈ até 2 dias, **M** ≈ 3–5 dias, **L** ≈ 1–2 semanas, 
 /apps
   /web          React 18, Vite, TS, shadcn/ui, Tailwind, TanStack Query, Zustand, TipTap + Yjs, MSAL
   /api          NestJS, Prisma, CASL, OpenAPI 3.1
-  /collab       Hocuspocus (persistência em section_documents)
-  /worker       NestJS + BullMQ (relay do outbox, Graph, documentos, assinatura, notificações)
+  /worker       NestJS + BullMQ (relay do outbox, documentos, auditoria, notificações, SLA e expiração)
 /packages
   /rules-engine @cpq/rules-engine: regras JSONLogic + cálculo de preços (TS puro)
   /api-client   cliente TS gerado a partir do OpenAPI
@@ -29,25 +28,25 @@ Esforço: **S** ≈ até 2 dias, **M** ≈ 3–5 dias, **L** ≈ 1–2 semanas, 
 /db
   /migrations   Prisma + SQL manual (triggers, colunas geradas)
   /seed         dados de referência
-/infra          Terraform/CloudFormation + Ansible + docker-compose
+/infra          Ansible (servidor Ubuntu) + runbook de restauro
 /e2e            Playwright
 ```
 
-Módulos NestJS (fronteira própria, sem aceder a tabelas alheias): `auth`, `users`, `clients`, `catalog`, `pricing`, `rules`, `quotes`, `content`, `proposals`, `documents`, `approvals`, `audit`, `outbox`, `notifications`, `signature`, `graph`.
+Módulos NestJS (fronteira própria, sem aceder a tabelas alheias): `auth`, `users`, `clients`, `catalog`, `pricing`, `rules`, `quotes`, `content`, `proposals`, `documents`, `approvals`, `audit`, `outbox`, `notifications`, `portal`.
 
 ## 3. Mapa de fases
 
 | Fase | Nome | Entrega | Depende de |
 | --- | --- | --- | --- |
-| 0 | Decisões e pré-requisitos | Respostas às decisões bloqueantes; acessos Entra/AWS/M365 | — |
+| 0 | Decisões e pré-requisitos | Respostas às decisões bloqueantes; acesso ao Entra ID e ao servidor | — |
 | 1 | Fundações | Repositório, CI/CD, infra por código, autenticação, observabilidade | 0 |
 | 2 | CPQ | Catálogo, preços, regras, cotações versionadas e bloqueadas | 1 |
-| 3 | Proposal Engine + SharePoint | Conteúdos, editor colaborativo, compilação DOCX/PDF, worker Graph | 2 |
+| 3 | Proposal Engine | Conteúdos, editor, compilação DOCX/PDF, worker, repositório local | 2 |
 | 4 | Workflow e governança | Estados, aprovações, auditoria encadeada, envio com verificação de hash | 3 |
-| 5 | Assinatura e integrações | Assinatura eletrónica, acompanhamento, CRM interno | 4 |
+| 5 | Aceitação e integrações | Portal de aceitação, acompanhamento, CRM interno, RGPD | 4 |
 | 6 | Endurecimento e go-live | Testes de carga, restauro, segurança, migração de dados, formação | 5 |
 
-Fase 0 e as pré-aprovações de segurança (Graph, AWS) correm **em paralelo** com o início da Fase 1.
+Fase 0 e as aprovações de acesso (Entra ID, servidor) correm **em paralelo** com o início da Fase 1.
 
 ## 4. Fase 0 — Decisões e pré-requisitos
 
@@ -57,12 +56,10 @@ Fase 0 e as pré-aprovações de segurança (Graph, AWS) correm **em paralelo** 
 | 0.2 | Casos de referência de preços: 50 cotações calculadas pela área financeira | Financeiro | Fase 2 (critério de saída) |
 | 0.3 | Workshop de regras de preço e de bundles | Financeiro + comercial | Fase 2 |
 | 0.4 | Línguas das propostas e modelo `.docx` base por língua | Comercial / marketing | Fase 3 |
-| 0.5 | Assinatura avançada ou qualificada (QES); escolha do fornecedor | Jurídico | Fase 5 |
 | 0.6 | API/eventos do CRM interno e dono dos dados de cliente | Equipa do CRM | Fase 5 |
 | 0.7 | Multi-empresa (várias entidades legais)? | Direção | Modelo de dados (decidir antes da Fase 2) |
-| 0.8 | Aprovação de segurança: `Sites.Selected`, `Mail.Send` restrito, registo Azure Bot | Segurança TI | Fase 3 |
-| 0.9 | Contas AWS, domínio, certificado ACM, tenant M365 de QA e site SharePoint "Propostas" por ambiente | TI | Fase 1 |
-| 0.10 | Licença e custo do módulo HTML do Docxtemplater | Compras | Fase 3 |
+| 0.8 | Registo da aplicação no Entra ID (grupos e papéis) e servidor SMTP para as notificações | TI | Fase 1 |
+| 0.9 | Servidor Ubuntu, domínio, certificado TLS, discos de dados e destino das cópias de segurança | TI | Fase 1 |
 
 **Saída:** 0.2, 0.3, 0.7, 0.8 e 0.9 respondidas; as restantes com data de resposta acordada.
 
@@ -76,9 +73,9 @@ Objetivo: um utilizador autentica-se e vê o catálogo em QA, com traces ponta a
 | --- | --- | --- |
 | 1.1 | Monorepo (pnpm/turborepo), lint, formatação, tsconfig partilhado | S |
 | 1.2 | Prisma + MariaDB 12.3 local (compose); migração inicial das tabelas base; teste de ordenação de UUIDv7 (decide `UUID` vs `BINARY(16)`) e de `ON UPDATE CURRENT_TIMESTAMP(6)` | M |
-| 1.3 | Terraform/CloudFormation: VPC, subnets privadas, ALB + WAF + ACM, NAT, VPC endpoints, EC2, EBS dedicado, IAM, KMS, S3 (backups e Object Lock) | L |
+| 1.3 | Preparação do servidor: Nginx com TLS, firewall, discos dedicados (LUKS) para a base de dados e para os documentos | L |
 | 1.4 | Ansible: Ubuntu, Docker Compose, Nginx, MariaDB oficial com encriptação (`file_key_management` em tmpfs), Redis com AOF | L |
-| 1.5 | Backups: mariabackup diário, binlogs → S3 a cada 5 min, AWS Backup; **primeiro restauro testado** noutra instância | M |
+| 1.5 | Backups: mariabackup diário, binlogs e documentos copiados para o destino separado a cada 5 min; **primeiro restauro testado** noutra instância | M |
 | 1.6 | CI/CD: build, testes, SAST, análise de dependências, imagens assinadas; deploy para dev e QA; migrações automáticas | L |
 | 1.7 | Segredos: leitura do Secrets Manager pelo papel IAM; configuração por ambiente | S |
 | 1.8 | OpenTelemetry (web, API, worker) → Collector → CloudWatch; ID de correlação; painéis e alarmes base | M |
@@ -156,45 +153,42 @@ Objetivo: cotar com preços corretos, versionar e bloquear.
 
 **Saída:** as 50 cotações de referência coincidem ao cêntimo com o cálculo da área financeira; tentativa de alterar versão `LOCKED` por SQL direto é rejeitada pelos triggers; cotação de 200 linhas cumpre p95 < 50 ms (UI) e < 500 ms (servidor).
 
-## 7. Fase 3 — Proposal Engine + SharePoint
+## 7. Fase 3 — Proposal Engine
 
-Objetivo: gerar uma proposta completa e guardá-la no SharePoint com `Sites.Selected`.
+Objetivo: gerar uma proposta completa (DOCX e PDF) e guardá-la no repositório local, com os hashes registados. **Feita.**
 
-### Worker / Graph
-
-| ID | Tarefa | Esf. |
-| --- | --- | --- |
-| 3.1 | Interface `DocumentRepository` e implementação Graph `v1.0`; *mock* para testes | M |
-| 3.2 | Autenticação do worker (client credentials com certificado do Secrets Manager); concessão `Sites.Selected` ao site "Propostas" por ambiente | M |
-| 3.3 | Job "criar estrutura da proposta": pastas `/Clientes/{cliente}/{proposta}/01_Trabalho`, `02_Enviado`, `03_Assinado`; idempotente (`conflictBehavior: fail` + verificação prévia); guarda `driveItem.id` | M |
-| 3.4 | Tratamento de `429`/`503` com `Retry-After`; JSON batching; testes de falha e retoma | M |
-| 3.5 | Job de compilação: montar secções → Docxtemplater → carregar → converter PDF → hash → `documents` (ficheiros em `01_Trabalho`) | XL |
-| 3.6 | Subscrição Graph (webhook + delta query), renovação por job, marcação `MANUALLY_EDITED`; receção de webhooks em `/webhooks/*` com validação de `clientState` | L |
-
-### API / colaboração
+### Worker / repositório
 
 | ID | Tarefa | Esf. |
 | --- | --- | --- |
-| 3.7 | `content`: blocos, versões (rascunho/aprovado/retirado), línguas, tags, responsável e data de revisão; bloco jurídico | L |
-| 3.8 | `proposals`: secções referenciando versão de bloco; `is_modified` quando se altera bloco jurídico | M |
-| 3.9 | Catálogo fechado de *merge tags* tipadas; validação na compilação; variável em falta bloqueia a geração | M |
-| 3.10 | Tabela de preços como elemento estruturado do documento | M |
-| 3.11 | Hocuspocus: autenticação por token, persistência em `section_documents`, `html_cache`, autorização por proposta | L |
-| 3.12 | Sanitização do HTML do editor antes de entrar no DOCX; subconjunto de formatação suportado | M |
-| 3.13 | Endpoints de documentos: estado do job, descarregar, abrir no Word Online (`webUrl`) | S |
-| 3.14 | Regeneração: bloqueada se `MANUALLY_EDITED` sem confirmação; cria novo documento sem apagar o anterior | M |
+| 3.1 | Interface `DocumentRepository` e implementação em pasta local (`DOCUMENT_STORAGE_DIR`): abertura exclusiva, nomes normalizados, sem sair da raiz | M |
+| 3.2 | Estrutura `Clientes/{cliente}/{proposta}/{01_Trabalho,02_Enviado,03_Assinado}` criada ao gravar | S |
+| 3.3 | Tratamento de falhas: *retry* com *backoff* pelo outbox, mensagem do último erro guardada | M |
+| 3.4 | Job de compilação: montar secções → Docxtemplater (`{@conteudo}` em OOXML) → PDF → hash → `documents` (ficheiros em `01_Trabalho`) | XL |
+| 3.5 | Deteção de edições manuais: comparação periódica do hash em disco com o registado | M |
+
+### API
+
+| ID | Tarefa | Esf. |
+| --- | --- | --- |
+| 3.6 | `content`: blocos, versões (rascunho/aprovado/retirado), línguas, tags, responsável e data de revisão; bloco jurídico só pelo Jurídico | L |
+| 3.7 | Secções da proposta referenciando versão de bloco; `is_modified` quando se altera bloco jurídico; bloqueio otimista por `row_version` | M |
+| 3.8 | Catálogo fechado de *merge tags* tipadas; variável em falta bloqueia a geração | M |
+| 3.9 | Tabela de preços como elemento estruturado do documento | M |
+| 3.10 | Sanitização do HTML do editor antes de entrar no DOCX; subconjunto de formatação suportado | M |
+| 3.11 | Endpoints de documentos: pedir geração, estado do pedido, listar, descarregar, carregar versão editada | M |
+| 3.12 | Regeneração: cria sempre ficheiros novos, sem apagar os anteriores | S |
 
 ### Frontend
 
 | ID | Tarefa | Esf. |
 | --- | --- | --- |
-| 3.15 | Biblioteca de conteúdos: pesquisa por tags/língua, versões, estados, revisão pendente | L |
-| 3.16 | Editor de proposta: lista de secções, reordenar, inserir bloco, editar com TipTap + Yjs (cursores, presença), extensão de *merge tags* | XL |
-| 3.17 | Ecrã de compilação: progresso via WebSocket, erros de variáveis em falta, pré-visualização PDF, abertura no Word Online | L |
-| 3.18 | Aviso de documento editado manualmente e fluxo de confirmação para regenerar | S |
-| 3.19 | E2E: composição → compilação → documento visível no SharePoint de QA | M |
+| 3.13 | Biblioteca de conteúdos: pesquisa por tags/língua, versões, estados, revisão pendente | L |
+| 3.14 | Editor de proposta: lista de secções, reordenar, inserir bloco, editar com TipTap, inserir variáveis | XL |
+| 3.15 | Ecrã de geração: progresso por consulta periódica, variáveis por resolver, descarga, carregamento de versão editada | L |
+| 3.16 | E2E: composição → geração pelo worker → descarga do PDF | M |
 
-**Saída:** proposta completa gerada e guardada no SharePoint de QA com `Sites.Selected` (sem permissões a nível do tenant); falha simulada do SharePoint deixa a proposta gravada e o job retoma sozinho; testes visuais com documentos de referência aprovados.
+**Saída:** proposta completa gerada e guardada no repositório; falha simulada deixa a proposta gravada e o job retoma sozinho; edição fora da aplicação é detetada pelo hash.
 
 ## 8. Fase 4 — Workflow e governança
 
@@ -208,9 +202,9 @@ Objetivo: nenhum documento sai se o hash não for o aprovado.
 | 4.4 | API | Invalidar aprovação quando a cotação ou o documento mudam; pedidos jurídicos (`LEGAL`) para blocos jurídicos modificados | M |
 | 4.5 | API | Envio: verificar hash da cotação (recalculado a partir de `snapshot_json`) e do documento; copiar PDF para `02_Enviado`; bloquear em caso de divergência | M |
 | 4.6 | Worker | Auditoria encadeada: fila com concorrência 1, `row_hash`, utilizador de BD só com `INSERT`/`SELECT` | M |
-| 4.7 | Worker | Exportação diária para S3 com Object Lock (compliance); job noturno de verificação da cadeia com alerta | M |
+| 4.7 | Worker | Exportação diária para ficheiros só de leitura (`AUDIT_EXPORT_DIR`), replicados para o destino de backup; job noturno de verificação da cadeia com alerta | M |
 | 4.8 | Worker | SLA e escalonamento de aprovações; expiração diária de propostas (`SENT` → `EXPIRED`) | M |
-| 4.9 | Worker | Notificações: email (`Mail.Send` restrito) e cartões adaptativos no Teams com ligação à página de decisão; registo Azure Bot | L |
+| 4.9 | Worker | Notificações: email (SMTP) e, opcionalmente, mensagem no Teams por *webhook* de entrada, com ligação à página de decisão | L |
 | 4.10 | Frontend | Submeter para aprovação com resumo de políticas aplicáveis | M |
 | 4.11 | Frontend | Caixa de entrada do aprovador, página de decisão (cotação, margem, documento, histórico), delegação | L |
 | 4.12 | Frontend | Linha temporal da proposta (estados, aprovações, auditoria) e ação de envio com estado dos hashes | M |
@@ -219,27 +213,27 @@ Objetivo: nenhum documento sai se o hash não for o aprovado.
 
 **Saída:** o teste 4.14 passa; cadeia de auditoria verificada e exportação WORM a funcionar; fluxo completo comercial → aprovador → envio demonstrado em QA com notificações reais.
 
-## 9. Fase 5 — Assinatura e integrações
+## 9. Fase 5 — Aceitação e integrações
 
 | ID | Camada | Tarefa | Esf. |
 | --- | --- | --- | --- |
-| 5.1 | Worker | Interface `SignatureProvider` e adaptador do fornecedor escolhido em 0.5; criação de envelope, cancelamento | L |
-| 5.2 | API | Webhooks do fornecedor (validação HMAC, idempotência) → `signature_envelopes` e transições `ACCEPTED`/`REJECTED`; PDF assinado em `03_Assinado` | L |
-| 5.3 | API/Worker | Acompanhamento de abertura via eventos do fornecedor ou portal de cliente com ligação; sem píxeis de rastreio | M |
-| 5.4 | API/Worker | Integração com o CRM interno conforme 0.6 (clientes, oportunidades, `crm_external_id`) | L |
-| 5.5 | API | RGPD: retenção por tipo de dado, exportação/eliminação por titular, base legal registada | M |
-| 5.6 | Frontend | Estado da assinatura na proposta, reenvio, registo manual de aceitação com evidência | M |
-| 5.7 | Frontend | Sincronização e ligação a oportunidades do CRM nos ecrãs de cliente e proposta | M |
+| 5.1 | API | Portal de aceitação: ligação com token aleatório (só o hash fica guardado), validade, revogação, limite de tentativas por IP | L |
+| 5.2 | API | Resposta do cliente (aceitar/recusar) com nome, email, hash do documento, data e IP; resposta única por ligação; transição para `ACCEPTED`/`REJECTED` | L |
+| 5.3 | Worker | Comprovativo de aceitação em PDF, guardado em `03_Assinado`; notificação ao comercial | M |
+| 5.4 | API | Acompanhamento de abertura (primeira e última abertura, contagem), sem píxeis de rastreio | M |
+| 5.5 | API/Worker | Integração com o CRM interno conforme 0.6 (clientes, oportunidades, `crm_external_id`), por interface e *webhook* | L |
+| 5.6 | API | RGPD: retenção por tipo de dado, exportação/anonimização por titular, base legal registada | M |
+| 5.7 | Frontend | Página pública do portal; estado da aceitação na proposta, nova ligação, registo manual de aceitação com evidência | L |
 
-**Saída:** proposta assinada passa a `ACCEPTED` sem intervenção manual; dados de cliente consistentes com o CRM.
+**Saída:** proposta aceite pelo cliente no portal passa a `ACCEPTED` sem intervenção manual, com comprovativo; dados de cliente consistentes com o CRM.
 
 ## 10. Fase 6 — Endurecimento e go-live
 
 | ID | Tarefa | Esf. |
 | --- | --- | --- |
-| 6.1 | Testes de carga: geração concorrente de documentos (limites do Graph), cotações de 200 linhas, colaboração simultânea | M |
+| 6.1 | Testes de carga: geração concorrente de documentos, cotações de 200 linhas | M |
 | 6.2 | Ensaio de recuperação completo: perda do servidor e restauro por código, incluindo falha de zona (RTO ≤ 4 h, RPO ≤ 15 min) | M |
-| 6.3 | Revisão de segurança: permissões Graph, WAF, CSP, segredos, dependências; teste de intrusão | L |
+| 6.3 | Revisão de segurança: cabeçalhos e CSP, segredos, portal do cliente, dependências; teste de intrusão | L |
 | 6.4 | Migração de dados reais (clientes, catálogo, listas de preços, blocos de conteúdo) com reconciliação | L |
 | 6.5 | Formação por perfil (Comercial, Gestor, Aprovador, Jurídico, Administrador) e manual de operação (runbooks, alertas, restauro) | M |
 | 6.6 | Piloto com um grupo reduzido de comerciais; correção de defeitos; decisão de go-live | L |
@@ -254,7 +248,7 @@ Objetivo: nenhum documento sai se o hash não for o aprovado.
 | Unitário | Motor de preços e regras (casos de referência e propriedades), serviços de domínio | Vitest/Jest |
 | Base de dados | Migrações para a frente e para trás, triggers, restrições | Testes de integração com MariaDB 12.3 em contentor |
 | Contrato | API contra o OpenAPI; cliente gerado compila | Testes de contrato no CI |
-| Integração | Worker com `DocumentRepository` simulado; Graph real só em QA | Jest + ambiente QA |
+| Integração | API e worker contra MariaDB, Redis e uma pasta temporária de documentos | Vitest |
 | End-to-end | Fluxos completos por papel | Playwright |
 | Não-funcionais | Carga, restauro, segurança | k6, ensaios manuais registados |
 
@@ -274,12 +268,10 @@ Regra: alterações ao motor de preços ou às transições de estado não entra
 
 | Risco | Efeito no plano | Resposta |
 | --- | --- | --- |
-| Aprovação de segurança do Graph tarde | Bloqueia a Fase 3 | Pedido na Fase 0; `DocumentRepository` simulado permite avançar |
 | Regras de preço mais complexas do que o modelo | Retrabalho na Fase 2 | Workshop 0.3 antes de começar; condições JSONLogic como válvula |
 | Conversão HTML → DOCX perde formatação | Atraso em 3.5 | Subconjunto de formatação; testes visuais desde o início da Fase 3 |
 | `UUID` da MariaDB não ordena UUIDv7 | Alteração de chaves | Teste em 1.2, antes de existir qualquer dado |
 | Servidor único e restauro nunca testado | Risco operacional | Restauro em 1.5 e ensaio completo em 6.2 |
-| Licença do módulo HTML do Docxtemplater | Custo ou troca de biblioteca | Decisão 0.10 antes da Fase 3 |
 
 ## 14. Próximo passo
 

@@ -1,11 +1,13 @@
 environment_name: qa
-aws_region: eu-west-1
 mariadb_version: "12.3"
-mariadb_data_device: /dev/nvme1n1       # volume EBS dedicado (/dev/sdf na AWS)
+mariadb_data_device: /dev/sdb              # disco dedicado à base de dados (cifrado com LUKS)
 mariadb_data_dir: /var/lib/mysql
 mariadb_buffer_pool_size: 4G
-mariadb_key_dir: /run/mariadb-keys       # tmpfs: a chave nunca vai para disco persistente
-secrets_key_id: "cpq/{{ environment_name }}/mariadb-encryption-key"
-backups_bucket: "{{ lookup('env', 'CPQ_BACKUPS_BUCKET') }}"
+mariadb_key_dir: /run/mariadb-keys          # tmpfs: a chave decifrada nunca vai para disco persistente
+mariadb_keys_encrypted: /etc/mysql/encryption/keys.enc
+mariadb_keys_password_file: /etc/mysql/encryption/keys.pass   # root:root 0400
+documents_dir: /srv/cpq/documents           # disco dedicado; DOCUMENT_STORAGE_DIR da aplicação
+audit_export_dir: /srv/cpq/audit            # exportações diárias da auditoria, só de leitura
+backup_target: "{{ lookup('env', 'CPQ_BACKUP_TARGET') }}"   # ex.: backup@servidor-copias:/backups/cpq (rsync por SSH) ou um caminho montado
 app_dir: /opt/cpq
 app_image_tag: latest

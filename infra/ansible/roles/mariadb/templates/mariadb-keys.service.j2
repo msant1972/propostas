@@ -1,12 +1,12 @@
 [Unit]
-Description=Chave de encriptação da MariaDB (do Secrets Manager para tmpfs)
+Description=Chave de encriptação da MariaDB (decifrada para tmpfs)
 Before=mariadb.service
 
 [Service]
 Type=oneshot
 RemainAfterExit=yes
 ExecStartPre=/usr/bin/install -d -m 0700 -o mysql -g mysql {{ mariadb_key_dir }}
-ExecStart=/bin/sh -c 'aws secretsmanager get-secret-value --region {{ aws_region }} --secret-id {{ secrets_key_id }} --query SecretString --output text > {{ mariadb_key_dir }}/keys.txt && chown mysql:mysql {{ mariadb_key_dir }}/keys.txt && chmod 0400 {{ mariadb_key_dir }}/keys.txt'
+ExecStart=/bin/sh -c 'openssl enc -d -aes-256-cbc -pbkdf2 -in {{ mariadb_keys_encrypted }} -pass file:{{ mariadb_keys_password_file }} -out {{ mariadb_key_dir }}/keys.txt && chown mysql:mysql {{ mariadb_key_dir }}/keys.txt && chmod 0400 {{ mariadb_key_dir }}/keys.txt'
 
 [Install]
 WantedBy=multi-user.target

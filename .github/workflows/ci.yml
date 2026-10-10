@@ -82,11 +82,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: hashicorp/setup-terraform@v3
-      - run: terraform fmt -check -recursive
-        working-directory: infra/terraform
-      - run: terraform init -backend=false && terraform validate
-        working-directory: infra/terraform
       - run: pipx install ansible-lint && ansible-lint
         working-directory: infra/ansible
 

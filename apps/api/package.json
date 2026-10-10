@@ -22,6 +22,7 @@
   "dependencies": {
     "@casl/ability": "^7.0.1",
     "@cpq/db": "workspace:*",
+    "@cpq/rules-engine": "workspace:*",
     "@cpq/shared": "workspace:*",
     "@nestjs/common": "^12.1.2",
     "@nestjs/config": "^12.0.1",

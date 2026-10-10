@@ -46,3 +46,18 @@ describe('defineAbilityFor', () => {
     expect(a.can('read', 'Client')).toBe(true);
   });
 });
+
+import { visibleProposalsWhere } from './ability.js';
+
+describe('visibleProposalsWhere', () => {
+  const a = (roles: Actor['roles']): Actor => ({ userId: 'u1', teamId: 't1', region: 'PT', roles });
+
+  it('administrador vê tudo', () => expect(visibleProposalsWhere(a(['Administrador']))).toEqual({}));
+  it('comercial vê as suas', () => expect(visibleProposalsWhere(a(['Comercial']))).toEqual({ OR: [{ ownerUserId: 'u1' }] }));
+  it('gestor vê equipa e região, e soma-se ao papel de comercial', () => {
+    expect(visibleProposalsWhere(a(['Comercial', 'Gestor_Comercial']))).toEqual({
+      OR: [{ ownerUserId: 'u1' }, { ownerTeamId: 't1' }, { region: 'PT' }],
+    });
+  });
+  it('sem papéis relevantes não vê nada', () => expect(visibleProposalsWhere(a(['Juridico']))).toEqual({ id: { in: [] } }));
+});

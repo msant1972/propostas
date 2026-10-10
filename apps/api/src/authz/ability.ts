@@ -2,7 +2,18 @@ import { AbilityBuilder, createMongoAbility, type MongoAbility } from '@casl/abi
 import type { Role } from '@cpq/shared';
 
 export type Action = 'manage' | 'create' | 'read' | 'update' | 'delete';
-export type Subject = 'Product' | 'Client' | 'Proposal' | 'AuditLog' | 'User' | 'all';
+export type Subject =
+  | 'Product'
+  | 'Client'
+  | 'Proposal'
+  | 'Quote'
+  | 'PriceList'
+  | 'TaxRate'
+  | 'FxRate'
+  | 'Rule'
+  | 'AuditLog'
+  | 'User'
+  | 'all';
 export type AppAbility = MongoAbility<[Action, Subject | Record<string, unknown>]>;
 
 /** Utilizador autenticado já ligado à linha de `users`. */
@@ -30,9 +41,12 @@ export function defineAbilityFor(actor: Actor): AppAbility {
   // Catálogo e clientes: leitura para qualquer utilizador autenticado.
   can('read', 'Product');
   can('read', 'Client');
+  can('read', 'TaxRate');
+  can('read', 'FxRate');
 
   if (has('Comercial')) {
     can('create', 'Proposal');
+    can('read', 'PriceList');
     can(['read', 'update'], 'Proposal', { ownerUserId: actor.userId });
     can('create', 'Client');
   }
@@ -53,4 +67,19 @@ export function defineAbilityFor(actor: Actor): AppAbility {
   }
 
   return build();
+}
+
+/**
+ * Filtro Prisma equivalente às regras de visibilidade de propostas de `defineAbilityFor`,
+ * para listagens (a consulta já devolve só o que o utilizador pode ver).
+ */
+export function visibleProposalsWhere(actor: Actor): Record<string, unknown> {
+  if (actor.roles.includes('Administrador')) return {};
+  const or: Record<string, unknown>[] = [];
+  if (actor.roles.includes('Comercial')) or.push({ ownerUserId: actor.userId });
+  if (actor.roles.includes('Gestor_Comercial') && actor.teamId) {
+    or.push({ ownerTeamId: actor.teamId });
+    if (actor.region) or.push({ region: actor.region });
+  }
+  return or.length ? { OR: or } : { id: { in: [] } };
 }

@@ -199,6 +199,9 @@ importers:
       '@cpq/db':
         specifier: workspace:*
         version: link:../../db
+      '@cpq/rules-engine':
+        specifier: workspace:*
+        version: link:../../packages/rules-engine
       '@cpq/shared':
         specifier: workspace:*
         version: link:../../packages/shared

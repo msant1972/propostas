@@ -1,0 +1,4 @@
+DROP TRIGGER IF EXISTS trg_qv_immutable;
+DROP TRIGGER IF EXISTS trg_qi_bi;
+DROP TRIGGER IF EXISTS trg_qi_bu;
+DROP TRIGGER IF EXISTS trg_qi_bd;

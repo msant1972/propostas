@@ -48,7 +48,7 @@ export interface paths {
         /** Lista produtos do catálogo */
         get: operations["listProducts"];
         put?: never;
-        post?: never;
+        post: operations["createProduct"];
         delete?: never;
         options?: never;
         head?: never;
@@ -69,7 +69,332 @@ export interface paths {
         delete?: never;
         options?: never;
         head?: never;
+        patch: operations["updateProduct"];
+        trace?: never;
+    };
+    "/api/v1/clients": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["listClients"];
+        put?: never;
+        post: operations["createClient"];
+        delete?: never;
+        options?: never;
+        head?: never;
         patch?: never;
+        trace?: never;
+    };
+    "/api/v1/clients/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getClient"];
+        put?: never;
+        post?: never;
+        delete: operations["deleteClient"];
+        options?: never;
+        head?: never;
+        patch: operations["updateClient"];
+        trace?: never;
+    };
+    "/api/v1/proposals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["listProposals"];
+        put?: never;
+        post: operations["createProposal"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/proposals/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getProposal"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["updateProposal"];
+        trace?: never;
+    };
+    "/api/v1/proposals/{id}/quotes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["listQuoteVersions"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/proposals/{id}/quotes/current": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getCurrentQuote"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/proposals/{id}/quotes/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Calcula sem gravar (a UI usa o mesmo motor localmente) */
+        post: operations["previewQuote"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/proposals/{id}/quotes/new-version": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["createQuoteVersion"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/proposals/{id}/quotes/{versionId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getQuoteVersion"];
+        /** Grava o rascunho; o servidor reavalia e rejeita cotações inválidas */
+        put: operations["saveQuoteDraft"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/proposals/{id}/quotes/{versionId}/lock": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Bloqueia a versão e calcula o snapshot_hash */
+        post: operations["lockQuote"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/proposals/{id}/quotes/{versionId}/verify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Recalcula o hash a partir do snapshot guardado */
+        get: operations["verifyQuote"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/catalog/products/{id}/attributes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["replaceProductAttributes"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/catalog/products/{id}/bundle": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["replaceProductBundle"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/price-lists": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["listPriceLists"];
+        put?: never;
+        post: operations["createPriceList"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/price-lists/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["updatePriceList"];
+        trace?: never;
+    };
+    "/api/v1/price-lists/{id}/items": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["listPriceListItems"];
+        put: operations["replacePriceListItems"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/tax-rates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["listTaxRates"];
+        put?: never;
+        post: operations["createTaxRate"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/fx-rates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["listFxRates"];
+        put: operations["upsertFxRate"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/rules": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["listRules"];
+        put?: never;
+        post: operations["createRule"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/rules/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Desativa a regra (não se apagam: os snapshots referenciam-nas) */
+        delete: operations["deactivateRule"];
+        options?: never;
+        head?: never;
+        patch: operations["updateRule"];
         trace?: never;
     };
 }
@@ -93,6 +418,350 @@ export interface components {
             total: number;
             page: number;
             pageSize: number;
+        };
+        ClientDto: {
+            id: string;
+            code: string;
+            name: string;
+            vatNumber: string | null;
+            countryCode: string;
+            tier: string | null;
+            vatValid: boolean;
+        };
+        ClientPageDto: {
+            items: components["schemas"]["ClientDto"][];
+            total: number;
+            page: number;
+            pageSize: number;
+        };
+        CreateClientDto: {
+            code: string;
+            name: string;
+            vatNumber?: string;
+            /** @description ISO 3166-1 alpha-2 */
+            countryCode: string;
+            tier?: string;
+            /** @description VAT intracomunitário validado (VIES) */
+            vatValid?: boolean;
+        };
+        UpdateClientDto: {
+            code?: string;
+            name?: string;
+            vatNumber?: string;
+            /** @description ISO 3166-1 alpha-2 */
+            countryCode?: string;
+            tier?: string;
+            /** @description VAT intracomunitário validado (VIES) */
+            vatValid?: boolean;
+        };
+        ProposalDto: {
+            id: string;
+            code: string;
+            title: string;
+            clientId: string;
+            ownerUserId: string;
+            status: string;
+            currency: string;
+            language: string;
+            validUntil: string | null;
+            createdAt: string;
+        };
+        ProposalPageDto: {
+            items: components["schemas"]["ProposalDto"][];
+            total: number;
+            page: number;
+            pageSize: number;
+        };
+        CreateProposalDto: {
+            title: string;
+            clientId: string;
+            /** @default EUR */
+            currency: string;
+            /** @default pt-PT */
+            language: string;
+            /** @description AAAA-MM-DD */
+            validUntil?: string;
+        };
+        UpdateProposalDto: {
+            title?: string;
+            language?: string;
+            validUntil?: string;
+        };
+        QuoteVersionSummaryDto: {
+            id: string;
+            versionNumber: number;
+            status: string;
+            isCurrent: boolean;
+            grandTotal: string;
+            totalTcv: string;
+            marginPercent: string | null;
+            snapshotHash: string | null;
+            createdAt: string;
+        };
+        QuoteTotalsDto: {
+            subtotal: string;
+            discountAmount: string;
+            totalTax: string;
+            grandTotal: string;
+            mrr: string;
+            tcv: string;
+            marginPercent: string | null;
+        };
+        QuoteLineResultDto: {
+            lineNumber: number;
+            productId: string;
+            productName: string;
+            quantity: string;
+            termMonths: number | null;
+            listUnitPrice: string;
+            discountPercent: string;
+            netUnitPrice: string;
+            globalDiscountAmount: string;
+            taxRatePercent: string;
+            taxRegime: string;
+            taxAmount: string;
+            lineTotal: string;
+            attributes: {
+                [key: string]: unknown;
+            } | null;
+        };
+        ViolationDto: {
+            ruleId: string | null;
+            code: string;
+            /** @enum {string} */
+            severity: "error" | "warning" | "info";
+            lineNumber: number | null;
+            message: string;
+        };
+        QuoteVersionDto: {
+            id: string;
+            proposalId: string;
+            versionNumber: number;
+            /** @enum {string} */
+            status: "DRAFT" | "LOCKED" | "SUPERSEDED";
+            isCurrent: boolean;
+            currency: string;
+            priceListId: string;
+            globalDiscountPercent: string;
+            totals: components["schemas"]["QuoteTotalsDto"];
+            lines: components["schemas"]["QuoteLineResultDto"][];
+            snapshotHash: string | null;
+            lockedAt: string | null;
+            violations: components["schemas"]["ViolationDto"][];
+        };
+        QuoteLineDto: {
+            productId: string;
+            /** @description Decimal em texto, até 3 casas */
+            quantity: string;
+            termMonths?: number;
+            discountPercent?: string;
+            attributes?: {
+                [key: string]: unknown;
+            };
+        };
+        SaveQuoteDto: {
+            channel?: string;
+            globalDiscountPercent?: string;
+            lines: components["schemas"]["QuoteLineDto"][];
+        };
+        QuotePreviewResultDto: {
+            valid: boolean;
+            priceListId: string;
+            totals: components["schemas"]["QuoteTotalsDto"];
+            lines: components["schemas"]["QuoteLineResultDto"][];
+            violations: components["schemas"]["ViolationDto"][];
+        };
+        VerifyQuoteDto: {
+            valid: boolean;
+            storedHash: string | null;
+            recomputedHash: string | null;
+        };
+        CreateProductDto: {
+            sku: string;
+            name: string;
+            description?: string;
+            /** @default UN */
+            unitOfMeasure: string;
+            /** @enum {string} */
+            billingModel: "ONE_TIME" | "RECURRING" | "USAGE_BASED" | "MILESTONE";
+            /** @enum {string} */
+            billingPeriod?: "MONTH" | "QUARTER" | "YEAR";
+            unitCost?: string;
+            /** @default EUR */
+            costCurrency: string;
+            /** @enum {string} */
+            taxCategory?: "STANDARD" | "REDUCED" | "EXEMPT" | "OUTSIDE_SCOPE";
+            isActive?: boolean;
+        };
+        UpdateProductDto: {
+            sku?: string;
+            name?: string;
+            description?: string;
+            /** @default UN */
+            unitOfMeasure: string;
+            /** @enum {string} */
+            billingModel?: "ONE_TIME" | "RECURRING" | "USAGE_BASED" | "MILESTONE";
+            /** @enum {string} */
+            billingPeriod?: "MONTH" | "QUARTER" | "YEAR";
+            unitCost?: string;
+            /** @default EUR */
+            costCurrency: string;
+            /** @enum {string} */
+            taxCategory?: "STANDARD" | "REDUCED" | "EXEMPT" | "OUTSIDE_SCOPE";
+            isActive?: boolean;
+        };
+        AttributeDto: {
+            code: string;
+            label: string;
+            /** @enum {string} */
+            dataType: "INTEGER" | "DECIMAL" | "LIST" | "BOOLEAN";
+            minValue?: string;
+            maxValue?: string;
+            stepValue?: string;
+            allowedValues?: string[];
+            isRequired?: boolean;
+            defaultValue?: string;
+        };
+        ReplaceAttributesDto: {
+            attributes: components["schemas"]["AttributeDto"][];
+        };
+        BundleItemDto: {
+            componentProductId: string;
+            isRequired?: boolean;
+            defaultQuantity?: string;
+            minQuantity?: string;
+            maxQuantity?: string;
+        };
+        ReplaceBundleDto: {
+            items: components["schemas"]["BundleItemDto"][];
+        };
+        PriceListDto: {
+            id: string;
+            name: string;
+            currency: string;
+            region: string | null;
+            channel: string | null;
+            clientTier: string | null;
+            validFrom: string;
+            validTo: string | null;
+            itemCount: number;
+        };
+        CreatePriceListDto: {
+            name: string;
+            currency: string;
+            region?: string;
+            channel?: string;
+            clientTier?: string;
+            validFrom: string;
+            validTo?: string;
+        };
+        UpdatePriceListDto: {
+            name?: string;
+            currency?: string;
+            region?: string;
+            channel?: string;
+            clientTier?: string;
+            validFrom?: string;
+            validTo?: string;
+        };
+        PriceListItemDto: {
+            productId: string;
+            /** @default 0 */
+            minQuantity: string;
+            unitPrice: string;
+        };
+        ReplacePriceListItemsDto: {
+            items: components["schemas"]["PriceListItemDto"][];
+        };
+        TaxRateDto: {
+            id: string;
+            countryCode: string;
+            taxCategory: string;
+            regime: string;
+            ratePercent: string;
+            validFrom: string;
+            validTo: string | null;
+        };
+        CreateTaxRateDto: {
+            countryCode: string;
+            /** @enum {string} */
+            taxCategory?: "STANDARD" | "REDUCED" | "EXEMPT" | "OUTSIDE_SCOPE";
+            /** @enum {string} */
+            regime: "STANDARD" | "REDUCED" | "EXEMPT" | "REVERSE_CHARGE" | "OUTSIDE_SCOPE";
+            ratePercent: string;
+            exemptionReason?: string;
+            validFrom: string;
+            validTo?: string;
+        };
+        FxRateDto: {
+            id: string;
+            baseCurrency: string;
+            quoteCurrency: string;
+            rate: string;
+            rateDate: string;
+            source: string;
+        };
+        UpsertFxRateDto: {
+            baseCurrency: string;
+            quoteCurrency: string;
+            rate: string;
+            rateDate: string;
+            source: string;
+        };
+        RuleDto: {
+            id: string;
+            sourceProductId: string;
+            targetProductId: string | null;
+            ruleType: string;
+            condition: {
+                [key: string]: unknown;
+            } | null;
+            params: {
+                [key: string]: unknown;
+            } | null;
+            priority: number;
+            message: string | null;
+            validFrom: string;
+            validTo: string | null;
+            isActive: boolean;
+        };
+        CreateRuleDto: {
+            sourceProductId: string;
+            targetProductId?: string;
+            /** @enum {string} */
+            ruleType: "REQUIRES" | "EXCLUDES" | "RECOMMENDS" | "CONSTRAINT" | "DEFAULT";
+            /** @description Condição JSONLogic */
+            condition?: {
+                [key: string]: unknown;
+            };
+            params?: {
+                [key: string]: unknown;
+            };
+            /** @default 100 */
+            priority: number;
+            message?: string;
+            validFrom: string;
+            validTo?: string;
+            isActive?: boolean;
+        };
+        UpdateRuleDto: {
+            sourceProductId?: string;
+            targetProductId?: string;
+            /** @enum {string} */
+            ruleType?: "REQUIRES" | "EXCLUDES" | "RECOMMENDS" | "CONSTRAINT" | "DEFAULT";
+            /** @description Condição JSONLogic */
+            condition?: {
+                [key: string]: unknown;
+            };
+            params?: {
+                [key: string]: unknown;
+            };
+            /** @default 100 */
+            priority: number;
+            message?: string;
+            validFrom?: string;
+            validTo?: string;
+            isActive?: boolean;
         };
     };
     responses: never;
@@ -161,6 +830,29 @@ export interface operations {
             };
         };
     };
+    createProduct: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateProductDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductDto"];
+                };
+            };
+        };
+    };
     getProduct: {
         parameters: {
             query?: never;
@@ -178,6 +870,741 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ProductDto"];
+                };
+            };
+        };
+    };
+    updateProduct: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateProductDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listClients: {
+        parameters: {
+            query?: {
+                q?: string;
+                page?: number;
+                pageSize?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ClientPageDto"];
+                };
+            };
+        };
+    };
+    createClient: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateClientDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ClientDto"];
+                };
+            };
+        };
+    };
+    getClient: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ClientDto"];
+                };
+            };
+        };
+    };
+    deleteClient: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    updateClient: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateClientDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ClientDto"];
+                };
+            };
+        };
+    };
+    listProposals: {
+        parameters: {
+            query?: {
+                q?: string;
+                status?: string;
+                clientId?: string;
+                page?: number;
+                pageSize?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProposalPageDto"];
+                };
+            };
+        };
+    };
+    createProposal: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateProposalDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProposalDto"];
+                };
+            };
+        };
+    };
+    getProposal: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProposalDto"];
+                };
+            };
+        };
+    };
+    updateProposal: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateProposalDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProposalDto"];
+                };
+            };
+        };
+    };
+    listQuoteVersions: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QuoteVersionSummaryDto"][];
+                };
+            };
+        };
+    };
+    getCurrentQuote: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QuoteVersionDto"];
+                };
+            };
+        };
+    };
+    previewQuote: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SaveQuoteDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QuotePreviewResultDto"];
+                };
+            };
+        };
+    };
+    createQuoteVersion: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QuoteVersionDto"];
+                };
+            };
+        };
+    };
+    getQuoteVersion: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                versionId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QuoteVersionDto"];
+                };
+            };
+        };
+    };
+    saveQuoteDraft: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                versionId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SaveQuoteDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QuoteVersionDto"];
+                };
+            };
+        };
+    };
+    lockQuote: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                versionId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QuoteVersionDto"];
+                };
+            };
+        };
+    };
+    verifyQuote: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                versionId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VerifyQuoteDto"];
+                };
+            };
+        };
+    };
+    replaceProductAttributes: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReplaceAttributesDto"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    replaceProductBundle: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReplaceBundleDto"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listPriceLists: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PriceListDto"][];
+                };
+            };
+        };
+    };
+    createPriceList: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreatePriceListDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PriceListDto"];
+                };
+            };
+        };
+    };
+    updatePriceList: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdatePriceListDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PriceListDto"];
+                };
+            };
+        };
+    };
+    listPriceListItems: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PriceListItemDto"][];
+                };
+            };
+        };
+    };
+    replacePriceListItems: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReplacePriceListItemsDto"];
+            };
+        };
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listTaxRates: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TaxRateDto"][];
+                };
+            };
+        };
+    };
+    createTaxRate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateTaxRateDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TaxRateDto"];
+                };
+            };
+        };
+    };
+    listFxRates: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FxRateDto"][];
+                };
+            };
+        };
+    };
+    upsertFxRate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpsertFxRateDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FxRateDto"];
+                };
+            };
+        };
+    };
+    listRules: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RuleDto"][];
+                };
+            };
+        };
+    };
+    createRule: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateRuleDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RuleDto"];
+                };
+            };
+        };
+    };
+    deactivateRule: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    updateRule: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateRuleDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RuleDto"];
                 };
             };
         };

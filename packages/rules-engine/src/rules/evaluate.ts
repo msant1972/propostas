@@ -163,3 +163,15 @@ function contextOf(line: QuoteLineInput, product?: Product) {
     productId: line.productId,
   };
 }
+
+/** Valida uma condição JSONLogic ao gravar a regra: devolve a mensagem de erro, ou null se for válida. */
+export function validateCondition(condition: unknown): string | null {
+  if (condition === null || condition === undefined) return null;
+  if (typeof condition !== 'object' || Array.isArray(condition)) return 'A condição tem de ser um objeto JSONLogic';
+  try {
+    jsonLogic.apply(condition as never, { source: {}, target: {}, quote: {}, client: {} } as never);
+    return null;
+  } catch (e) {
+    return e instanceof Error ? e.message : 'Condição inválida';
+  }
+}

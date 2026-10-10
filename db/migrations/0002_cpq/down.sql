@@ -1,0 +1,11 @@
+DROP TABLE IF EXISTS quote_items;
+DROP TABLE IF EXISTS quote_versions;
+DROP TABLE IF EXISTS proposals;
+DROP TABLE IF EXISTS cpq_rules;
+DROP TABLE IF EXISTS price_list_items;
+DROP TABLE IF EXISTS price_lists;
+DROP TABLE IF EXISTS fx_rates;
+DROP TABLE IF EXISTS tax_rates;
+DROP TABLE IF EXISTS product_bundle_items;
+DROP TABLE IF EXISTS product_attributes;
+DROP TABLE IF EXISTS clients;

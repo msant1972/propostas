@@ -11,6 +11,7 @@ const schema = z
     ENTRA_TENANT_ID: z.string().optional(),
     ENTRA_AUDIENCE: z.string().optional(),
     ENTRA_GROUP_ROLE_MAP: z.string().optional(), // JSON: {"<group-oid>": "Comercial"}
+    ISSUER_COUNTRY: z.string().length(2).default('PT'), // país da entidade emitente (determina o IVA)
     THROTTLE_LIMIT: z.coerce.number().int().default(120),
   })
   .superRefine((env, ctx) => {

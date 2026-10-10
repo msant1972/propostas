@@ -55,7 +55,18 @@ export const ModelName = {
   User: 'User',
   Product: 'Product',
   OutboxEvent: 'OutboxEvent',
-  AuditLog: 'AuditLog'
+  AuditLog: 'AuditLog',
+  Client: 'Client',
+  ProductAttribute: 'ProductAttribute',
+  ProductBundleItem: 'ProductBundleItem',
+  TaxRate: 'TaxRate',
+  FxRate: 'FxRate',
+  PriceList: 'PriceList',
+  PriceListItem: 'PriceListItem',
+  CpqRule: 'CpqRule',
+  Proposal: 'Proposal',
+  QuoteVersion: 'QuoteVersion',
+  QuoteItem: 'QuoteItem'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -145,6 +156,195 @@ export const AuditLogScalarFieldEnum = {
 export type AuditLogScalarFieldEnum = (typeof AuditLogScalarFieldEnum)[keyof typeof AuditLogScalarFieldEnum]
 
 
+export const ClientScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  name: 'name',
+  vatNumber: 'vatNumber',
+  countryCode: 'countryCode',
+  tier: 'tier',
+  vatValid: 'vatValid',
+  crmExternalId: 'crmExternalId',
+  createdAt: 'createdAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type ClientScalarFieldEnum = (typeof ClientScalarFieldEnum)[keyof typeof ClientScalarFieldEnum]
+
+
+export const ProductAttributeScalarFieldEnum = {
+  id: 'id',
+  productId: 'productId',
+  code: 'code',
+  label: 'label',
+  dataType: 'dataType',
+  minValue: 'minValue',
+  maxValue: 'maxValue',
+  stepValue: 'stepValue',
+  allowedValuesJson: 'allowedValuesJson',
+  isRequired: 'isRequired',
+  defaultValue: 'defaultValue'
+} as const
+
+export type ProductAttributeScalarFieldEnum = (typeof ProductAttributeScalarFieldEnum)[keyof typeof ProductAttributeScalarFieldEnum]
+
+
+export const ProductBundleItemScalarFieldEnum = {
+  id: 'id',
+  bundleProductId: 'bundleProductId',
+  componentProductId: 'componentProductId',
+  isRequired: 'isRequired',
+  defaultQuantity: 'defaultQuantity',
+  minQuantity: 'minQuantity',
+  maxQuantity: 'maxQuantity',
+  sortOrder: 'sortOrder'
+} as const
+
+export type ProductBundleItemScalarFieldEnum = (typeof ProductBundleItemScalarFieldEnum)[keyof typeof ProductBundleItemScalarFieldEnum]
+
+
+export const TaxRateScalarFieldEnum = {
+  id: 'id',
+  countryCode: 'countryCode',
+  taxCategory: 'taxCategory',
+  regime: 'regime',
+  ratePercent: 'ratePercent',
+  exemptionReason: 'exemptionReason',
+  validFrom: 'validFrom',
+  validTo: 'validTo'
+} as const
+
+export type TaxRateScalarFieldEnum = (typeof TaxRateScalarFieldEnum)[keyof typeof TaxRateScalarFieldEnum]
+
+
+export const FxRateScalarFieldEnum = {
+  id: 'id',
+  baseCurrency: 'baseCurrency',
+  quoteCurrency: 'quoteCurrency',
+  rate: 'rate',
+  rateDate: 'rateDate',
+  source: 'source'
+} as const
+
+export type FxRateScalarFieldEnum = (typeof FxRateScalarFieldEnum)[keyof typeof FxRateScalarFieldEnum]
+
+
+export const PriceListScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  currency: 'currency',
+  region: 'region',
+  channel: 'channel',
+  clientTier: 'clientTier',
+  validFrom: 'validFrom',
+  validTo: 'validTo'
+} as const
+
+export type PriceListScalarFieldEnum = (typeof PriceListScalarFieldEnum)[keyof typeof PriceListScalarFieldEnum]
+
+
+export const PriceListItemScalarFieldEnum = {
+  id: 'id',
+  priceListId: 'priceListId',
+  productId: 'productId',
+  minQuantity: 'minQuantity',
+  unitPrice: 'unitPrice'
+} as const
+
+export type PriceListItemScalarFieldEnum = (typeof PriceListItemScalarFieldEnum)[keyof typeof PriceListItemScalarFieldEnum]
+
+
+export const CpqRuleScalarFieldEnum = {
+  id: 'id',
+  sourceProductId: 'sourceProductId',
+  targetProductId: 'targetProductId',
+  ruleType: 'ruleType',
+  paramsJson: 'paramsJson',
+  conditionJson: 'conditionJson',
+  priority: 'priority',
+  message: 'message',
+  validFrom: 'validFrom',
+  validTo: 'validTo',
+  isActive: 'isActive'
+} as const
+
+export type CpqRuleScalarFieldEnum = (typeof CpqRuleScalarFieldEnum)[keyof typeof CpqRuleScalarFieldEnum]
+
+
+export const ProposalScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  title: 'title',
+  clientId: 'clientId',
+  ownerUserId: 'ownerUserId',
+  ownerTeamId: 'ownerTeamId',
+  region: 'region',
+  status: 'status',
+  currency: 'currency',
+  language: 'language',
+  validUntil: 'validUntil',
+  spDriveId: 'spDriveId',
+  spFolderItemId: 'spFolderItemId',
+  rowVersion: 'rowVersion',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  deletedAt: 'deletedAt'
+} as const
+
+export type ProposalScalarFieldEnum = (typeof ProposalScalarFieldEnum)[keyof typeof ProposalScalarFieldEnum]
+
+
+export const QuoteVersionScalarFieldEnum = {
+  id: 'id',
+  proposalId: 'proposalId',
+  versionNumber: 'versionNumber',
+  status: 'status',
+  isCurrent: 'isCurrent',
+  priceListId: 'priceListId',
+  currency: 'currency',
+  fxRateToEur: 'fxRateToEur',
+  subtotal: 'subtotal',
+  discountPercent: 'discountPercent',
+  discountAmount: 'discountAmount',
+  totalTax: 'totalTax',
+  grandTotal: 'grandTotal',
+  totalMrr: 'totalMrr',
+  totalTcv: 'totalTcv',
+  marginPercent: 'marginPercent',
+  snapshotJson: 'snapshotJson',
+  snapshotHash: 'snapshotHash',
+  lockedAt: 'lockedAt',
+  createdBy: 'createdBy',
+  createdAt: 'createdAt'
+} as const
+
+export type QuoteVersionScalarFieldEnum = (typeof QuoteVersionScalarFieldEnum)[keyof typeof QuoteVersionScalarFieldEnum]
+
+
+export const QuoteItemScalarFieldEnum = {
+  id: 'id',
+  quoteVersionId: 'quoteVersionId',
+  lineNumber: 'lineNumber',
+  productId: 'productId',
+  productNameSnapshot: 'productNameSnapshot',
+  attributesJson: 'attributesJson',
+  quantity: 'quantity',
+  termMonths: 'termMonths',
+  listUnitPrice: 'listUnitPrice',
+  unitCost: 'unitCost',
+  costFxRate: 'costFxRate',
+  discountPercent: 'discountPercent',
+  netUnitPrice: 'netUnitPrice',
+  globalDiscountAmount: 'globalDiscountAmount',
+  taxRatePercent: 'taxRatePercent',
+  taxRegime: 'taxRegime',
+  taxAmount: 'taxAmount',
+  lineTotal: 'lineTotal'
+} as const
+
+export type QuoteItemScalarFieldEnum = (typeof QuoteItemScalarFieldEnum)[keyof typeof QuoteItemScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -158,6 +358,14 @@ export const JsonNullValueInput = {
 } as const
 
 export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
+
+
+export const NullableJsonNullValueInput = {
+  DbNull: DbNull,
+  JsonNull: JsonNull
+} as const
+
+export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
 
 
 export const NullsOrder = {
@@ -238,4 +446,128 @@ export const AuditLogOrderByRelevanceFieldEnum = {
 } as const
 
 export type AuditLogOrderByRelevanceFieldEnum = (typeof AuditLogOrderByRelevanceFieldEnum)[keyof typeof AuditLogOrderByRelevanceFieldEnum]
+
+
+export const ClientOrderByRelevanceFieldEnum = {
+  id: 'id',
+  code: 'code',
+  name: 'name',
+  vatNumber: 'vatNumber',
+  countryCode: 'countryCode',
+  tier: 'tier',
+  crmExternalId: 'crmExternalId'
+} as const
+
+export type ClientOrderByRelevanceFieldEnum = (typeof ClientOrderByRelevanceFieldEnum)[keyof typeof ClientOrderByRelevanceFieldEnum]
+
+
+export const ProductAttributeOrderByRelevanceFieldEnum = {
+  id: 'id',
+  productId: 'productId',
+  code: 'code',
+  label: 'label',
+  defaultValue: 'defaultValue'
+} as const
+
+export type ProductAttributeOrderByRelevanceFieldEnum = (typeof ProductAttributeOrderByRelevanceFieldEnum)[keyof typeof ProductAttributeOrderByRelevanceFieldEnum]
+
+
+export const ProductBundleItemOrderByRelevanceFieldEnum = {
+  id: 'id',
+  bundleProductId: 'bundleProductId',
+  componentProductId: 'componentProductId'
+} as const
+
+export type ProductBundleItemOrderByRelevanceFieldEnum = (typeof ProductBundleItemOrderByRelevanceFieldEnum)[keyof typeof ProductBundleItemOrderByRelevanceFieldEnum]
+
+
+export const TaxRateOrderByRelevanceFieldEnum = {
+  id: 'id',
+  countryCode: 'countryCode',
+  taxCategory: 'taxCategory',
+  exemptionReason: 'exemptionReason'
+} as const
+
+export type TaxRateOrderByRelevanceFieldEnum = (typeof TaxRateOrderByRelevanceFieldEnum)[keyof typeof TaxRateOrderByRelevanceFieldEnum]
+
+
+export const FxRateOrderByRelevanceFieldEnum = {
+  id: 'id',
+  baseCurrency: 'baseCurrency',
+  quoteCurrency: 'quoteCurrency',
+  source: 'source'
+} as const
+
+export type FxRateOrderByRelevanceFieldEnum = (typeof FxRateOrderByRelevanceFieldEnum)[keyof typeof FxRateOrderByRelevanceFieldEnum]
+
+
+export const PriceListOrderByRelevanceFieldEnum = {
+  id: 'id',
+  name: 'name',
+  currency: 'currency',
+  region: 'region',
+  channel: 'channel',
+  clientTier: 'clientTier'
+} as const
+
+export type PriceListOrderByRelevanceFieldEnum = (typeof PriceListOrderByRelevanceFieldEnum)[keyof typeof PriceListOrderByRelevanceFieldEnum]
+
+
+export const PriceListItemOrderByRelevanceFieldEnum = {
+  id: 'id',
+  priceListId: 'priceListId',
+  productId: 'productId'
+} as const
+
+export type PriceListItemOrderByRelevanceFieldEnum = (typeof PriceListItemOrderByRelevanceFieldEnum)[keyof typeof PriceListItemOrderByRelevanceFieldEnum]
+
+
+export const CpqRuleOrderByRelevanceFieldEnum = {
+  id: 'id',
+  sourceProductId: 'sourceProductId',
+  targetProductId: 'targetProductId',
+  message: 'message'
+} as const
+
+export type CpqRuleOrderByRelevanceFieldEnum = (typeof CpqRuleOrderByRelevanceFieldEnum)[keyof typeof CpqRuleOrderByRelevanceFieldEnum]
+
+
+export const ProposalOrderByRelevanceFieldEnum = {
+  id: 'id',
+  code: 'code',
+  title: 'title',
+  clientId: 'clientId',
+  ownerUserId: 'ownerUserId',
+  ownerTeamId: 'ownerTeamId',
+  region: 'region',
+  currency: 'currency',
+  language: 'language',
+  spDriveId: 'spDriveId',
+  spFolderItemId: 'spFolderItemId'
+} as const
+
+export type ProposalOrderByRelevanceFieldEnum = (typeof ProposalOrderByRelevanceFieldEnum)[keyof typeof ProposalOrderByRelevanceFieldEnum]
+
+
+export const QuoteVersionOrderByRelevanceFieldEnum = {
+  id: 'id',
+  proposalId: 'proposalId',
+  priceListId: 'priceListId',
+  currency: 'currency',
+  snapshotHash: 'snapshotHash',
+  createdBy: 'createdBy'
+} as const
+
+export type QuoteVersionOrderByRelevanceFieldEnum = (typeof QuoteVersionOrderByRelevanceFieldEnum)[keyof typeof QuoteVersionOrderByRelevanceFieldEnum]
+
+
+export const QuoteItemOrderByRelevanceFieldEnum = {
+  id: 'id',
+  quoteVersionId: 'quoteVersionId',
+  productId: 'productId',
+  productNameSnapshot: 'productNameSnapshot',
+  taxRegime: 'taxRegime'
+} as const
+
+export type QuoteItemOrderByRelevanceFieldEnum = (typeof QuoteItemOrderByRelevanceFieldEnum)[keyof typeof QuoteItemOrderByRelevanceFieldEnum]
 

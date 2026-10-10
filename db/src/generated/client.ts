@@ -66,3 +66,58 @@ export type OutboxEvent = Prisma.OutboxEventModel
  * 
  */
 export type AuditLog = Prisma.AuditLogModel
+/**
+ * Model Client
+ * 
+ */
+export type Client = Prisma.ClientModel
+/**
+ * Model ProductAttribute
+ * 
+ */
+export type ProductAttribute = Prisma.ProductAttributeModel
+/**
+ * Model ProductBundleItem
+ * 
+ */
+export type ProductBundleItem = Prisma.ProductBundleItemModel
+/**
+ * Model TaxRate
+ * 
+ */
+export type TaxRate = Prisma.TaxRateModel
+/**
+ * Model FxRate
+ * 
+ */
+export type FxRate = Prisma.FxRateModel
+/**
+ * Model PriceList
+ * 
+ */
+export type PriceList = Prisma.PriceListModel
+/**
+ * Model PriceListItem
+ * 
+ */
+export type PriceListItem = Prisma.PriceListItemModel
+/**
+ * Model CpqRule
+ * 
+ */
+export type CpqRule = Prisma.CpqRuleModel
+/**
+ * Model Proposal
+ * 
+ */
+export type Proposal = Prisma.ProposalModel
+/**
+ * Model QuoteVersion
+ * 
+ */
+export type QuoteVersion = Prisma.QuoteVersionModel
+/**
+ * Model QuoteItem
+ * 
+ */
+export type QuoteItem = Prisma.QuoteItemModel

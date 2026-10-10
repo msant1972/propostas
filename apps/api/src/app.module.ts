@@ -1,9 +1,13 @@
 import { Module } from '@nestjs/common';
 import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { AdminModule } from './admin/admin.module.js';
 import { AuthGuard } from './auth/auth.guard.js';
 import { AuthModule } from './auth/auth.module.js';
 import { AuthzGuard } from './authz/authz.js';
+import { ClientsModule } from './clients/clients.module.js';
+import { CpqModule } from './cpq/cpq.module.js';
+import { ProposalsModule } from './proposals/proposals.module.js';
 import { CatalogModule } from './catalog/catalog.module.js';
 import { OutboxModule } from './outbox/outbox.module.js';
 import { PrismaModule } from './prisma/prisma.module.js';
@@ -30,6 +34,10 @@ import { HealthController } from './health.controller.js';
     OutboxModule,
     AuthModule,
     CatalogModule,
+    CpqModule,
+    ClientsModule,
+    ProposalsModule,
+    AdminModule,
   ],
   controllers: [HealthController],
   providers: [

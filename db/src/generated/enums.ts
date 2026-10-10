@@ -36,3 +36,59 @@ export const OutboxStatus = {
 } as const
 
 export type OutboxStatus = (typeof OutboxStatus)[keyof typeof OutboxStatus]
+
+
+export const AttributeDataType = {
+  INTEGER: 'INTEGER',
+  DECIMAL: 'DECIMAL',
+  LIST: 'LIST',
+  BOOLEAN: 'BOOLEAN'
+} as const
+
+export type AttributeDataType = (typeof AttributeDataType)[keyof typeof AttributeDataType]
+
+
+export const TaxRegimeDb = {
+  STANDARD: 'STANDARD',
+  REDUCED: 'REDUCED',
+  EXEMPT: 'EXEMPT',
+  REVERSE_CHARGE: 'REVERSE_CHARGE',
+  OUTSIDE_SCOPE: 'OUTSIDE_SCOPE'
+} as const
+
+export type TaxRegimeDb = (typeof TaxRegimeDb)[keyof typeof TaxRegimeDb]
+
+
+export const RuleTypeDb = {
+  REQUIRES: 'REQUIRES',
+  EXCLUDES: 'EXCLUDES',
+  RECOMMENDS: 'RECOMMENDS',
+  CONSTRAINT: 'CONSTRAINT',
+  DEFAULT: 'DEFAULT'
+} as const
+
+export type RuleTypeDb = (typeof RuleTypeDb)[keyof typeof RuleTypeDb]
+
+
+export const ProposalStatus = {
+  DRAFT: 'DRAFT',
+  IN_REVIEW: 'IN_REVIEW',
+  PENDING_APPROVAL: 'PENDING_APPROVAL',
+  APPROVED: 'APPROVED',
+  SENT: 'SENT',
+  ACCEPTED: 'ACCEPTED',
+  REJECTED: 'REJECTED',
+  EXPIRED: 'EXPIRED',
+  CANCELLED: 'CANCELLED'
+} as const
+
+export type ProposalStatus = (typeof ProposalStatus)[keyof typeof ProposalStatus]
+
+
+export const QuoteVersionStatus = {
+  DRAFT: 'DRAFT',
+  LOCKED: 'LOCKED',
+  SUPERSEDED: 'SUPERSEDED'
+} as const
+
+export type QuoteVersionStatus = (typeof QuoteVersionStatus)[keyof typeof QuoteVersionStatus]

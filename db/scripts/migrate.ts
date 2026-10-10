@@ -8,6 +8,13 @@ import mariadb from 'mariadb';
  * Executor de migrações SQL: `migrate up` aplica as pendentes, `migrate down` reverte a última.
  * Cada pasta em db/migrations tem up.sql e down.sql.
  */
+/** Um ficheiro pode conter várias instruções separadas por uma linha `-- split` (ex.: triggers). */
+async function runSql(conn: { query(sql: string): Promise<unknown> }, file: string): Promise<void> {
+  for (const part of readFileSync(file, 'utf8').split(/^-- split$/m)) {
+    if (part.trim()) await conn.query(part);
+  }
+}
+
 const dir = join(fileURLToPath(new URL('.', import.meta.url)), '..', 'migrations');
 
 export async function migrate(databaseUrl: string, direction: 'up' | 'down' = 'up'): Promise<string[]> {
@@ -32,14 +39,14 @@ export async function migrate(databaseUrl: string, direction: 'up' | 'down' = 'u
 
     if (direction === 'up') {
       for (const name of all.filter((n) => !applied.has(n))) {
-        await conn.query(readFileSync(join(dir, name, 'up.sql'), 'utf8'));
+        await runSql(conn, join(dir, name, 'up.sql'));
         await conn.query('INSERT INTO _migrations (name) VALUES (?)', [name]);
         done.push(name);
       }
     } else {
       const last = [...all].reverse().find((n) => applied.has(n));
       if (last) {
-        await conn.query(readFileSync(join(dir, last, 'down.sql'), 'utf8'));
+        await runSql(conn, join(dir, last, 'down.sql'));
         await conn.query('DELETE FROM _migrations WHERE name = ?', [last]);
         done.push(last);
       }

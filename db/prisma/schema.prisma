@@ -99,3 +99,246 @@ model AuditLog {
   @@index([entityType, entityId], map: "ix_audit_entity")
   @@map("audit_log")
 }
+
+// ---------------------------------------------------------------------------------------------
+// Fase 2 — CPQ (migrações 0002 e 0003)
+// ---------------------------------------------------------------------------------------------
+
+enum AttributeDataType {
+  INTEGER
+  DECIMAL
+  LIST
+  BOOLEAN
+}
+
+enum TaxRegimeDb {
+  STANDARD
+  REDUCED
+  EXEMPT
+  REVERSE_CHARGE
+  OUTSIDE_SCOPE
+
+  @@map("TaxRegime")
+}
+
+enum RuleTypeDb {
+  REQUIRES
+  EXCLUDES
+  RECOMMENDS
+  CONSTRAINT
+  DEFAULT
+
+  @@map("RuleType")
+}
+
+enum ProposalStatus {
+  DRAFT
+  IN_REVIEW
+  PENDING_APPROVAL
+  APPROVED
+  SENT
+  ACCEPTED
+  REJECTED
+  EXPIRED
+  CANCELLED
+}
+
+enum QuoteVersionStatus {
+  DRAFT
+  LOCKED
+  SUPERSEDED
+}
+
+model Client {
+  id            String    @id @db.Char(36)
+  code          String    @unique @db.VarChar(50)
+  name          String    @db.VarChar(255)
+  vatNumber     String?   @map("vat_number") @db.VarChar(30)
+  countryCode   String    @map("country_code") @db.Char(2)
+  tier          String?   @db.VarChar(30)
+  vatValid      Boolean   @default(false) @map("vat_valid")
+  crmExternalId String?   @unique @map("crm_external_id") @db.VarChar(100)
+  createdAt     DateTime  @default(now()) @map("created_at") @db.DateTime(6)
+  deletedAt     DateTime? @map("deleted_at") @db.DateTime(6)
+  proposals     Proposal[]
+
+  @@map("clients")
+}
+
+model ProductAttribute {
+  id                String            @id @db.Char(36)
+  productId         String            @map("product_id") @db.Char(36)
+  code              String            @db.VarChar(50)
+  label             String            @db.VarChar(100)
+  dataType          AttributeDataType @map("data_type")
+  minValue          Decimal?          @map("min_value") @db.Decimal(15, 4)
+  maxValue          Decimal?          @map("max_value") @db.Decimal(15, 4)
+  stepValue         Decimal?          @map("step_value") @db.Decimal(15, 4)
+  allowedValuesJson Json?             @map("allowed_values_json")
+  isRequired        Boolean           @default(false) @map("is_required")
+  defaultValue      String?           @map("default_value") @db.VarChar(100)
+
+  @@unique([productId, code], map: "uq_pa")
+  @@map("product_attributes")
+}
+
+model ProductBundleItem {
+  id                 String   @id @db.Char(36)
+  bundleProductId    String   @map("bundle_product_id") @db.Char(36)
+  componentProductId String   @map("component_product_id") @db.Char(36)
+  isRequired         Boolean  @default(true) @map("is_required")
+  defaultQuantity    Decimal  @default(1) @map("default_quantity") @db.Decimal(12, 3)
+  minQuantity        Decimal? @map("min_quantity") @db.Decimal(12, 3)
+  maxQuantity        Decimal? @map("max_quantity") @db.Decimal(12, 3)
+  sortOrder          Int      @default(0) @map("sort_order") @db.SmallInt
+
+  @@unique([bundleProductId, componentProductId], map: "uq_pbi")
+  @@map("product_bundle_items")
+}
+
+model TaxRate {
+  id              String      @id @db.Char(36)
+  countryCode     String      @map("country_code") @db.Char(2)
+  taxCategory     String      @default("STANDARD") @map("tax_category") @db.VarChar(30)
+  regime          TaxRegimeDb
+  ratePercent     Decimal     @map("rate_percent") @db.Decimal(5, 2)
+  exemptionReason String?     @map("exemption_reason") @db.VarChar(255)
+  validFrom       DateTime    @map("valid_from") @db.Date
+  validTo         DateTime?   @map("valid_to") @db.Date
+
+  @@unique([countryCode, taxCategory, regime, validFrom], map: "uq_tax")
+  @@map("tax_rates")
+}
+
+model FxRate {
+  id            String   @id @db.Char(36)
+  baseCurrency  String   @map("base_currency") @db.Char(3)
+  quoteCurrency String   @map("quote_currency") @db.Char(3)
+  rate          Decimal  @db.Decimal(18, 8)
+  rateDate      DateTime @map("rate_date") @db.Date
+  source        String   @db.VarChar(50)
+
+  @@unique([baseCurrency, quoteCurrency, rateDate], map: "uq_fx")
+  @@map("fx_rates")
+}
+
+model PriceList {
+  id         String          @id @db.Char(36)
+  name       String          @db.VarChar(100)
+  currency   String          @db.Char(3)
+  region     String?         @db.VarChar(50)
+  channel    String?         @db.VarChar(50)
+  clientTier String?         @map("client_tier") @db.VarChar(30)
+  validFrom  DateTime        @map("valid_from") @db.Date
+  validTo    DateTime?       @map("valid_to") @db.Date
+  items      PriceListItem[]
+
+  @@map("price_lists")
+}
+
+model PriceListItem {
+  id          String    @id @db.Char(36)
+  priceListId String    @map("price_list_id") @db.Char(36)
+  productId   String    @map("product_id") @db.Char(36)
+  minQuantity Decimal   @default(0) @map("min_quantity") @db.Decimal(12, 3)
+  unitPrice   Decimal   @map("unit_price") @db.Decimal(15, 4)
+  priceList   PriceList @relation(fields: [priceListId], references: [id])
+
+  @@unique([priceListId, productId, minQuantity], map: "uq_pli")
+  @@map("price_list_items")
+}
+
+model CpqRule {
+  id              String     @id @db.Char(36)
+  sourceProductId String     @map("source_product_id") @db.Char(36)
+  targetProductId String?    @map("target_product_id") @db.Char(36)
+  ruleType        RuleTypeDb @map("rule_type")
+  paramsJson      Json?      @map("params_json")
+  conditionJson   Json?      @map("condition_json")
+  priority        Int        @default(100) @db.SmallInt
+  message         String?    @db.VarChar(255)
+  validFrom       DateTime   @map("valid_from") @db.Date
+  validTo         DateTime?  @map("valid_to") @db.Date
+  isActive        Boolean    @default(true) @map("is_active")
+
+  @@map("cpq_rules")
+}
+
+model Proposal {
+  id              String         @id @db.Char(36)
+  code            String         @unique @db.VarChar(50)
+  title           String         @db.VarChar(255)
+  clientId        String         @map("client_id") @db.Char(36)
+  ownerUserId     String         @map("owner_user_id") @db.Char(36)
+  ownerTeamId     String?        @map("owner_team_id") @db.Char(36)
+  region          String?        @db.VarChar(50)
+  status          ProposalStatus @default(DRAFT)
+  currency        String         @default("EUR") @db.Char(3)
+  language        String         @default("pt-PT") @db.Char(5)
+  validUntil      DateTime?      @map("valid_until") @db.Date
+  spDriveId       String?        @map("sp_drive_id") @db.VarChar(255)
+  spFolderItemId  String?        @map("sp_folder_item_id") @db.VarChar(255)
+  rowVersion      Int            @default(1) @map("row_version")
+  createdAt       DateTime       @default(now()) @map("created_at") @db.DateTime(6)
+  updatedAt       DateTime       @default(now()) @updatedAt @map("updated_at") @db.DateTime(6)
+  deletedAt       DateTime?      @map("deleted_at") @db.DateTime(6)
+  client          Client         @relation(fields: [clientId], references: [id])
+  quoteVersions   QuoteVersion[]
+
+  @@index([ownerUserId, status], map: "ix_prop_owner_status")
+  @@map("proposals")
+}
+
+model QuoteVersion {
+  id             String             @id @db.Char(36)
+  proposalId     String             @map("proposal_id") @db.Char(36)
+  versionNumber  Int                @map("version_number")
+  status         QuoteVersionStatus @default(DRAFT)
+  isCurrent      Boolean            @default(true) @map("is_current")
+  priceListId    String             @map("price_list_id") @db.Char(36)
+  currency       String             @db.Char(3)
+  fxRateToEur    Decimal            @default(1) @map("fx_rate_to_eur") @db.Decimal(18, 8)
+  subtotal       Decimal            @default(0) @db.Decimal(15, 2)
+  discountPercent Decimal           @default(0) @map("discount_percent") @db.Decimal(5, 2)
+  discountAmount Decimal            @default(0) @map("discount_amount") @db.Decimal(15, 2)
+  totalTax       Decimal            @default(0) @map("total_tax") @db.Decimal(15, 2)
+  grandTotal     Decimal            @default(0) @map("grand_total") @db.Decimal(15, 2)
+  totalMrr       Decimal            @default(0) @map("total_mrr") @db.Decimal(15, 2)
+  totalTcv       Decimal            @default(0) @map("total_tcv") @db.Decimal(15, 2)
+  marginPercent  Decimal?           @map("margin_percent") @db.Decimal(6, 2)
+  snapshotJson   Json?              @map("snapshot_json")
+  snapshotHash   String?            @map("snapshot_hash") @db.Char(64)
+  lockedAt       DateTime?          @map("locked_at") @db.DateTime(6)
+  createdBy      String             @map("created_by") @db.Char(36)
+  createdAt      DateTime           @default(now()) @map("created_at") @db.DateTime(6)
+  proposal       Proposal           @relation(fields: [proposalId], references: [id])
+  items          QuoteItem[]
+
+  @@unique([proposalId, versionNumber], map: "uq_qv_number")
+  @@map("quote_versions")
+}
+
+model QuoteItem {
+  id                   String       @id @db.Char(36)
+  quoteVersionId       String       @map("quote_version_id") @db.Char(36)
+  lineNumber           Int          @map("line_number") @db.SmallInt
+  productId            String       @map("product_id") @db.Char(36)
+  productNameSnapshot  String       @map("product_name_snapshot") @db.VarChar(255)
+  attributesJson       Json?        @map("attributes_json")
+  quantity             Decimal      @db.Decimal(12, 3)
+  termMonths           Int?         @map("term_months") @db.SmallInt
+  listUnitPrice        Decimal      @map("list_unit_price") @db.Decimal(15, 4)
+  unitCost             Decimal      @map("unit_cost") @db.Decimal(15, 4)
+  costFxRate           Decimal      @default(1) @map("cost_fx_rate") @db.Decimal(18, 8)
+  discountPercent      Decimal      @default(0) @map("discount_percent") @db.Decimal(5, 2)
+  netUnitPrice         Decimal      @map("net_unit_price") @db.Decimal(15, 4)
+  globalDiscountAmount Decimal      @default(0) @map("global_discount_amount") @db.Decimal(15, 2)
+  taxRatePercent       Decimal      @map("tax_rate_percent") @db.Decimal(5, 2)
+  taxRegime            String       @default("STANDARD") @map("tax_regime") @db.VarChar(20)
+  taxAmount            Decimal      @default(0) @map("tax_amount") @db.Decimal(15, 2)
+  lineTotal            Decimal      @map("line_total") @db.Decimal(15, 2)
+  quoteVersion         QuoteVersion @relation(fields: [quoteVersionId], references: [id])
+
+  @@unique([quoteVersionId, lineNumber], map: "uq_qi_line")
+  @@map("quote_items")
+}

@@ -100,3 +100,17 @@ describe('atributos e bundles', () => {
     expect(run([{ productId: 'SUP', quantity: '4' }])).toEqual(['BUNDLE_COMPONENT_QUANTITY']);
   });
 });
+
+import { validateCondition } from './evaluate.js';
+
+describe('validateCondition', () => {
+  it('aceita condições válidas e nulas', () => {
+    expect(validateCondition(null)).toBeNull();
+    expect(validateCondition({ '>': [{ var: 'source.quantity' }, 50] })).toBeNull();
+  });
+  it('rejeita operadores desconhecidos e formatos inválidos', () => {
+    expect(validateCondition({ inventado: [1, 2] })).toMatch(/Unrecognized|inventado/i);
+    expect(validateCondition('x')).toMatch(/objeto/);
+    expect(validateCondition([1])).toMatch(/objeto/);
+  });
+});

@@ -35,3 +35,15 @@ export class AuthzGuard implements CanActivate {
     return true;
   }
 }
+
+import { createParamDecorator } from '@nestjs/common';
+
+/** Utilizador autenticado (linha de `users` + papéis); só existe em rotas com @CheckAbility. */
+export const CurrentActor = createParamDecorator((_: unknown, ctx: ExecutionContext): Actor => {
+  return ctx.switchToHttp().getRequest<ActorRequest>().actor!;
+});
+
+/** Permissões do utilizador, para verificar regras por registo depois de carregar o objeto. */
+export const CurrentAbility = createParamDecorator((_: unknown, ctx: ExecutionContext): AppAbility => {
+  return ctx.switchToHttp().getRequest<ActorRequest>().ability!;
+});

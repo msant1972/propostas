@@ -5,5 +5,5 @@ export { selectPriceList, findPriceListOverlaps, type PriceListContext } from '.
 export { applicableTax, determineRegime, EU_COUNTRIES } from './pricing/tax.js';
 export { fxRate } from './pricing/fx.js';
 export { calculateQuote } from './pricing/calculate.js';
-export { evaluateRules, type RuleEvaluation } from './rules/evaluate.js';
+export { evaluateRules, validateCondition, type RuleEvaluation } from './rules/evaluate.js';
 export { canonicalJson, snapshotHash } from './snapshot.js';

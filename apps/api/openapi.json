@@ -92,6 +92,41 @@
         "tags": [
           "catalog"
         ]
+      },
+      "post": {
+        "operationId": "createProduct",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateProductDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "",
+        "tags": [
+          "admin"
+        ]
       }
     },
     "/api/v1/catalog/products/{id}": {
@@ -127,6 +162,1298 @@
         "summary": "Detalhe de um produto",
         "tags": [
           "catalog"
+        ]
+      },
+      "patch": {
+        "operationId": "updateProduct",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProductDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/v1/clients": {
+      "get": {
+        "operationId": "listClients",
+        "parameters": [
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 20,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientPageDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "",
+        "tags": [
+          "clients"
+        ]
+      },
+      "post": {
+        "operationId": "createClient",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateClientDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "",
+        "tags": [
+          "clients"
+        ]
+      }
+    },
+    "/api/v1/clients/{id}": {
+      "get": {
+        "operationId": "getClient",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "",
+        "tags": [
+          "clients"
+        ]
+      },
+      "patch": {
+        "operationId": "updateClient",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateClientDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "",
+        "tags": [
+          "clients"
+        ]
+      },
+      "delete": {
+        "operationId": "deleteClient",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "",
+        "tags": [
+          "clients"
+        ]
+      }
+    },
+    "/api/v1/proposals": {
+      "get": {
+        "operationId": "listProposals",
+        "parameters": [
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "clientId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 20,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProposalPageDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "",
+        "tags": [
+          "proposals"
+        ]
+      },
+      "post": {
+        "operationId": "createProposal",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateProposalDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProposalDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "",
+        "tags": [
+          "proposals"
+        ]
+      }
+    },
+    "/api/v1/proposals/{id}": {
+      "get": {
+        "operationId": "getProposal",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProposalDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "",
+        "tags": [
+          "proposals"
+        ]
+      },
+      "patch": {
+        "operationId": "updateProposal",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProposalDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProposalDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "",
+        "tags": [
+          "proposals"
+        ]
+      }
+    },
+    "/api/v1/proposals/{id}/quotes": {
+      "get": {
+        "operationId": "listQuoteVersions",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/QuoteVersionSummaryDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "",
+        "tags": [
+          "proposals"
+        ]
+      }
+    },
+    "/api/v1/proposals/{id}/quotes/current": {
+      "get": {
+        "operationId": "getCurrentQuote",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuoteVersionDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "",
+        "tags": [
+          "proposals"
+        ]
+      }
+    },
+    "/api/v1/proposals/{id}/quotes/preview": {
+      "post": {
+        "operationId": "previewQuote",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveQuoteDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuotePreviewResultDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Calcula sem gravar (a UI usa o mesmo motor localmente)",
+        "tags": [
+          "proposals"
+        ]
+      }
+    },
+    "/api/v1/proposals/{id}/quotes/new-version": {
+      "post": {
+        "operationId": "createQuoteVersion",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuoteVersionDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "",
+        "tags": [
+          "proposals"
+        ]
+      }
+    },
+    "/api/v1/proposals/{id}/quotes/{versionId}": {
+      "get": {
+        "operationId": "getQuoteVersion",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "versionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuoteVersionDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "",
+        "tags": [
+          "proposals"
+        ]
+      },
+      "put": {
+        "operationId": "saveQuoteDraft",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "versionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveQuoteDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuoteVersionDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Grava o rascunho; o servidor reavalia e rejeita cotações inválidas",
+        "tags": [
+          "proposals"
+        ]
+      }
+    },
+    "/api/v1/proposals/{id}/quotes/{versionId}/lock": {
+      "post": {
+        "operationId": "lockQuote",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "versionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuoteVersionDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Bloqueia a versão e calcula o snapshot_hash",
+        "tags": [
+          "proposals"
+        ]
+      }
+    },
+    "/api/v1/proposals/{id}/quotes/{versionId}/verify": {
+      "get": {
+        "operationId": "verifyQuote",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "versionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerifyQuoteDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Recalcula o hash a partir do snapshot guardado",
+        "tags": [
+          "proposals"
+        ]
+      }
+    },
+    "/api/v1/catalog/products/{id}/attributes": {
+      "put": {
+        "operationId": "replaceProductAttributes",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReplaceAttributesDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/v1/catalog/products/{id}/bundle": {
+      "put": {
+        "operationId": "replaceProductBundle",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReplaceBundleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/v1/price-lists": {
+      "get": {
+        "operationId": "listPriceLists",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PriceListDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "",
+        "tags": [
+          "admin"
+        ]
+      },
+      "post": {
+        "operationId": "createPriceList",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePriceListDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PriceListDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/v1/price-lists/{id}": {
+      "patch": {
+        "operationId": "updatePriceList",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePriceListDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PriceListDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/v1/price-lists/{id}/items": {
+      "get": {
+        "operationId": "listPriceListItems",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PriceListItemDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "",
+        "tags": [
+          "admin"
+        ]
+      },
+      "put": {
+        "operationId": "replacePriceListItems",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReplacePriceListItemsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/v1/tax-rates": {
+      "get": {
+        "operationId": "listTaxRates",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TaxRateDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "",
+        "tags": [
+          "admin"
+        ]
+      },
+      "post": {
+        "operationId": "createTaxRate",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTaxRateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TaxRateDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/v1/fx-rates": {
+      "get": {
+        "operationId": "listFxRates",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FxRateDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "",
+        "tags": [
+          "admin"
+        ]
+      },
+      "put": {
+        "operationId": "upsertFxRate",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpsertFxRateDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FxRateDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/v1/rules": {
+      "get": {
+        "operationId": "listRules",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RuleDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "",
+        "tags": [
+          "admin"
+        ]
+      },
+      "post": {
+        "operationId": "createRule",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRuleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RuleDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/api/v1/rules/{id}": {
+      "patch": {
+        "operationId": "updateRule",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateRuleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RuleDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "",
+        "tags": [
+          "admin"
+        ]
+      },
+      "delete": {
+        "operationId": "deactivateRule",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Desativa a regra (não se apagam: os snapshots referenciam-nas)",
+        "tags": [
+          "admin"
         ]
       }
     }
@@ -225,6 +1552,1233 @@
           "page",
           "pageSize"
         ]
+      },
+      "ClientDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "vatNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "countryCode": {
+            "type": "string"
+          },
+          "tier": {
+            "type": "string",
+            "nullable": true
+          },
+          "vatValid": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "code",
+          "name",
+          "vatNumber",
+          "countryCode",
+          "tier",
+          "vatValid"
+        ]
+      },
+      "ClientPageDto": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ClientDto"
+            }
+          },
+          "total": {
+            "type": "number"
+          },
+          "page": {
+            "type": "number"
+          },
+          "pageSize": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "page",
+          "pageSize"
+        ]
+      },
+      "CreateClientDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "vatNumber": {
+            "type": "string"
+          },
+          "countryCode": {
+            "type": "string",
+            "description": "ISO 3166-1 alpha-2"
+          },
+          "tier": {
+            "type": "string"
+          },
+          "vatValid": {
+            "type": "boolean",
+            "description": "VAT intracomunitário validado (VIES)"
+          }
+        },
+        "required": [
+          "code",
+          "name",
+          "countryCode"
+        ]
+      },
+      "UpdateClientDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "vatNumber": {
+            "type": "string"
+          },
+          "countryCode": {
+            "type": "string",
+            "description": "ISO 3166-1 alpha-2"
+          },
+          "tier": {
+            "type": "string"
+          },
+          "vatValid": {
+            "type": "boolean",
+            "description": "VAT intracomunitário validado (VIES)"
+          }
+        }
+      },
+      "ProposalDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "clientId": {
+            "type": "string"
+          },
+          "ownerUserId": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string"
+          },
+          "validUntil": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "code",
+          "title",
+          "clientId",
+          "ownerUserId",
+          "status",
+          "currency",
+          "language",
+          "validUntil",
+          "createdAt"
+        ]
+      },
+      "ProposalPageDto": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProposalDto"
+            }
+          },
+          "total": {
+            "type": "number"
+          },
+          "page": {
+            "type": "number"
+          },
+          "pageSize": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "page",
+          "pageSize"
+        ]
+      },
+      "CreateProposalDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "clientId": {
+            "type": "string"
+          },
+          "currency": {
+            "type": "string",
+            "default": "EUR"
+          },
+          "language": {
+            "type": "string",
+            "default": "pt-PT"
+          },
+          "validUntil": {
+            "type": "string",
+            "description": "AAAA-MM-DD"
+          }
+        },
+        "required": [
+          "title",
+          "clientId"
+        ]
+      },
+      "UpdateProposalDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string"
+          },
+          "validUntil": {
+            "type": "string"
+          }
+        }
+      },
+      "QuoteVersionSummaryDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "versionNumber": {
+            "type": "number"
+          },
+          "status": {
+            "type": "string"
+          },
+          "isCurrent": {
+            "type": "boolean"
+          },
+          "grandTotal": {
+            "type": "string"
+          },
+          "totalTcv": {
+            "type": "string"
+          },
+          "marginPercent": {
+            "type": "string",
+            "nullable": true
+          },
+          "snapshotHash": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "versionNumber",
+          "status",
+          "isCurrent",
+          "grandTotal",
+          "totalTcv",
+          "marginPercent",
+          "snapshotHash",
+          "createdAt"
+        ]
+      },
+      "QuoteTotalsDto": {
+        "type": "object",
+        "properties": {
+          "subtotal": {
+            "type": "string"
+          },
+          "discountAmount": {
+            "type": "string"
+          },
+          "totalTax": {
+            "type": "string"
+          },
+          "grandTotal": {
+            "type": "string"
+          },
+          "mrr": {
+            "type": "string"
+          },
+          "tcv": {
+            "type": "string"
+          },
+          "marginPercent": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "subtotal",
+          "discountAmount",
+          "totalTax",
+          "grandTotal",
+          "mrr",
+          "tcv",
+          "marginPercent"
+        ]
+      },
+      "QuoteLineResultDto": {
+        "type": "object",
+        "properties": {
+          "lineNumber": {
+            "type": "number"
+          },
+          "productId": {
+            "type": "string"
+          },
+          "productName": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "string"
+          },
+          "termMonths": {
+            "type": "number",
+            "nullable": true
+          },
+          "listUnitPrice": {
+            "type": "string"
+          },
+          "discountPercent": {
+            "type": "string"
+          },
+          "netUnitPrice": {
+            "type": "string"
+          },
+          "globalDiscountAmount": {
+            "type": "string"
+          },
+          "taxRatePercent": {
+            "type": "string"
+          },
+          "taxRegime": {
+            "type": "string"
+          },
+          "taxAmount": {
+            "type": "string"
+          },
+          "lineTotal": {
+            "type": "string"
+          },
+          "attributes": {
+            "type": "object",
+            "additionalProperties": true,
+            "nullable": true
+          }
+        },
+        "required": [
+          "lineNumber",
+          "productId",
+          "productName",
+          "quantity",
+          "termMonths",
+          "listUnitPrice",
+          "discountPercent",
+          "netUnitPrice",
+          "globalDiscountAmount",
+          "taxRatePercent",
+          "taxRegime",
+          "taxAmount",
+          "lineTotal",
+          "attributes"
+        ]
+      },
+      "ViolationDto": {
+        "type": "object",
+        "properties": {
+          "ruleId": {
+            "type": "string",
+            "nullable": true
+          },
+          "code": {
+            "type": "string"
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "error",
+              "warning",
+              "info"
+            ]
+          },
+          "lineNumber": {
+            "type": "number",
+            "nullable": true
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "ruleId",
+          "code",
+          "severity",
+          "lineNumber",
+          "message"
+        ]
+      },
+      "QuoteVersionDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "proposalId": {
+            "type": "string"
+          },
+          "versionNumber": {
+            "type": "number"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "DRAFT",
+              "LOCKED",
+              "SUPERSEDED"
+            ]
+          },
+          "isCurrent": {
+            "type": "boolean"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "priceListId": {
+            "type": "string"
+          },
+          "globalDiscountPercent": {
+            "type": "string"
+          },
+          "totals": {
+            "$ref": "#/components/schemas/QuoteTotalsDto"
+          },
+          "lines": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/QuoteLineResultDto"
+            }
+          },
+          "snapshotHash": {
+            "type": "string",
+            "nullable": true
+          },
+          "lockedAt": {
+            "type": "string",
+            "nullable": true
+          },
+          "violations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ViolationDto"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "proposalId",
+          "versionNumber",
+          "status",
+          "isCurrent",
+          "currency",
+          "priceListId",
+          "globalDiscountPercent",
+          "totals",
+          "lines",
+          "snapshotHash",
+          "lockedAt",
+          "violations"
+        ]
+      },
+      "QuoteLineDto": {
+        "type": "object",
+        "properties": {
+          "productId": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "string",
+            "description": "Decimal em texto, até 3 casas"
+          },
+          "termMonths": {
+            "type": "number"
+          },
+          "discountPercent": {
+            "type": "string"
+          },
+          "attributes": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "required": [
+          "productId",
+          "quantity"
+        ]
+      },
+      "SaveQuoteDto": {
+        "type": "object",
+        "properties": {
+          "channel": {
+            "type": "string"
+          },
+          "globalDiscountPercent": {
+            "type": "string"
+          },
+          "lines": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/QuoteLineDto"
+            }
+          }
+        },
+        "required": [
+          "lines"
+        ]
+      },
+      "QuotePreviewResultDto": {
+        "type": "object",
+        "properties": {
+          "valid": {
+            "type": "boolean"
+          },
+          "priceListId": {
+            "type": "string"
+          },
+          "totals": {
+            "$ref": "#/components/schemas/QuoteTotalsDto"
+          },
+          "lines": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/QuoteLineResultDto"
+            }
+          },
+          "violations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ViolationDto"
+            }
+          }
+        },
+        "required": [
+          "valid",
+          "priceListId",
+          "totals",
+          "lines",
+          "violations"
+        ]
+      },
+      "VerifyQuoteDto": {
+        "type": "object",
+        "properties": {
+          "valid": {
+            "type": "boolean"
+          },
+          "storedHash": {
+            "type": "string",
+            "nullable": true
+          },
+          "recomputedHash": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "valid",
+          "storedHash",
+          "recomputedHash"
+        ]
+      },
+      "CreateProductDto": {
+        "type": "object",
+        "properties": {
+          "sku": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "unitOfMeasure": {
+            "type": "string",
+            "default": "UN"
+          },
+          "billingModel": {
+            "type": "string",
+            "enum": [
+              "ONE_TIME",
+              "RECURRING",
+              "USAGE_BASED",
+              "MILESTONE"
+            ]
+          },
+          "billingPeriod": {
+            "type": "string",
+            "enum": [
+              "MONTH",
+              "QUARTER",
+              "YEAR"
+            ]
+          },
+          "unitCost": {
+            "type": "string"
+          },
+          "costCurrency": {
+            "type": "string",
+            "default": "EUR"
+          },
+          "taxCategory": {
+            "type": "string",
+            "enum": [
+              "STANDARD",
+              "REDUCED",
+              "EXEMPT",
+              "OUTSIDE_SCOPE"
+            ]
+          },
+          "isActive": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "sku",
+          "name",
+          "billingModel"
+        ]
+      },
+      "UpdateProductDto": {
+        "type": "object",
+        "properties": {
+          "sku": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "unitOfMeasure": {
+            "type": "string",
+            "default": "UN"
+          },
+          "billingModel": {
+            "type": "string",
+            "enum": [
+              "ONE_TIME",
+              "RECURRING",
+              "USAGE_BASED",
+              "MILESTONE"
+            ]
+          },
+          "billingPeriod": {
+            "type": "string",
+            "enum": [
+              "MONTH",
+              "QUARTER",
+              "YEAR"
+            ]
+          },
+          "unitCost": {
+            "type": "string"
+          },
+          "costCurrency": {
+            "type": "string",
+            "default": "EUR"
+          },
+          "taxCategory": {
+            "type": "string",
+            "enum": [
+              "STANDARD",
+              "REDUCED",
+              "EXEMPT",
+              "OUTSIDE_SCOPE"
+            ]
+          },
+          "isActive": {
+            "type": "boolean"
+          }
+        }
+      },
+      "AttributeDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "dataType": {
+            "type": "string",
+            "enum": [
+              "INTEGER",
+              "DECIMAL",
+              "LIST",
+              "BOOLEAN"
+            ]
+          },
+          "minValue": {
+            "type": "string"
+          },
+          "maxValue": {
+            "type": "string"
+          },
+          "stepValue": {
+            "type": "string"
+          },
+          "allowedValues": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "isRequired": {
+            "type": "boolean"
+          },
+          "defaultValue": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "label",
+          "dataType"
+        ]
+      },
+      "ReplaceAttributesDto": {
+        "type": "object",
+        "properties": {
+          "attributes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AttributeDto"
+            }
+          }
+        },
+        "required": [
+          "attributes"
+        ]
+      },
+      "BundleItemDto": {
+        "type": "object",
+        "properties": {
+          "componentProductId": {
+            "type": "string"
+          },
+          "isRequired": {
+            "type": "boolean"
+          },
+          "defaultQuantity": {
+            "type": "string"
+          },
+          "minQuantity": {
+            "type": "string"
+          },
+          "maxQuantity": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "componentProductId"
+        ]
+      },
+      "ReplaceBundleDto": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BundleItemDto"
+            }
+          }
+        },
+        "required": [
+          "items"
+        ]
+      },
+      "PriceListDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "region": {
+            "type": "string",
+            "nullable": true
+          },
+          "channel": {
+            "type": "string",
+            "nullable": true
+          },
+          "clientTier": {
+            "type": "string",
+            "nullable": true
+          },
+          "validFrom": {
+            "type": "string"
+          },
+          "validTo": {
+            "type": "string",
+            "nullable": true
+          },
+          "itemCount": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "currency",
+          "region",
+          "channel",
+          "clientTier",
+          "validFrom",
+          "validTo",
+          "itemCount"
+        ]
+      },
+      "CreatePriceListDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "region": {
+            "type": "string"
+          },
+          "channel": {
+            "type": "string"
+          },
+          "clientTier": {
+            "type": "string"
+          },
+          "validFrom": {
+            "type": "string"
+          },
+          "validTo": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "currency",
+          "validFrom"
+        ]
+      },
+      "UpdatePriceListDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "region": {
+            "type": "string"
+          },
+          "channel": {
+            "type": "string"
+          },
+          "clientTier": {
+            "type": "string"
+          },
+          "validFrom": {
+            "type": "string"
+          },
+          "validTo": {
+            "type": "string"
+          }
+        }
+      },
+      "PriceListItemDto": {
+        "type": "object",
+        "properties": {
+          "productId": {
+            "type": "string"
+          },
+          "minQuantity": {
+            "type": "string",
+            "default": "0"
+          },
+          "unitPrice": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "productId",
+          "unitPrice"
+        ]
+      },
+      "ReplacePriceListItemsDto": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PriceListItemDto"
+            }
+          }
+        },
+        "required": [
+          "items"
+        ]
+      },
+      "TaxRateDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "countryCode": {
+            "type": "string"
+          },
+          "taxCategory": {
+            "type": "string"
+          },
+          "regime": {
+            "type": "string"
+          },
+          "ratePercent": {
+            "type": "string"
+          },
+          "validFrom": {
+            "type": "string"
+          },
+          "validTo": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "countryCode",
+          "taxCategory",
+          "regime",
+          "ratePercent",
+          "validFrom",
+          "validTo"
+        ]
+      },
+      "CreateTaxRateDto": {
+        "type": "object",
+        "properties": {
+          "countryCode": {
+            "type": "string"
+          },
+          "taxCategory": {
+            "type": "string",
+            "enum": [
+              "STANDARD",
+              "REDUCED",
+              "EXEMPT",
+              "OUTSIDE_SCOPE"
+            ]
+          },
+          "regime": {
+            "type": "string",
+            "enum": [
+              "STANDARD",
+              "REDUCED",
+              "EXEMPT",
+              "REVERSE_CHARGE",
+              "OUTSIDE_SCOPE"
+            ]
+          },
+          "ratePercent": {
+            "type": "string"
+          },
+          "exemptionReason": {
+            "type": "string"
+          },
+          "validFrom": {
+            "type": "string"
+          },
+          "validTo": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "countryCode",
+          "regime",
+          "ratePercent",
+          "validFrom"
+        ]
+      },
+      "FxRateDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "baseCurrency": {
+            "type": "string"
+          },
+          "quoteCurrency": {
+            "type": "string"
+          },
+          "rate": {
+            "type": "string"
+          },
+          "rateDate": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "baseCurrency",
+          "quoteCurrency",
+          "rate",
+          "rateDate",
+          "source"
+        ]
+      },
+      "UpsertFxRateDto": {
+        "type": "object",
+        "properties": {
+          "baseCurrency": {
+            "type": "string"
+          },
+          "quoteCurrency": {
+            "type": "string"
+          },
+          "rate": {
+            "type": "string"
+          },
+          "rateDate": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "baseCurrency",
+          "quoteCurrency",
+          "rate",
+          "rateDate",
+          "source"
+        ]
+      },
+      "RuleDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "sourceProductId": {
+            "type": "string"
+          },
+          "targetProductId": {
+            "type": "string",
+            "nullable": true
+          },
+          "ruleType": {
+            "type": "string"
+          },
+          "condition": {
+            "type": "object",
+            "additionalProperties": true,
+            "nullable": true
+          },
+          "params": {
+            "type": "object",
+            "additionalProperties": true,
+            "nullable": true
+          },
+          "priority": {
+            "type": "number"
+          },
+          "message": {
+            "type": "string",
+            "nullable": true
+          },
+          "validFrom": {
+            "type": "string"
+          },
+          "validTo": {
+            "type": "string",
+            "nullable": true
+          },
+          "isActive": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "sourceProductId",
+          "targetProductId",
+          "ruleType",
+          "condition",
+          "params",
+          "priority",
+          "message",
+          "validFrom",
+          "validTo",
+          "isActive"
+        ]
+      },
+      "CreateRuleDto": {
+        "type": "object",
+        "properties": {
+          "sourceProductId": {
+            "type": "string"
+          },
+          "targetProductId": {
+            "type": "string"
+          },
+          "ruleType": {
+            "type": "string",
+            "enum": [
+              "REQUIRES",
+              "EXCLUDES",
+              "RECOMMENDS",
+              "CONSTRAINT",
+              "DEFAULT"
+            ]
+          },
+          "condition": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "Condição JSONLogic"
+          },
+          "params": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "priority": {
+            "type": "number",
+            "default": 100
+          },
+          "message": {
+            "type": "string"
+          },
+          "validFrom": {
+            "type": "string"
+          },
+          "validTo": {
+            "type": "string"
+          },
+          "isActive": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "sourceProductId",
+          "ruleType",
+          "validFrom"
+        ]
+      },
+      "UpdateRuleDto": {
+        "type": "object",
+        "properties": {
+          "sourceProductId": {
+            "type": "string"
+          },
+          "targetProductId": {
+            "type": "string"
+          },
+          "ruleType": {
+            "type": "string",
+            "enum": [
+              "REQUIRES",
+              "EXCLUDES",
+              "RECOMMENDS",
+              "CONSTRAINT",
+              "DEFAULT"
+            ]
+          },
+          "condition": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "Condição JSONLogic"
+          },
+          "params": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "priority": {
+            "type": "number",
+            "default": 100
+          },
+          "message": {
+            "type": "string"
+          },
+          "validFrom": {
+            "type": "string"
+          },
+          "validTo": {
+            "type": "string"
+          },
+          "isActive": {
+            "type": "boolean"
+          }
+        }
       }
     }
   }

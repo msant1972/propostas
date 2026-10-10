@@ -17,16 +17,16 @@ if [ ! -d "$MARIADB_DATA/mysql" ]; then
     --auth-root-authentication-method=normal --skip-test-db >/dev/null
 fi
 
-if ! "$MARIADB_HOME/bin/mariadb-admin" --socket="$DB_SOCKET" ping >/dev/null 2>&1; then
+if ! "$MARIADB_HOME/bin/mariadb-admin" --socket="$DB_SOCKET" -uroot ping >/dev/null 2>&1; then
   echo "A arrancar a MariaDB (porta $DB_PORT) …"
   nohup "$MARIADB_HOME/bin/mariadbd" --defaults-file="$HERE/mariadb.cnf" --basedir="$MARIADB_HOME" \
     --datadir="$MARIADB_DATA" --socket="$DB_SOCKET" --port="$DB_PORT" --pid-file="$DATA/mariadb.pid" \
     >"$DATA/mariadb.log" 2>&1 &
   for _ in $(seq 1 60); do
-    "$MARIADB_HOME/bin/mariadb-admin" --socket="$DB_SOCKET" ping >/dev/null 2>&1 && break
+    "$MARIADB_HOME/bin/mariadb-admin" --socket="$DB_SOCKET" -uroot ping >/dev/null 2>&1 && break
     sleep 1
   done
-  "$MARIADB_HOME/bin/mariadb-admin" --socket="$DB_SOCKET" ping >/dev/null
+  "$MARIADB_HOME/bin/mariadb-admin" --socket="$DB_SOCKET" -uroot ping >/dev/null
 fi
 
 "$MARIADB_HOME/bin/mariadb" --socket="$DB_SOCKET" -uroot <<SQL

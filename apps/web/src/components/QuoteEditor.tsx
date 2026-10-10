@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { Fragment, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   calculateQuote, ConfigurationError, type AttributeValue, type Catalog, type ProductAttribute, type QuoteInput, type QuoteResult,
@@ -115,8 +115,8 @@ export function QuoteEditor({ catalog, currency, client, issuerCountry, state, o
             const r = result?.lines.find((x) => x.lineNumber === i + 1);
             const lineIssues = result?.violations.filter((v) => v.lineNumber === i + 1) ?? [];
             return (
-              <>
-                <tr key={`l${i}`} className="border-b border-[var(--border)] align-top">
+              <Fragment key={i}>
+                <tr className="border-b border-[var(--border)] align-top">
                   <td className="py-2">{p?.name ?? l.productId}</td>
                   <td><Input aria-label={`${t('quote.quantity')} ${i + 1}`} className="w-24" disabled={readOnly} value={l.quantity} onChange={(e) => setLine(i, { quantity: e.target.value })} /></td>
                   <td>{p?.billingModel === 'RECURRING' ? <Input aria-label={`${t('quote.term')} ${i + 1}`} className="w-20" disabled={readOnly} value={l.termMonths} onChange={(e) => setLine(i, { termMonths: e.target.value })} /> : '—'}</td>
@@ -126,7 +126,7 @@ export function QuoteEditor({ catalog, currency, client, issuerCountry, state, o
                   <td className="text-right">{!readOnly && <Button variant="ghost" onClick={() => onChange({ ...state, lines: state.lines.filter((_, n) => n !== i) })}>{t('quote.remove')}</Button>}</td>
                 </tr>
                 {(p?.attributes?.length ?? 0) > 0 && (
-                  <tr key={`a${i}`} className="border-b border-[var(--border)]">
+                  <tr className="border-b border-[var(--border)]">
                     <td colSpan={7} className="pb-2">
                       <div className="flex flex-wrap items-center gap-4 text-xs">
                         <span className="opacity-70">{t('quote.attributes')}:</span>
@@ -141,9 +141,9 @@ export function QuoteEditor({ catalog, currency, client, issuerCountry, state, o
                   </tr>
                 )}
                 {lineIssues.length > 0 && (
-                  <tr key={`v${i}`}><td colSpan={7} className="pb-2 text-xs">{lineIssues.map((v, n) => <div key={n} role={v.severity === 'error' ? 'alert' : undefined} className={v.severity === 'error' ? 'text-red-600' : 'text-amber-600'}>{v.message}</div>)}</td></tr>
+                  <tr><td colSpan={7} className="pb-2 text-xs">{lineIssues.map((v, n) => <div key={n} role={v.severity === 'error' ? 'alert' : undefined} className={v.severity === 'error' ? 'text-red-600' : 'text-amber-600'}>{v.message}</div>)}</td></tr>
                 )}
-              </>
+              </Fragment>
             );
           })}
         </tbody>

@@ -39,8 +39,10 @@ export async function resetDb(prisma: PrismaClient): Promise<void> {
   const tables = (await prisma.$queryRawUnsafe<Array<{ t: string }>>(
     "SELECT table_name AS t FROM information_schema.tables WHERE table_schema = DATABASE() AND table_type = 'BASE TABLE' AND table_name <> '_migrations'",
   )).map((r) => r.t);
-  await prisma.$executeRawUnsafe('SET FOREIGN_KEY_CHECKS = 0');
-  // Os triggers de imutabilidade só bloqueiam UPDATE/DELETE linha a linha; TRUNCATE não os dispara.
-  for (const t of tables) await prisma.$executeRawUnsafe(`TRUNCATE TABLE \`${t}\``);
-  await prisma.$executeRawUnsafe('SET FOREIGN_KEY_CHECKS = 1');
+  // O SET FOREIGN_KEY_CHECKS é por ligação: uma transação interativa fixa-nos numa só.
+  await prisma.$transaction(async (tx) => {
+    await tx.$executeRawUnsafe('SET FOREIGN_KEY_CHECKS = 0');
+    for (const t of tables) await tx.$executeRawUnsafe(`TRUNCATE TABLE \`${t}\``);
+    await tx.$executeRawUnsafe('SET FOREIGN_KEY_CHECKS = 1');
+  });
 }

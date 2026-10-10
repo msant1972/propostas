@@ -28,7 +28,7 @@ run('relay do outbox com MariaDB e Redis', () => {
   let worker: Worker<OutboxJob>;
   let relay: OutboxRelay;
   const queueName = `events-test-${uuidv7()}`;
-  const cfg = loadConfig({ DATABASE_URL: DB, OUTBOX_MAX_ATTEMPTS: '2', OUTBOX_STALE_MINUTES: '10' });
+  let cfg: ReturnType<typeof loadConfig>;
 
   const add = (eventType: string, over: Record<string, unknown> = {}) => {
     const id = uuidv7();
@@ -36,6 +36,7 @@ run('relay do outbox com MariaDB e Redis', () => {
   };
 
   beforeAll(async () => {
+    cfg = loadConfig({ DATABASE_URL: DB, OUTBOX_MAX_ATTEMPTS: '2', OUTBOX_STALE_MINUTES: '10' });
     await migrate(DB!, 'up');
     prisma = createPrisma(DB!);
     await prisma.outboxEvent.deleteMany();

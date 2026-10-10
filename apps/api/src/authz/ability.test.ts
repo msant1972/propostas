@@ -65,6 +65,8 @@ describe('visibleProposalsWhere', () => {
     expect(visibleProposalsWhere(a(['Comercial', 'Gestor_Comercial']))).toEqual({
       OR: [{ ownerUserId: 'u1' }, { ownerTeamId: 't1' }, { region: 'PT' }],
     });
+    // sem equipa, o gestor continua a ver as suas próprias propostas
+    expect(visibleProposalsWhere({ ...a(['Gestor_Comercial']), teamId: null })).toEqual({ OR: [{ ownerUserId: 'u1' }] });
   });
   it('sem papéis relevantes não vê nada', () => expect(visibleProposalsWhere(a(['Juridico']))).toEqual({ id: { in: [] } }));
 });

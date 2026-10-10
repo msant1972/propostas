@@ -57,6 +57,39 @@ async function main() {
       create: { id: uuidv7(), sku, name, billingModel, billingPeriod, unitOfMeasure, unitCost },
     });
   }
+
+  // Preços, impostos, regra e cliente de exemplo, para o ambiente de testes ser utilizável de imediato.
+  const byEmpty = await prisma.priceList.count();
+  if (byEmpty === 0) {
+    const all = await prisma.product.findMany();
+    const listId = uuidv7();
+    await prisma.priceList.create({ data: { id: listId, name: 'Geral EUR', currency: 'EUR', validFrom: new Date('2026-01-01') } });
+    const items = all.flatMap((p) => {
+      const price = (Number(p.unitCost) * 2).toFixed(4);
+      const rows = [{ id: uuidv7(), priceListId: listId, productId: p.id, minQuantity: '0', unitPrice: price }];
+      if (p.sku === 'LIC-CORE') rows.push({ id: uuidv7(), priceListId: listId, productId: p.id, minQuantity: '50', unitPrice: (Number(price) * 0.9).toFixed(4) });
+      return rows;
+    });
+    await prisma.priceListItem.createMany({ data: items });
+
+    for (const [taxCategory, regime, ratePercent] of [['STANDARD', 'STANDARD', '23.00'], ['REDUCED', 'REDUCED', '6.00']] as const) {
+      await prisma.taxRate.create({ data: { id: uuidv7(), countryCode: 'PT', taxCategory, regime, ratePercent, validFrom: new Date('2020-01-01') } });
+    }
+    await prisma.fxRate.create({ data: { id: uuidv7(), baseCurrency: 'USD', quoteCurrency: 'EUR', rate: '0.92000000', rateDate: new Date('2026-10-01'), source: 'seed' } });
+
+    const core = all.find((p) => p.sku === 'LIC-CORE')!;
+    const premium = all.find((p) => p.sku === 'SUP-PRM')!;
+    await prisma.cpqRule.create({
+      data: {
+        id: uuidv7(), sourceProductId: core.id, targetProductId: premium.id, ruleType: 'REQUIRES',
+        conditionJson: { '>': [{ var: 'source.quantity' }, 50] }, message: 'Mais de 50 licenças exige Suporte Premium',
+        validFrom: new Date('2026-01-01'),
+      },
+    });
+    await prisma.client.create({
+      data: { id: uuidv7(), code: 'CLI-001', name: 'Cliente Exemplo, Lda.', vatNumber: '500000000', countryCode: 'PT', vatValid: true },
+    });
+  }
   console.log(`seed: ${products.length} produtos, ${ROLES.length} utilizadores, 2 equipas`);
 }
 

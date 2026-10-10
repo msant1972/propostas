@@ -55,6 +55,9 @@ export function defineAbilityFor(actor: Actor): AppAbility {
   // Custos e margens: informação restrita (a aprovação por margem exige que alguém a veja).
   if (has('Gestor_Comercial') || has('Aprovador_Financeiro')) can('read', 'Cost');
 
+  if (has('Gestor_Comercial')) {
+    can(['read', 'update'], 'Proposal', { ownerUserId: actor.userId }); // um gestor também cota
+  }
   if (has('Gestor_Comercial') && actor.teamId) {
     can(['read', 'update'], 'Proposal', { ownerTeamId: actor.teamId });
     if (actor.region) can('read', 'Proposal', { region: actor.region });
@@ -80,7 +83,7 @@ export function defineAbilityFor(actor: Actor): AppAbility {
 export function visibleProposalsWhere(actor: Actor): Record<string, unknown> {
   if (actor.roles.includes('Administrador')) return {};
   const or: Record<string, unknown>[] = [];
-  if (actor.roles.includes('Comercial')) or.push({ ownerUserId: actor.userId });
+  if (actor.roles.includes('Comercial') || actor.roles.includes('Gestor_Comercial')) or.push({ ownerUserId: actor.userId });
   if (actor.roles.includes('Gestor_Comercial') && actor.teamId) {
     or.push({ ownerTeamId: actor.teamId });
     if (actor.region) or.push({ region: actor.region });

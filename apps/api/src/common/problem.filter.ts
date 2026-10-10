@@ -13,6 +13,7 @@ export class ProblemFilter implements ExceptionFilter {
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
     let detail = 'Erro interno';
     let errors: unknown;
+    let extra: Record<string, unknown> = {};
 
     if (exception instanceof HttpException) {
       status = exception.getStatus();
@@ -20,6 +21,7 @@ export class ProblemFilter implements ExceptionFilter {
       if (typeof body === 'string') detail = body;
       else {
         const b = body as { message?: string | string[] };
+        extra = Object.fromEntries(Object.entries(body).filter(([k]) => !['message', 'statusCode', 'error'].includes(k))); // ex.: violations, code
         if (Array.isArray(b.message)) {
           detail = 'Pedido inválido';
           errors = b.message;
@@ -32,6 +34,6 @@ export class ProblemFilter implements ExceptionFilter {
     res
       .status(status)
       .type('application/problem+json')
-      .json({ type: 'about:blank', title: HttpStatus[status] ?? 'Erro', status, detail, instance: req.originalUrl, ...(errors ? { errors } : {}) });
+      .json({ type: 'about:blank', title: HttpStatus[status] ?? 'Erro', status, detail, instance: req.originalUrl, ...extra, ...(errors ? { errors } : {}) });
   }
 }

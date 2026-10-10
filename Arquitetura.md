@@ -196,6 +196,8 @@ O modelo passa de 6 para 28 tabelas, todas com FKs reais. Convenções: chaves `
 | Infraestrutura | `graph_subscriptions` | Subscrições Graph, `deltaLink` e expiração | — |
 | Infraestrutura | `outbox_events` | Eventos a processar pelo worker | — |
 
+**Resultado do teste da tarefa 1.2 (MariaDB 12.3.3):** o tipo nativo `UUID` mantém a ordem temporal dos UUIDv7, o Prisma lê e escreve-o sem perdas (declarado como `CHAR(36)` no schema) e `ON UPDATE CURRENT_TIMESTAMP(6)` funciona. Mantém-se `UUID`; `BINARY(16)` não é necessário. As migrações são SQL manual, aplicadas por um executor próprio (`db/src/migrate.ts`), e o `schema.prisma` é mantido em sincronia à mão. O OpenAPI exportado pelo NestJS é 3.0 (não 3.1): o cliente TypeScript é gerado a partir dele sem diferenças práticas.
+
 ### DDL das tabelas principais
 
 ```sql

@@ -278,6 +278,9 @@ importers:
       '@cpq/api-client':
         specifier: workspace:*
         version: link:../../packages/api-client
+      '@cpq/rules-engine':
+        specifier: workspace:*
+        version: link:../../packages/rules-engine
       '@cpq/shared':
         specifier: workspace:*
         version: link:../../packages/shared

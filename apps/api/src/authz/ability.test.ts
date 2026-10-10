@@ -40,6 +40,13 @@ describe('defineAbilityFor', () => {
     expect(a.can('delete', 'AuditLog')).toBe(false);
   });
 
+  it('só gestores e aprovadores financeiros veem custos e margens', () => {
+    expect(defineAbilityFor(actor({ roles: ['Comercial'] })).can('read', 'Cost')).toBe(false);
+    expect(defineAbilityFor(actor({ roles: ['Gestor_Comercial'] })).can('read', 'Cost')).toBe(true);
+    expect(defineAbilityFor(actor({ roles: ['Aprovador_Financeiro'] })).can('read', 'Cost')).toBe(true);
+    expect(defineAbilityFor(actor({ roles: ['Administrador'] })).can('read', 'Cost')).toBe(true);
+  });
+
   it('sem papéis só se lê catálogo e clientes', () => {
     const a = defineAbilityFor(actor({ roles: [] }));
     expect(a.can('create', 'Proposal')).toBe(false);

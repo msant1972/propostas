@@ -11,6 +11,7 @@ export type Subject =
   | 'TaxRate'
   | 'FxRate'
   | 'Rule'
+  | 'Cost'
   | 'AuditLog'
   | 'User'
   | 'all';
@@ -50,6 +51,9 @@ export function defineAbilityFor(actor: Actor): AppAbility {
     can(['read', 'update'], 'Proposal', { ownerUserId: actor.userId });
     can('create', 'Client');
   }
+
+  // Custos e margens: informação restrita (a aprovação por margem exige que alguém a veja).
+  if (has('Gestor_Comercial') || has('Aprovador_Financeiro')) can('read', 'Cost');
 
   if (has('Gestor_Comercial') && actor.teamId) {
     can(['read', 'update'], 'Proposal', { ownerTeamId: actor.teamId });

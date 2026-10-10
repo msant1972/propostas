@@ -1,6 +1,13 @@
 {
-  "app": { "title": "CPQ & Propostas" },
-  "nav": { "catalog": "Catálogo", "logout": "Terminar sessão" },
+  "app": {
+    "title": "CPQ & Propostas"
+  },
+  "nav": {
+    "catalog": "Catálogo",
+    "logout": "Terminar sessão",
+    "clients": "Clientes",
+    "proposals": "Propostas"
+  },
   "login": {
     "title": "Iniciar sessão",
     "devNotice": "Modo de desenvolvimento: escolha um perfil.",
@@ -11,7 +18,10 @@
     "entra": "Entrar com Microsoft",
     "error": "Não foi possível iniciar sessão."
   },
-  "forbidden": { "title": "Acesso negado", "text": "Não tem permissão para ver esta página." },
+  "forbidden": {
+    "title": "Acesso negado",
+    "text": "Não tem permissão para ver esta página."
+  },
   "catalog": {
     "title": "Catálogo",
     "sku": "SKU",
@@ -43,5 +53,99 @@
     "Aprovador_Financeiro": "Aprovador financeiro",
     "Juridico": "Jurídico",
     "Administrador": "Administrador"
+  },
+  "common": {
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "create": "Criar",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "search": "Pesquisar",
+    "loading": "A carregar…",
+    "error": "Ocorreu um erro.",
+    "empty": "Sem resultados.",
+    "previous": "Anterior",
+    "next": "Seguinte",
+    "back": "Voltar",
+    "yes": "Sim",
+    "no": "Não"
+  },
+  "clients": {
+    "title": "Clientes",
+    "new": "Novo cliente",
+    "code": "Código",
+    "name": "Nome",
+    "vat": "NIF/VAT",
+    "country": "País",
+    "tier": "Tier",
+    "vatValid": "VAT validado",
+    "created": "Cliente criado.",
+    "saved": "Cliente guardado.",
+    "confirmDelete": "Eliminar este cliente?"
+  },
+  "proposals": {
+    "title": "Propostas",
+    "new": "Nova proposta",
+    "code": "Código",
+    "name": "Título",
+    "client": "Cliente",
+    "status": "Estado",
+    "owner": "Dono",
+    "validUntil": "Válida até",
+    "currency": "Moeda",
+    "created": "Criada em",
+    "selectClient": "Selecione um cliente"
+  },
+  "status": {
+    "DRAFT": "Rascunho",
+    "IN_REVIEW": "Em revisão",
+    "PENDING_APPROVAL": "Aguarda aprovação",
+    "APPROVED": "Aprovada",
+    "SENT": "Enviada",
+    "ACCEPTED": "Aceite",
+    "REJECTED": "Rejeitada",
+    "EXPIRED": "Expirada",
+    "CANCELLED": "Cancelada"
+  },
+  "quote": {
+    "title": "Cotação",
+    "version": "Versão {{n}}",
+    "versions": "Versões",
+    "status": {
+      "DRAFT": "Rascunho",
+      "LOCKED": "Bloqueada",
+      "SUPERSEDED": "Substituída"
+    },
+    "addLine": "Adicionar linha",
+    "product": "Produto",
+    "quantity": "Quantidade",
+    "term": "Duração (meses)",
+    "discount": "Desconto %",
+    "globalDiscount": "Desconto global %",
+    "lineTotal": "Total da linha",
+    "unitPrice": "Preço unitário",
+    "tax": "IVA",
+    "subtotal": "Subtotal",
+    "discountTotal": "Desconto",
+    "totalTax": "IVA total",
+    "grandTotal": "Total",
+    "mrr": "MRR",
+    "tcv": "Valor total do contrato",
+    "margin": "Margem",
+    "save": "Guardar rascunho",
+    "lock": "Bloquear versão",
+    "newVersion": "Nova versão",
+    "locked": "Versão bloqueada: para alterar, crie uma nova versão.",
+    "hash": "Hash do snapshot",
+    "violations": "Avisos e erros",
+    "noLines": "Adicione pelo menos uma linha.",
+    "savedOk": "Rascunho guardado.",
+    "lockedOk": "Versão bloqueada.",
+    "remove": "Remover",
+    "attributes": "Atributos",
+    "verified": "Integridade verificada",
+    "notVerified": "Integridade NÃO verificada",
+    "verify": "Verificar integridade",
+    "noCatalog": "Catálogo indisponível."
   }
 }

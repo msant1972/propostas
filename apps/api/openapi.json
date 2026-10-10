@@ -202,6 +202,33 @@
         ]
       }
     },
+    "/api/v1/cpq/catalog": {
+      "get": {
+        "operationId": "getEngineCatalog",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EngineCatalogDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "",
+        "tags": [
+          "cpq"
+        ]
+      }
+    },
     "/api/v1/clients": {
       "get": {
         "operationId": "listClients",
@@ -1551,6 +1578,53 @@
           "total",
           "page",
           "pageSize"
+        ]
+      },
+      "EngineCatalogDto": {
+        "type": "object",
+        "properties": {
+          "products": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          },
+          "priceLists": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          },
+          "taxRates": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          },
+          "fxRates": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          },
+          "rules": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          }
+        },
+        "required": [
+          "products",
+          "priceLists",
+          "taxRates",
+          "fxRates",
+          "rules"
         ]
       },
       "ClientDto": {

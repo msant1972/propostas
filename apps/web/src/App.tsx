@@ -3,6 +3,9 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { RequireAuth } from './auth/RequireAuth';
 import { Layout } from './components/Layout';
 import { CatalogPage } from './pages/CatalogPage';
+import { ClientsPage } from './pages/ClientsPage';
+import { ProposalPage } from './pages/ProposalPage';
+import { ProposalsPage } from './pages/ProposalsPage';
 import { ForbiddenPage } from './pages/ForbiddenPage';
 import { LoginPage } from './pages/LoginPage';
 import { ProductPage } from './pages/ProductPage';
@@ -25,6 +28,9 @@ export function App() {
           >
             <Route path="/catalogo" element={<CatalogPage />} />
             <Route path="/catalogo/:id" element={<ProductPage />} />
+            <Route path="/clientes" element={<ClientsPage />} />
+            <Route path="/propostas" element={<ProposalsPage />} />
+            <Route path="/propostas/:id" element={<ProposalPage />} />
           </Route>
           <Route path="*" element={<Navigate to="/catalogo" replace />} />
         </Routes>

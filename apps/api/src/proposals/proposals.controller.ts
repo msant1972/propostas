@@ -2,6 +2,7 @@ import { Body, Controller, Get, Param, ParseUUIDPipe, Patch, Post, Put, Query } 
 import { ApiBearerAuth, ApiCreatedResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import type { Actor, AppAbility } from '../authz/ability.js';
 import { CheckAbility, CurrentAbility, CurrentActor } from '../authz/authz.js';
+import { maskCost } from './mask-cost.js';
 import {
   CreateProposalDto, ListProposalsQuery, ProposalDto, ProposalPageDto, QuotePreviewResultDto, QuoteVersionDto,
   QuoteVersionSummaryDto, SaveQuoteDto, UpdateProposalDto, VerifyQuoteDto,
@@ -58,7 +59,7 @@ export class ProposalsController {
   @ApiOkResponse({ type: [QuoteVersionSummaryDto] })
   async listQuotes(@Param('id', ParseUUIDPipe) id: string, @CurrentAbility() ability: AppAbility) {
     await this.proposals.authorized(id, ability, 'read');
-    return this.quotes.list(id);
+    return maskCost(await this.quotes.list(id), ability);
   }
 
   @Get(':id/quotes/current')
@@ -67,7 +68,7 @@ export class ProposalsController {
   @ApiOkResponse({ type: QuoteVersionDto })
   async currentQuote(@Param('id', ParseUUIDPipe) id: string, @CurrentAbility() ability: AppAbility) {
     await this.proposals.authorized(id, ability, 'read');
-    return this.quotes.current(id);
+    return maskCost(await this.quotes.current(id), ability);
   }
 
   @Post(':id/quotes/preview')
@@ -75,7 +76,7 @@ export class ProposalsController {
   @ApiOperation({ operationId: 'previewQuote', summary: 'Calcula sem gravar (a UI usa o mesmo motor localmente)' })
   @ApiOkResponse({ type: QuotePreviewResultDto })
   async preview(@Param('id', ParseUUIDPipe) id: string, @CurrentAbility() ability: AppAbility, @Body() dto: SaveQuoteDto) {
-    return this.quotes.preview(await this.proposals.authorized(id, ability, 'read'), dto);
+    return maskCost(await this.quotes.preview(await this.proposals.authorized(id, ability, 'read'), dto), ability);
   }
 
   @Post(':id/quotes/new-version')
@@ -83,7 +84,7 @@ export class ProposalsController {
   @ApiOperation({ operationId: 'createQuoteVersion' })
   @ApiCreatedResponse({ type: QuoteVersionDto })
   async newVersion(@Param('id', ParseUUIDPipe) id: string, @CurrentAbility() ability: AppAbility, @CurrentActor() actor: Actor) {
-    return this.quotes.newVersion(await this.proposals.authorized(id, ability, 'update'), actor.userId);
+    return maskCost(await this.quotes.newVersion(await this.proposals.authorized(id, ability, 'update'), actor.userId), ability);
   }
 
   @Get(':id/quotes/:versionId')
@@ -92,7 +93,7 @@ export class ProposalsController {
   @ApiOkResponse({ type: QuoteVersionDto })
   async getQuote(@Param('id', ParseUUIDPipe) id: string, @Param('versionId', ParseUUIDPipe) versionId: string, @CurrentAbility() ability: AppAbility) {
     await this.proposals.authorized(id, ability, 'read');
-    return this.quotes.get(id, versionId);
+    return maskCost(await this.quotes.get(id, versionId), ability);
   }
 
   @Put(':id/quotes/:versionId')
@@ -103,7 +104,7 @@ export class ProposalsController {
     @Param('id', ParseUUIDPipe) id: string, @Param('versionId', ParseUUIDPipe) versionId: string,
     @CurrentAbility() ability: AppAbility, @Body() dto: SaveQuoteDto,
   ) {
-    return this.quotes.saveDraft(await this.proposals.authorized(id, ability, 'update'), versionId, dto);
+    return maskCost(await this.quotes.saveDraft(await this.proposals.authorized(id, ability, 'update'), versionId, dto), ability);
   }
 
   @Post(':id/quotes/:versionId/lock')
@@ -114,7 +115,7 @@ export class ProposalsController {
     @Param('id', ParseUUIDPipe) id: string, @Param('versionId', ParseUUIDPipe) versionId: string,
     @CurrentAbility() ability: AppAbility, @CurrentActor() actor: Actor,
   ) {
-    return this.quotes.lock(await this.proposals.authorized(id, ability, 'update'), versionId, actor.userId);
+    return maskCost(await this.quotes.lock(await this.proposals.authorized(id, ability, 'update'), versionId, actor.userId), ability);
   }
 
   @Get(':id/quotes/:versionId/verify')

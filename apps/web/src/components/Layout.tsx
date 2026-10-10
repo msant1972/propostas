@@ -22,6 +22,12 @@ export function Layout() {
       <header className="flex items-center justify-between border-b border-[var(--border)] px-6 py-3">
         <nav className="flex items-center gap-6">
           <span className="font-semibold">{t('app.title')}</span>
+          <Link to="/propostas" className="text-sm hover:underline">
+            {t('nav.proposals')}
+          </Link>
+          <Link to="/clientes" className="text-sm hover:underline">
+            {t('nav.clients')}
+          </Link>
           <Link to="/catalogo" className="text-sm hover:underline">
             {t('nav.catalog')}
           </Link>

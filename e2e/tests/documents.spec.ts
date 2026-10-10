@@ -13,8 +13,8 @@ test('biblioteca de conteúdos → secções → geração de DOCX e PDF → des
   await login(page, 'Administrador');
   await page.getByRole('link', { name: 'Conteúdos' }).click();
   await page.getByRole('button', { name: 'Novo bloco' }).click();
-  await page.getByLabel('Código').fill(code);
-  await page.getByLabel('Título').fill('Bloco e2e');
+  await page.getByLabel('Código', { exact: true }).fill(code);
+  await page.getByLabel('Título', { exact: true }).fill('Bloco e2e');
   await page.getByRole('textbox', { name: 'Texto' }).click();
   await page.keyboard.type('Proposta para {{cliente.nome}} válida até {{proposta.validade}}.');
   await page.getByRole('button', { name: 'Criar' }).click();
@@ -29,7 +29,7 @@ test('biblioteca de conteúdos → secções → geração de DOCX e PDF → des
   await page.getByRole('link', { name: 'Propostas' }).click();
   await page.getByRole('button', { name: 'Nova proposta' }).click();
   const title = `Documento e2e ${Date.now()}`;
-  await page.getByLabel('Título').fill(title);
+  await page.getByLabel('Título', { exact: true }).fill(title);
   await page.getByLabel('Cliente').selectOption({ label: 'Cliente Exemplo, Lda.' });
   await page.getByRole('button', { name: 'Criar' }).click();
   await page.getByLabel('Produto').selectOption({ label: 'IMP-BAS — Implementação Base' });
@@ -78,8 +78,8 @@ test('gera os documentos quando tudo está resolvido', async ({ page, request })
   await page.getByRole('button', { name: 'Gerar documento' }).click();
 
   // o worker (processo separado) gera os ficheiros; a página faz polling até aparecerem
-  await expect(page.getByRole('cell', { name: 'DOCX' })).toBeVisible({ timeout: 20_000 });
-  await expect(page.getByRole('cell', { name: 'PDF' })).toBeVisible();
+  await expect(page.getByRole('button', { name: /Descarregar.*\.docx/ })).toBeVisible({ timeout: 20_000 });
+  await expect(page.getByRole('button', { name: /Descarregar.*\.pdf/ })).toBeVisible();
 
   const [download] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name: /Descarregar.*\.pdf/ }).click()]);
   expect(download.suggestedFilename()).toMatch(/\.pdf$/);

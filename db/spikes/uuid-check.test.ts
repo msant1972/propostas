@@ -4,6 +4,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { uuidv7 } from '@cpq/shared';
 import { createPrisma } from '../src/index.js';
 import { migrate } from '../src/migrate.js';
+import { testDatabase } from '../src/testing.js';
 
 /**
  * Teste decisivo da tarefa 1.2 (ver Planeamento.md): o tipo nativo UUID da MariaDB serve para UUIDv7?
@@ -12,21 +13,24 @@ import { migrate } from '../src/migrate.js';
  *  3. DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6) funciona.
  * Se algum falhar, passa-se a BINARY(16) (ver Arquitetura.md).
  */
-const url = process.env['TEST_DATABASE_URL'];
-const run = describe.skipIf(!url);
+const base = process.env['TEST_DATABASE_URL'];
+const run = describe.skipIf(!base);
+let url: string;
 
 run('compatibilidade UUID/UUIDv7 e timestamps na MariaDB', () => {
   let conn: mariadb.Connection;
-  const prisma = url ? createPrisma(url) : undefined!;
+  let prisma: ReturnType<typeof createPrisma>;
 
   beforeAll(async () => {
-    const u = new URL(url!);
+    url = await testDatabase(base!, 'db');
+    prisma = createPrisma(url);
+    const u = new URL(url);
     conn = await mariadb.createConnection({
       host: u.hostname, port: Number(u.port || 3306), user: decodeURIComponent(u.username),
       password: decodeURIComponent(u.password), database: u.pathname.slice(1),
     });
     await conn.query("SET time_zone = '+00:00'");
-    await migrate(url!, 'up');
+    await migrate(url, 'up');
     await conn.query('DROP TABLE IF EXISTS spike_uuid');
     await conn.query('CREATE TABLE spike_uuid (id UUID PRIMARY KEY, n INT NOT NULL)');
   });

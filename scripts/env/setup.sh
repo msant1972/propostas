@@ -36,6 +36,7 @@ CREATE USER IF NOT EXISTS 'cpq'@'127.0.0.1' IDENTIFIED BY 'cpq';
 CREATE USER IF NOT EXISTS 'cpq'@'localhost' IDENTIFIED BY 'cpq';
 GRANT ALL PRIVILEGES ON cpq_dev.*  TO 'cpq'@'127.0.0.1', 'cpq'@'localhost';
 GRANT ALL PRIVILEGES ON cpq_test.* TO 'cpq'@'127.0.0.1', 'cpq'@'localhost';
+GRANT ALL PRIVILEGES ON \`cpq\\_test\\_%\`.* TO 'cpq'@'127.0.0.1', 'cpq'@'localhost';
 SQL
 
 # --- Redis ---------------------------------------------------------------------------------------

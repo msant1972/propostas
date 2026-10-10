@@ -2,7 +2,7 @@ import 'reflect-metadata';
 import { Test } from '@nestjs/testing';
 import type { INestApplication } from '@nestjs/common';
 import request from 'supertest';
-import { createPrisma, type PrismaClient } from '@cpq/db';
+import { createPrisma, migrate, testDatabase, type PrismaClient } from '@cpq/db';
 import { DEV_USER_OIDS, type Role } from '@cpq/shared';
 import { AppModule } from '../src/app.module.js';
 import { configureApp } from '../src/setup.js';
@@ -18,14 +18,16 @@ export interface Harness {
 }
 
 export async function boot(): Promise<Harness> {
-  process.env['DATABASE_URL'] = TEST_DB!;
+  const url = await testDatabase(TEST_DB!, 'api');
+  await migrate(url, 'up');
+  process.env['DATABASE_URL'] = url;
   process.env['AUTH_MODE'] = 'dev';
   process.env['THROTTLE_LIMIT'] = '100000';
   const mod = await Test.createTestingModule({ imports: [AppModule] }).compile();
   const app = mod.createNestApplication();
   configureApp(app);
   await app.init();
-  const prisma = createPrisma(TEST_DB!);
+  const prisma = createPrisma(url);
   const http = () => request(app.getHttpServer());
   const token = async (role: Role, oid = DEV_USER_OIDS[role]) => {
     const r = await http().post('/api/v1/dev/token').send({ oid, email: `${oid}@x.pt`, name: `U ${role}`, roles: [role] }).expect(201);

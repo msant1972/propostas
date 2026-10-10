@@ -18,8 +18,6 @@ run('conteúdos, secções e documentos', () => {
 
   beforeAll(async () => {
     process.env['DOCUMENT_STORAGE_DIR'] = await mkdtemp(join(tmpdir(), 'api-docs-'));
-    const { migrate } = await import('@cpq/db');
-    await migrate(TEST_DB!, 'up');
     h = await boot();
     await resetDb(h.prisma);
     repo = new LocalDocumentRepository(process.env['DOCUMENT_STORAGE_DIR']!);

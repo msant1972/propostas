@@ -2,7 +2,7 @@ import 'reflect-metadata';
 import { Queue, Worker } from 'bullmq';
 import { Redis } from 'ioredis';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { createPrisma, migrate, type PrismaClient } from '@cpq/db';
+import { createPrisma, migrate, testDatabase, type PrismaClient } from '@cpq/db';
 import { uuidv7 } from '@cpq/shared';
 import { loadConfig } from '../src/config.js';
 import { dispatch, type OutboxJob } from '../src/queues/handlers.js';
@@ -36,9 +36,10 @@ run('relay do outbox com MariaDB e Redis', () => {
   };
 
   beforeAll(async () => {
-    cfg = loadConfig({ DATABASE_URL: DB, OUTBOX_MAX_ATTEMPTS: '2', OUTBOX_STALE_MINUTES: '10' });
-    await migrate(DB!, 'up');
-    prisma = createPrisma(DB!);
+    const url = await testDatabase(DB!, 'worker');
+    cfg = loadConfig({ DATABASE_URL: url, OUTBOX_MAX_ATTEMPTS: '2', OUTBOX_STALE_MINUTES: '10' });
+    await migrate(url, 'up');
+    prisma = createPrisma(url);
     await prisma.outboxEvent.deleteMany();
     redis = new Redis(REDIS!, { maxRetriesPerRequest: null });
     queue = new Queue<OutboxJob>(queueName, { connection: redis });

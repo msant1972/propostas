@@ -37,6 +37,8 @@ export async function migrate(databaseUrl: string, direction: 'up' | 'down' = 'u
   });
   try {
     await conn.query("SET time_zone = '+00:00'");
+    // Uma só execução de cada vez por base de dados (suites e instâncias a arrancar em simultâneo).
+    await conn.query("SELECT GET_LOCK('cpq_migrate', 120)");
     await conn.query(
       'CREATE TABLE IF NOT EXISTS _migrations (name VARCHAR(100) PRIMARY KEY, applied_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6))',
     );
@@ -60,6 +62,7 @@ export async function migrate(databaseUrl: string, direction: 'up' | 'down' = 'u
     }
     return done;
   } finally {
+    await conn.query("SELECT RELEASE_LOCK('cpq_migrate')").catch(() => undefined);
     await conn.end();
   }
 }

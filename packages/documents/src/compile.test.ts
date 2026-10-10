@@ -2,7 +2,7 @@ import { mkdtemp, readFile, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { createPrisma, migrate, type PrismaClient } from '@cpq/db';
+import { createPrisma, migrate, testDatabase, type PrismaClient } from '@cpq/db';
 import { uuidv7 } from '@cpq/shared';
 import { compileProposal, CompileError, detectManualEdits, validateProposal } from './compile.js';
 import { LocalDocumentRepository, safeSegment } from './repository.js';
@@ -40,8 +40,9 @@ run('compileProposal com MariaDB', () => {
   const ids = { user: uuidv7(), client: uuidv7(), proposal: uuidv7(), version: uuidv7(), pl: uuidv7(), prod: uuidv7() };
 
   beforeAll(async () => {
-    await migrate(DB!, 'up');
-    prisma = createPrisma(DB!);
+    const url = await testDatabase(DB!, 'documents');
+    await migrate(url, 'up');
+    prisma = createPrisma(url);
     root = await mkdtemp(join(tmpdir(), 'docs-'));
     repo = new LocalDocumentRepository(root);
     await prisma.$transaction(async (tx) => {

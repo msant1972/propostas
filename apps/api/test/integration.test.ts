@@ -10,8 +10,6 @@ run('integração com MariaDB', () => {
   const ids: Record<string, string> = {};
 
   beforeAll(async () => {
-    const { migrate } = await import('@cpq/db');
-    await migrate(TEST_DB!, 'up');
     h = await boot();
     await resetDb(h.prisma);
   });

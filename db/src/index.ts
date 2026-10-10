@@ -20,3 +20,4 @@ export function createPrisma(databaseUrl: string): PrismaClient {
 }
 
 export { migrate } from './migrate.js';
+export { testDatabase } from './testing.js';

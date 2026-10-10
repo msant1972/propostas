@@ -13,7 +13,7 @@ import type {
   QuotePreviewResultDto, QuoteVersionDto, QuoteVersionSummaryDto, SaveQuoteDto, VerifyQuoteDto,
 } from './proposals.dto.js';
 
-type ProposalRow = { id: string; clientId: string; currency: string; region: string | null };
+type ProposalRow = { id: string; clientId: string; currency: string; region: string | null; status?: string };
 type ClientRow = { countryCode: string; tier: string | null; vatNumber: string | null; vatValid: boolean };
 
 const today = () => new Date().toISOString().slice(0, 10);
@@ -212,6 +212,11 @@ export class QuotesService {
     }
   }
 
+  /** A cotação só se altera/bloqueia nos estados que o workflow permite (a proposta não pode mudar a meio da revisão). */
+  private assertProposalEditable(p: ProposalRow, allowed: string[]): void {
+    if (p.status && !allowed.includes(p.status)) throw new ConflictException('A proposta não está num estado que permita alterar a cotação');
+  }
+
   private async draft(proposalId: string, versionId: string) {
     const v = await this.prisma.quoteVersion.findFirst({ where: { id: versionId, proposalId } });
     if (!v) throw new NotFoundException('Versão de cotação não encontrada');
@@ -221,6 +226,7 @@ export class QuotesService {
 
   /** Grava um rascunho: o servidor reavalia sempre e rejeita configurações inválidas. */
   async saveDraft(p: ProposalRow, versionId: string, dto: SaveQuoteDto): Promise<QuoteVersionDto> {
+    this.assertProposalEditable(p, ['DRAFT']);
     await this.draft(p.id, versionId);
     const { input, result, catalog } = await this.compute(p, dto);
     this.rejectInvalid(result);
@@ -229,7 +235,8 @@ export class QuotesService {
   }
 
   /** Bloqueia a versão: recalcula, congela o snapshot e o hash. Depois disto, só uma nova versão pode mudar. */
-  async lock(p: ProposalRow, versionId: string, actorUserId: string): Promise<QuoteVersionDto> {
+  async lock(p: ProposalRow, versionId: string, actorUserId: string, allowedStatuses: string[] = ['DRAFT']): Promise<QuoteVersionDto> {
+    this.assertProposalEditable(p, allowedStatuses);
     const v = await this.draft(p.id, versionId);
     const items = await this.prisma.quoteItem.findMany({ where: { quoteVersionId: versionId }, orderBy: { lineNumber: 'asc' } });
     if (items.length === 0) throw new UnprocessableEntityException('A cotação não tem linhas');

@@ -32,6 +32,7 @@ export type UserMinAggregateOutputType = {
   teamId: string | null
   region: string | null
   isActive: boolean | null
+  lastSeenAt: Date | null
 }
 
 export type UserMaxAggregateOutputType = {
@@ -42,6 +43,7 @@ export type UserMaxAggregateOutputType = {
   teamId: string | null
   region: string | null
   isActive: boolean | null
+  lastSeenAt: Date | null
 }
 
 export type UserCountAggregateOutputType = {
@@ -52,6 +54,8 @@ export type UserCountAggregateOutputType = {
   teamId: number
   region: number
   isActive: number
+  rolesJson: number
+  lastSeenAt: number
   _all: number
 }
 
@@ -64,6 +68,7 @@ export type UserMinAggregateInputType = {
   teamId?: true
   region?: true
   isActive?: true
+  lastSeenAt?: true
 }
 
 export type UserMaxAggregateInputType = {
@@ -74,6 +79,7 @@ export type UserMaxAggregateInputType = {
   teamId?: true
   region?: true
   isActive?: true
+  lastSeenAt?: true
 }
 
 export type UserCountAggregateInputType = {
@@ -84,6 +90,8 @@ export type UserCountAggregateInputType = {
   teamId?: true
   region?: true
   isActive?: true
+  rolesJson?: true
+  lastSeenAt?: true
   _all?: true
 }
 
@@ -167,6 +175,8 @@ export type UserGroupByOutputType = {
   teamId: string | null
   region: string | null
   isActive: boolean
+  rolesJson: runtime.JsonValue | null
+  lastSeenAt: Date | null
   _count: UserCountAggregateOutputType | null
   _min: UserMinAggregateOutputType | null
   _max: UserMaxAggregateOutputType | null
@@ -198,6 +208,8 @@ export type UserWhereInput = {
   teamId?: Prisma.StringNullableFilter<"User"> | string | null
   region?: Prisma.StringNullableFilter<"User"> | string | null
   isActive?: Prisma.BoolFilter<"User"> | boolean
+  rolesJson?: Prisma.JsonNullableFilter<"User">
+  lastSeenAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   team?: Prisma.XOR<Prisma.TeamNullableScalarRelationFilter, Prisma.TeamWhereInput> | null
 }
 
@@ -209,6 +221,8 @@ export type UserOrderByWithRelationInput = {
   teamId?: Prisma.SortOrderInput | Prisma.SortOrder
   region?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  rolesJson?: Prisma.SortOrderInput | Prisma.SortOrder
+  lastSeenAt?: Prisma.SortOrderInput | Prisma.SortOrder
   team?: Prisma.TeamOrderByWithRelationInput
   _relevance?: Prisma.UserOrderByRelevanceInput
 }
@@ -224,6 +238,8 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   teamId?: Prisma.StringNullableFilter<"User"> | string | null
   region?: Prisma.StringNullableFilter<"User"> | string | null
   isActive?: Prisma.BoolFilter<"User"> | boolean
+  rolesJson?: Prisma.JsonNullableFilter<"User">
+  lastSeenAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   team?: Prisma.XOR<Prisma.TeamNullableScalarRelationFilter, Prisma.TeamWhereInput> | null
 }, "id" | "entraOid">
 
@@ -235,6 +251,8 @@ export type UserOrderByWithAggregationInput = {
   teamId?: Prisma.SortOrderInput | Prisma.SortOrder
   region?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  rolesJson?: Prisma.SortOrderInput | Prisma.SortOrder
+  lastSeenAt?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
   _max?: Prisma.UserMaxOrderByAggregateInput
   _min?: Prisma.UserMinOrderByAggregateInput
@@ -251,6 +269,8 @@ export type UserScalarWhereWithAggregatesInput = {
   teamId?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   region?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   isActive?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
+  rolesJson?: Prisma.JsonNullableWithAggregatesFilter<"User">
+  lastSeenAt?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
 }
 
 export type UserCreateInput = {
@@ -260,6 +280,8 @@ export type UserCreateInput = {
   displayName: string
   region?: string | null
   isActive?: boolean
+  rolesJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  lastSeenAt?: Date | string | null
   team?: Prisma.TeamCreateNestedOneWithoutUsersInput
 }
 
@@ -271,6 +293,8 @@ export type UserUncheckedCreateInput = {
   teamId?: string | null
   region?: string | null
   isActive?: boolean
+  rolesJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  lastSeenAt?: Date | string | null
 }
 
 export type UserUpdateInput = {
@@ -280,6 +304,8 @@ export type UserUpdateInput = {
   displayName?: Prisma.StringFieldUpdateOperationsInput | string
   region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  rolesJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   team?: Prisma.TeamUpdateOneWithoutUsersNestedInput
 }
 
@@ -291,6 +317,8 @@ export type UserUncheckedUpdateInput = {
   teamId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  rolesJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type UserCreateManyInput = {
@@ -301,6 +329,8 @@ export type UserCreateManyInput = {
   teamId?: string | null
   region?: string | null
   isActive?: boolean
+  rolesJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  lastSeenAt?: Date | string | null
 }
 
 export type UserUpdateManyMutationInput = {
@@ -310,6 +340,8 @@ export type UserUpdateManyMutationInput = {
   displayName?: Prisma.StringFieldUpdateOperationsInput | string
   region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  rolesJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type UserUncheckedUpdateManyInput = {
@@ -320,6 +352,8 @@ export type UserUncheckedUpdateManyInput = {
   teamId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  rolesJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type UserListRelationFilter = {
@@ -346,6 +380,8 @@ export type UserCountOrderByAggregateInput = {
   teamId?: Prisma.SortOrder
   region?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  rolesJson?: Prisma.SortOrder
+  lastSeenAt?: Prisma.SortOrder
 }
 
 export type UserMaxOrderByAggregateInput = {
@@ -356,6 +392,7 @@ export type UserMaxOrderByAggregateInput = {
   teamId?: Prisma.SortOrder
   region?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  lastSeenAt?: Prisma.SortOrder
 }
 
 export type UserMinOrderByAggregateInput = {
@@ -366,6 +403,7 @@ export type UserMinOrderByAggregateInput = {
   teamId?: Prisma.SortOrder
   region?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  lastSeenAt?: Prisma.SortOrder
 }
 
 export type UserCreateNestedManyWithoutTeamInput = {
@@ -414,6 +452,10 @@ export type BoolFieldUpdateOperationsInput = {
   set?: boolean
 }
 
+export type NullableDateTimeFieldUpdateOperationsInput = {
+  set?: Date | string | null
+}
+
 export type UserCreateWithoutTeamInput = {
   id: string
   entraOid: string
@@ -421,6 +463,8 @@ export type UserCreateWithoutTeamInput = {
   displayName: string
   region?: string | null
   isActive?: boolean
+  rolesJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  lastSeenAt?: Date | string | null
 }
 
 export type UserUncheckedCreateWithoutTeamInput = {
@@ -430,6 +474,8 @@ export type UserUncheckedCreateWithoutTeamInput = {
   displayName: string
   region?: string | null
   isActive?: boolean
+  rolesJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  lastSeenAt?: Date | string | null
 }
 
 export type UserCreateOrConnectWithoutTeamInput = {
@@ -469,6 +515,8 @@ export type UserScalarWhereInput = {
   teamId?: Prisma.StringNullableFilter<"User"> | string | null
   region?: Prisma.StringNullableFilter<"User"> | string | null
   isActive?: Prisma.BoolFilter<"User"> | boolean
+  rolesJson?: Prisma.JsonNullableFilter<"User">
+  lastSeenAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
 }
 
 export type UserCreateManyTeamInput = {
@@ -478,6 +526,8 @@ export type UserCreateManyTeamInput = {
   displayName: string
   region?: string | null
   isActive?: boolean
+  rolesJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  lastSeenAt?: Date | string | null
 }
 
 export type UserUpdateWithoutTeamInput = {
@@ -487,6 +537,8 @@ export type UserUpdateWithoutTeamInput = {
   displayName?: Prisma.StringFieldUpdateOperationsInput | string
   region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  rolesJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type UserUncheckedUpdateWithoutTeamInput = {
@@ -496,6 +548,8 @@ export type UserUncheckedUpdateWithoutTeamInput = {
   displayName?: Prisma.StringFieldUpdateOperationsInput | string
   region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  rolesJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type UserUncheckedUpdateManyWithoutTeamInput = {
@@ -505,6 +559,8 @@ export type UserUncheckedUpdateManyWithoutTeamInput = {
   displayName?: Prisma.StringFieldUpdateOperationsInput | string
   region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  rolesJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 
@@ -517,6 +573,8 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   teamId?: boolean
   region?: boolean
   isActive?: boolean
+  rolesJson?: boolean
+  lastSeenAt?: boolean
   team?: boolean | Prisma.User$teamArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -530,9 +588,11 @@ export type UserSelectScalar = {
   teamId?: boolean
   region?: boolean
   isActive?: boolean
+  rolesJson?: boolean
+  lastSeenAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "entraOid" | "email" | "displayName" | "teamId" | "region" | "isActive", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "entraOid" | "email" | "displayName" | "teamId" | "region" | "isActive" | "rolesJson" | "lastSeenAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   team?: boolean | Prisma.User$teamArgs<ExtArgs>
 }
@@ -550,6 +610,8 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     teamId: string | null
     region: string | null
     isActive: boolean
+    rolesJson: runtime.JsonValue | null
+    lastSeenAt: Date | null
   }, ExtArgs["result"]["user"]>
   composites: {}
 }
@@ -927,6 +989,8 @@ export interface UserFieldRefs {
   readonly teamId: Prisma.FieldRef<"User", 'String'>
   readonly region: Prisma.FieldRef<"User", 'String'>
   readonly isActive: Prisma.FieldRef<"User", 'Boolean'>
+  readonly rolesJson: Prisma.FieldRef<"User", 'Json'>
+  readonly lastSeenAt: Prisma.FieldRef<"User", 'DateTime'>
 }
     
 

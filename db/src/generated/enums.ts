@@ -129,3 +129,40 @@ export const DocumentFolder = {
 } as const
 
 export type DocumentFolder = (typeof DocumentFolder)[keyof typeof DocumentFolder]
+
+
+export const ApprovalScope = {
+  COMMERCIAL: 'COMMERCIAL',
+  LEGAL: 'LEGAL'
+} as const
+
+export type ApprovalScope = (typeof ApprovalScope)[keyof typeof ApprovalScope]
+
+
+export const ApprovalMode = {
+  SEQUENTIAL: 'SEQUENTIAL',
+  PARALLEL: 'PARALLEL'
+} as const
+
+export type ApprovalMode = (typeof ApprovalMode)[keyof typeof ApprovalMode]
+
+
+export const ApprovalRequestStatus = {
+  OPEN: 'OPEN',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED',
+  RETURNED: 'RETURNED',
+  CANCELLED: 'CANCELLED',
+  SUPERSEDED: 'SUPERSEDED'
+} as const
+
+export type ApprovalRequestStatus = (typeof ApprovalRequestStatus)[keyof typeof ApprovalRequestStatus]
+
+
+export const ApprovalDecisionKind = {
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED',
+  RETURNED: 'RETURNED'
+} as const
+
+export type ApprovalDecisionKind = (typeof ApprovalDecisionKind)[keyof typeof ApprovalDecisionKind]

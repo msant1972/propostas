@@ -74,7 +74,7 @@ export class DocumentsService {
     const d = await this.prisma.document.create({
       data: {
         id: uuidv7(), proposalId: proposal.id, quoteVersionId: origin?.quoteVersionId, kind, origin: 'MANUALLY_EDITED', folder: 'F01_TRABALHO',
-        fileName, storageKey: stored.storageKey, sha256: stored.sha256, sizeBytes: stored.sizeBytes, generatedFrom: origin?.id, createdBy: actorUserId,
+        fileName, storageKey: stored.storageKey, sha256: stored.sha256, sizeBytes: stored.sizeBytes, generatedFrom: origin?.id, sourceFingerprint: origin?.sourceFingerprint, createdBy: actorUserId,
       },
     });
     return toDto(d);

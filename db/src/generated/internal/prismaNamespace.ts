@@ -419,7 +419,11 @@ export const ModelName = {
   ContentBlockTag: 'ContentBlockTag',
   ProposalSection: 'ProposalSection',
   SectionDocument: 'SectionDocument',
-  Document: 'Document'
+  Document: 'Document',
+  ApprovalPolicy: 'ApprovalPolicy',
+  ApprovalRequest: 'ApprovalRequest',
+  ApprovalDecision: 'ApprovalDecision',
+  ApprovalDelegation: 'ApprovalDelegation'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -435,7 +439,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "team" | "user" | "product" | "outboxEvent" | "auditLog" | "client" | "productAttribute" | "productBundleItem" | "taxRate" | "fxRate" | "priceList" | "priceListItem" | "cpqRule" | "proposal" | "quoteVersion" | "quoteItem" | "contentBlock" | "contentBlockVersion" | "tag" | "contentBlockTag" | "proposalSection" | "sectionDocument" | "document"
+    modelProps: "team" | "user" | "product" | "outboxEvent" | "auditLog" | "client" | "productAttribute" | "productBundleItem" | "taxRate" | "fxRate" | "priceList" | "priceListItem" | "cpqRule" | "proposal" | "quoteVersion" | "quoteItem" | "contentBlock" | "contentBlockVersion" | "tag" | "contentBlockTag" | "proposalSection" | "sectionDocument" | "document" | "approvalPolicy" | "approvalRequest" | "approvalDecision" | "approvalDelegation"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1957,6 +1961,270 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ApprovalPolicy: {
+      payload: Prisma.$ApprovalPolicyPayload<ExtArgs>
+      fields: Prisma.ApprovalPolicyFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ApprovalPolicyFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApprovalPolicyPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ApprovalPolicyFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApprovalPolicyPayload>
+        }
+        findFirst: {
+          args: Prisma.ApprovalPolicyFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApprovalPolicyPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ApprovalPolicyFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApprovalPolicyPayload>
+        }
+        findMany: {
+          args: Prisma.ApprovalPolicyFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApprovalPolicyPayload>[]
+        }
+        create: {
+          args: Prisma.ApprovalPolicyCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApprovalPolicyPayload>
+        }
+        createMany: {
+          args: Prisma.ApprovalPolicyCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.ApprovalPolicyDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApprovalPolicyPayload>
+        }
+        update: {
+          args: Prisma.ApprovalPolicyUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApprovalPolicyPayload>
+        }
+        deleteMany: {
+          args: Prisma.ApprovalPolicyDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ApprovalPolicyUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.ApprovalPolicyUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApprovalPolicyPayload>
+        }
+        aggregate: {
+          args: Prisma.ApprovalPolicyAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateApprovalPolicy>
+        }
+        groupBy: {
+          args: Prisma.ApprovalPolicyGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ApprovalPolicyGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ApprovalPolicyCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ApprovalPolicyCountAggregateOutputType> | number
+        }
+      }
+    }
+    ApprovalRequest: {
+      payload: Prisma.$ApprovalRequestPayload<ExtArgs>
+      fields: Prisma.ApprovalRequestFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ApprovalRequestFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApprovalRequestPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ApprovalRequestFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApprovalRequestPayload>
+        }
+        findFirst: {
+          args: Prisma.ApprovalRequestFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApprovalRequestPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ApprovalRequestFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApprovalRequestPayload>
+        }
+        findMany: {
+          args: Prisma.ApprovalRequestFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApprovalRequestPayload>[]
+        }
+        create: {
+          args: Prisma.ApprovalRequestCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApprovalRequestPayload>
+        }
+        createMany: {
+          args: Prisma.ApprovalRequestCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.ApprovalRequestDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApprovalRequestPayload>
+        }
+        update: {
+          args: Prisma.ApprovalRequestUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApprovalRequestPayload>
+        }
+        deleteMany: {
+          args: Prisma.ApprovalRequestDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ApprovalRequestUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.ApprovalRequestUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApprovalRequestPayload>
+        }
+        aggregate: {
+          args: Prisma.ApprovalRequestAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateApprovalRequest>
+        }
+        groupBy: {
+          args: Prisma.ApprovalRequestGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ApprovalRequestGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ApprovalRequestCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ApprovalRequestCountAggregateOutputType> | number
+        }
+      }
+    }
+    ApprovalDecision: {
+      payload: Prisma.$ApprovalDecisionPayload<ExtArgs>
+      fields: Prisma.ApprovalDecisionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ApprovalDecisionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApprovalDecisionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ApprovalDecisionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApprovalDecisionPayload>
+        }
+        findFirst: {
+          args: Prisma.ApprovalDecisionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApprovalDecisionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ApprovalDecisionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApprovalDecisionPayload>
+        }
+        findMany: {
+          args: Prisma.ApprovalDecisionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApprovalDecisionPayload>[]
+        }
+        create: {
+          args: Prisma.ApprovalDecisionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApprovalDecisionPayload>
+        }
+        createMany: {
+          args: Prisma.ApprovalDecisionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.ApprovalDecisionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApprovalDecisionPayload>
+        }
+        update: {
+          args: Prisma.ApprovalDecisionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApprovalDecisionPayload>
+        }
+        deleteMany: {
+          args: Prisma.ApprovalDecisionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ApprovalDecisionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.ApprovalDecisionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApprovalDecisionPayload>
+        }
+        aggregate: {
+          args: Prisma.ApprovalDecisionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateApprovalDecision>
+        }
+        groupBy: {
+          args: Prisma.ApprovalDecisionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ApprovalDecisionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ApprovalDecisionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ApprovalDecisionCountAggregateOutputType> | number
+        }
+      }
+    }
+    ApprovalDelegation: {
+      payload: Prisma.$ApprovalDelegationPayload<ExtArgs>
+      fields: Prisma.ApprovalDelegationFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ApprovalDelegationFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApprovalDelegationPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ApprovalDelegationFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApprovalDelegationPayload>
+        }
+        findFirst: {
+          args: Prisma.ApprovalDelegationFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApprovalDelegationPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ApprovalDelegationFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApprovalDelegationPayload>
+        }
+        findMany: {
+          args: Prisma.ApprovalDelegationFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApprovalDelegationPayload>[]
+        }
+        create: {
+          args: Prisma.ApprovalDelegationCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApprovalDelegationPayload>
+        }
+        createMany: {
+          args: Prisma.ApprovalDelegationCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.ApprovalDelegationDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApprovalDelegationPayload>
+        }
+        update: {
+          args: Prisma.ApprovalDelegationUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApprovalDelegationPayload>
+        }
+        deleteMany: {
+          args: Prisma.ApprovalDelegationDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ApprovalDelegationUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.ApprovalDelegationUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApprovalDelegationPayload>
+        }
+        aggregate: {
+          args: Prisma.ApprovalDelegationAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateApprovalDelegation>
+        }
+        groupBy: {
+          args: Prisma.ApprovalDelegationGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ApprovalDelegationGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ApprovalDelegationCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ApprovalDelegationCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -2012,7 +2280,9 @@ export const UserScalarFieldEnum = {
   displayName: 'displayName',
   teamId: 'teamId',
   region: 'region',
-  isActive: 'isActive'
+  isActive: 'isActive',
+  rolesJson: 'rolesJson',
+  lastSeenAt: 'lastSeenAt'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -2196,6 +2466,8 @@ export const ProposalScalarFieldEnum = {
   language: 'language',
   validUntil: 'validUntil',
   folderPath: 'folderPath',
+  sentAt: 'sentAt',
+  statusReason: 'statusReason',
   rowVersion: 'rowVersion',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
@@ -2335,11 +2607,77 @@ export const DocumentScalarFieldEnum = {
   sha256: 'sha256',
   sizeBytes: 'sizeBytes',
   generatedFrom: 'generatedFrom',
+  sourceFingerprint: 'sourceFingerprint',
   createdBy: 'createdBy',
   createdAt: 'createdAt'
 } as const
 
 export type DocumentScalarFieldEnum = (typeof DocumentScalarFieldEnum)[keyof typeof DocumentScalarFieldEnum]
+
+
+export const ApprovalPolicyScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  scope: 'scope',
+  conditionJson: 'conditionJson',
+  mode: 'mode',
+  levelsJson: 'levelsJson',
+  priority: 'priority',
+  isActive: 'isActive',
+  validFrom: 'validFrom',
+  validTo: 'validTo'
+} as const
+
+export type ApprovalPolicyScalarFieldEnum = (typeof ApprovalPolicyScalarFieldEnum)[keyof typeof ApprovalPolicyScalarFieldEnum]
+
+
+export const ApprovalRequestScalarFieldEnum = {
+  id: 'id',
+  proposalId: 'proposalId',
+  quoteVersionId: 'quoteVersionId',
+  documentId: 'documentId',
+  policyId: 'policyId',
+  policySnapshotJson: 'policySnapshotJson',
+  scope: 'scope',
+  status: 'status',
+  currentLevel: 'currentLevel',
+  levelDueAt: 'levelDueAt',
+  snapshotHash: 'snapshotHash',
+  documentSha256: 'documentSha256',
+  requestedBy: 'requestedBy',
+  requestedAt: 'requestedAt',
+  closedAt: 'closedAt'
+} as const
+
+export type ApprovalRequestScalarFieldEnum = (typeof ApprovalRequestScalarFieldEnum)[keyof typeof ApprovalRequestScalarFieldEnum]
+
+
+export const ApprovalDecisionScalarFieldEnum = {
+  id: 'id',
+  approvalRequestId: 'approvalRequestId',
+  levelNumber: 'levelNumber',
+  approverUserId: 'approverUserId',
+  onBehalfOfUserId: 'onBehalfOfUserId',
+  decision: 'decision',
+  comment: 'comment',
+  snapshotHash: 'snapshotHash',
+  documentSha256: 'documentSha256',
+  decidedAt: 'decidedAt'
+} as const
+
+export type ApprovalDecisionScalarFieldEnum = (typeof ApprovalDecisionScalarFieldEnum)[keyof typeof ApprovalDecisionScalarFieldEnum]
+
+
+export const ApprovalDelegationScalarFieldEnum = {
+  id: 'id',
+  fromUserId: 'fromUserId',
+  toUserId: 'toUserId',
+  validFrom: 'validFrom',
+  validTo: 'validTo',
+  createdAt: 'createdAt'
+} as const
+
+export type ApprovalDelegationScalarFieldEnum = (typeof ApprovalDelegationScalarFieldEnum)[keyof typeof ApprovalDelegationScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -2350,19 +2688,19 @@ export const SortOrder = {
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
-export const JsonNullValueInput = {
-  JsonNull: JsonNull
-} as const
-
-export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
-
-
 export const NullableJsonNullValueInput = {
   DbNull: DbNull,
   JsonNull: JsonNull
 } as const
 
 export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
 export const NullsOrder = {
@@ -2380,6 +2718,23 @@ export const TeamOrderByRelevanceFieldEnum = {
 } as const
 
 export type TeamOrderByRelevanceFieldEnum = (typeof TeamOrderByRelevanceFieldEnum)[keyof typeof TeamOrderByRelevanceFieldEnum]
+
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
+
+
+export const QueryMode = {
+  default: 'default',
+  insensitive: 'insensitive'
+} as const
+
+export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
 
 
 export const UserOrderByRelevanceFieldEnum = {
@@ -2405,23 +2760,6 @@ export const ProductOrderByRelevanceFieldEnum = {
 } as const
 
 export type ProductOrderByRelevanceFieldEnum = (typeof ProductOrderByRelevanceFieldEnum)[keyof typeof ProductOrderByRelevanceFieldEnum]
-
-
-export const JsonNullValueFilter = {
-  DbNull: DbNull,
-  JsonNull: JsonNull,
-  AnyNull: AnyNull
-} as const
-
-export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
-
-
-export const QueryMode = {
-  default: 'default',
-  insensitive: 'insensitive'
-} as const
-
-export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
 
 
 export const OutboxEventOrderByRelevanceFieldEnum = {
@@ -2540,7 +2878,8 @@ export const ProposalOrderByRelevanceFieldEnum = {
   region: 'region',
   currency: 'currency',
   language: 'language',
-  folderPath: 'folderPath'
+  folderPath: 'folderPath',
+  statusReason: 'statusReason'
 } as const
 
 export type ProposalOrderByRelevanceFieldEnum = (typeof ProposalOrderByRelevanceFieldEnum)[keyof typeof ProposalOrderByRelevanceFieldEnum]
@@ -2632,10 +2971,55 @@ export const DocumentOrderByRelevanceFieldEnum = {
   storageKey: 'storageKey',
   sha256: 'sha256',
   generatedFrom: 'generatedFrom',
+  sourceFingerprint: 'sourceFingerprint',
   createdBy: 'createdBy'
 } as const
 
 export type DocumentOrderByRelevanceFieldEnum = (typeof DocumentOrderByRelevanceFieldEnum)[keyof typeof DocumentOrderByRelevanceFieldEnum]
+
+
+export const ApprovalPolicyOrderByRelevanceFieldEnum = {
+  id: 'id',
+  name: 'name'
+} as const
+
+export type ApprovalPolicyOrderByRelevanceFieldEnum = (typeof ApprovalPolicyOrderByRelevanceFieldEnum)[keyof typeof ApprovalPolicyOrderByRelevanceFieldEnum]
+
+
+export const ApprovalRequestOrderByRelevanceFieldEnum = {
+  id: 'id',
+  proposalId: 'proposalId',
+  quoteVersionId: 'quoteVersionId',
+  documentId: 'documentId',
+  policyId: 'policyId',
+  snapshotHash: 'snapshotHash',
+  documentSha256: 'documentSha256',
+  requestedBy: 'requestedBy'
+} as const
+
+export type ApprovalRequestOrderByRelevanceFieldEnum = (typeof ApprovalRequestOrderByRelevanceFieldEnum)[keyof typeof ApprovalRequestOrderByRelevanceFieldEnum]
+
+
+export const ApprovalDecisionOrderByRelevanceFieldEnum = {
+  id: 'id',
+  approvalRequestId: 'approvalRequestId',
+  approverUserId: 'approverUserId',
+  onBehalfOfUserId: 'onBehalfOfUserId',
+  comment: 'comment',
+  snapshotHash: 'snapshotHash',
+  documentSha256: 'documentSha256'
+} as const
+
+export type ApprovalDecisionOrderByRelevanceFieldEnum = (typeof ApprovalDecisionOrderByRelevanceFieldEnum)[keyof typeof ApprovalDecisionOrderByRelevanceFieldEnum]
+
+
+export const ApprovalDelegationOrderByRelevanceFieldEnum = {
+  id: 'id',
+  fromUserId: 'fromUserId',
+  toUserId: 'toUserId'
+} as const
+
+export type ApprovalDelegationOrderByRelevanceFieldEnum = (typeof ApprovalDelegationOrderByRelevanceFieldEnum)[keyof typeof ApprovalDelegationOrderByRelevanceFieldEnum]
 
 
 
@@ -2655,6 +3039,27 @@ export type StringFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 
  * Reference to a field of type 'Boolean'
  */
 export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
+    
+
+
+/**
+ * Reference to a field of type 'Json'
+ */
+export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
+    
+
+
+/**
+ * Reference to a field of type 'QueryMode'
+ */
+export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
+    
+
+
+/**
+ * Reference to a field of type 'DateTime'
+ */
+export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
     
 
 
@@ -2683,27 +3088,6 @@ export type DecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel,
  * Reference to a field of type 'Int'
  */
 export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
-    
-
-
-/**
- * Reference to a field of type 'DateTime'
- */
-export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
-    
-
-
-/**
- * Reference to a field of type 'Json'
- */
-export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
-    
-
-
-/**
- * Reference to a field of type 'QueryMode'
- */
-export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
     
 
 
@@ -2788,6 +3172,34 @@ export type EnumDocumentOriginFieldRefInput<$PrismaModel> = FieldRefInputType<$P
  * Reference to a field of type 'DocumentFolder'
  */
 export type EnumDocumentFolderFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DocumentFolder'>
+    
+
+
+/**
+ * Reference to a field of type 'ApprovalScope'
+ */
+export type EnumApprovalScopeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ApprovalScope'>
+    
+
+
+/**
+ * Reference to a field of type 'ApprovalMode'
+ */
+export type EnumApprovalModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ApprovalMode'>
+    
+
+
+/**
+ * Reference to a field of type 'ApprovalRequestStatus'
+ */
+export type EnumApprovalRequestStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ApprovalRequestStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'ApprovalDecisionKind'
+ */
+export type EnumApprovalDecisionKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ApprovalDecisionKind'>
     
 
 
@@ -2971,6 +3383,10 @@ export type GlobalOmitConfig = {
   proposalSection?: Prisma.ProposalSectionOmit
   sectionDocument?: Prisma.SectionDocumentOmit
   document?: Prisma.DocumentOmit
+  approvalPolicy?: Prisma.ApprovalPolicyOmit
+  approvalRequest?: Prisma.ApprovalRequestOmit
+  approvalDecision?: Prisma.ApprovalDecisionOmit
+  approvalDelegation?: Prisma.ApprovalDelegationOmit
 }
 
 /* Types for Logging */

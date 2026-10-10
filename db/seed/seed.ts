@@ -40,7 +40,7 @@ async function main() {
     const entraOid = DEV_USER_OIDS[role];
     await prisma.user.upsert({
       where: { entraOid },
-      update: {},
+      update: { rolesJson: [role] },
       create: {
         id: uuidv7(),
         entraOid,
@@ -48,6 +48,7 @@ async function main() {
         displayName: `Utilizador ${role}`,
         teamId: teamIds.norte,
         region: 'PT',
+        rolesJson: [role],
       },
     });
   }

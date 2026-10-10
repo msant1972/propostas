@@ -73,7 +73,11 @@ export const ModelName = {
   ContentBlockTag: 'ContentBlockTag',
   ProposalSection: 'ProposalSection',
   SectionDocument: 'SectionDocument',
-  Document: 'Document'
+  Document: 'Document',
+  ApprovalPolicy: 'ApprovalPolicy',
+  ApprovalRequest: 'ApprovalRequest',
+  ApprovalDecision: 'ApprovalDecision',
+  ApprovalDelegation: 'ApprovalDelegation'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -108,7 +112,9 @@ export const UserScalarFieldEnum = {
   displayName: 'displayName',
   teamId: 'teamId',
   region: 'region',
-  isActive: 'isActive'
+  isActive: 'isActive',
+  rolesJson: 'rolesJson',
+  lastSeenAt: 'lastSeenAt'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -292,6 +298,8 @@ export const ProposalScalarFieldEnum = {
   language: 'language',
   validUntil: 'validUntil',
   folderPath: 'folderPath',
+  sentAt: 'sentAt',
+  statusReason: 'statusReason',
   rowVersion: 'rowVersion',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
@@ -431,11 +439,77 @@ export const DocumentScalarFieldEnum = {
   sha256: 'sha256',
   sizeBytes: 'sizeBytes',
   generatedFrom: 'generatedFrom',
+  sourceFingerprint: 'sourceFingerprint',
   createdBy: 'createdBy',
   createdAt: 'createdAt'
 } as const
 
 export type DocumentScalarFieldEnum = (typeof DocumentScalarFieldEnum)[keyof typeof DocumentScalarFieldEnum]
+
+
+export const ApprovalPolicyScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  scope: 'scope',
+  conditionJson: 'conditionJson',
+  mode: 'mode',
+  levelsJson: 'levelsJson',
+  priority: 'priority',
+  isActive: 'isActive',
+  validFrom: 'validFrom',
+  validTo: 'validTo'
+} as const
+
+export type ApprovalPolicyScalarFieldEnum = (typeof ApprovalPolicyScalarFieldEnum)[keyof typeof ApprovalPolicyScalarFieldEnum]
+
+
+export const ApprovalRequestScalarFieldEnum = {
+  id: 'id',
+  proposalId: 'proposalId',
+  quoteVersionId: 'quoteVersionId',
+  documentId: 'documentId',
+  policyId: 'policyId',
+  policySnapshotJson: 'policySnapshotJson',
+  scope: 'scope',
+  status: 'status',
+  currentLevel: 'currentLevel',
+  levelDueAt: 'levelDueAt',
+  snapshotHash: 'snapshotHash',
+  documentSha256: 'documentSha256',
+  requestedBy: 'requestedBy',
+  requestedAt: 'requestedAt',
+  closedAt: 'closedAt'
+} as const
+
+export type ApprovalRequestScalarFieldEnum = (typeof ApprovalRequestScalarFieldEnum)[keyof typeof ApprovalRequestScalarFieldEnum]
+
+
+export const ApprovalDecisionScalarFieldEnum = {
+  id: 'id',
+  approvalRequestId: 'approvalRequestId',
+  levelNumber: 'levelNumber',
+  approverUserId: 'approverUserId',
+  onBehalfOfUserId: 'onBehalfOfUserId',
+  decision: 'decision',
+  comment: 'comment',
+  snapshotHash: 'snapshotHash',
+  documentSha256: 'documentSha256',
+  decidedAt: 'decidedAt'
+} as const
+
+export type ApprovalDecisionScalarFieldEnum = (typeof ApprovalDecisionScalarFieldEnum)[keyof typeof ApprovalDecisionScalarFieldEnum]
+
+
+export const ApprovalDelegationScalarFieldEnum = {
+  id: 'id',
+  fromUserId: 'fromUserId',
+  toUserId: 'toUserId',
+  validFrom: 'validFrom',
+  validTo: 'validTo',
+  createdAt: 'createdAt'
+} as const
+
+export type ApprovalDelegationScalarFieldEnum = (typeof ApprovalDelegationScalarFieldEnum)[keyof typeof ApprovalDelegationScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -446,19 +520,19 @@ export const SortOrder = {
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
 
 
-export const JsonNullValueInput = {
-  JsonNull: JsonNull
-} as const
-
-export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
-
-
 export const NullableJsonNullValueInput = {
   DbNull: DbNull,
   JsonNull: JsonNull
 } as const
 
 export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
 export const NullsOrder = {
@@ -476,6 +550,23 @@ export const TeamOrderByRelevanceFieldEnum = {
 } as const
 
 export type TeamOrderByRelevanceFieldEnum = (typeof TeamOrderByRelevanceFieldEnum)[keyof typeof TeamOrderByRelevanceFieldEnum]
+
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
+
+
+export const QueryMode = {
+  default: 'default',
+  insensitive: 'insensitive'
+} as const
+
+export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
 
 
 export const UserOrderByRelevanceFieldEnum = {
@@ -501,23 +592,6 @@ export const ProductOrderByRelevanceFieldEnum = {
 } as const
 
 export type ProductOrderByRelevanceFieldEnum = (typeof ProductOrderByRelevanceFieldEnum)[keyof typeof ProductOrderByRelevanceFieldEnum]
-
-
-export const JsonNullValueFilter = {
-  DbNull: DbNull,
-  JsonNull: JsonNull,
-  AnyNull: AnyNull
-} as const
-
-export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
-
-
-export const QueryMode = {
-  default: 'default',
-  insensitive: 'insensitive'
-} as const
-
-export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
 
 
 export const OutboxEventOrderByRelevanceFieldEnum = {
@@ -636,7 +710,8 @@ export const ProposalOrderByRelevanceFieldEnum = {
   region: 'region',
   currency: 'currency',
   language: 'language',
-  folderPath: 'folderPath'
+  folderPath: 'folderPath',
+  statusReason: 'statusReason'
 } as const
 
 export type ProposalOrderByRelevanceFieldEnum = (typeof ProposalOrderByRelevanceFieldEnum)[keyof typeof ProposalOrderByRelevanceFieldEnum]
@@ -728,8 +803,53 @@ export const DocumentOrderByRelevanceFieldEnum = {
   storageKey: 'storageKey',
   sha256: 'sha256',
   generatedFrom: 'generatedFrom',
+  sourceFingerprint: 'sourceFingerprint',
   createdBy: 'createdBy'
 } as const
 
 export type DocumentOrderByRelevanceFieldEnum = (typeof DocumentOrderByRelevanceFieldEnum)[keyof typeof DocumentOrderByRelevanceFieldEnum]
+
+
+export const ApprovalPolicyOrderByRelevanceFieldEnum = {
+  id: 'id',
+  name: 'name'
+} as const
+
+export type ApprovalPolicyOrderByRelevanceFieldEnum = (typeof ApprovalPolicyOrderByRelevanceFieldEnum)[keyof typeof ApprovalPolicyOrderByRelevanceFieldEnum]
+
+
+export const ApprovalRequestOrderByRelevanceFieldEnum = {
+  id: 'id',
+  proposalId: 'proposalId',
+  quoteVersionId: 'quoteVersionId',
+  documentId: 'documentId',
+  policyId: 'policyId',
+  snapshotHash: 'snapshotHash',
+  documentSha256: 'documentSha256',
+  requestedBy: 'requestedBy'
+} as const
+
+export type ApprovalRequestOrderByRelevanceFieldEnum = (typeof ApprovalRequestOrderByRelevanceFieldEnum)[keyof typeof ApprovalRequestOrderByRelevanceFieldEnum]
+
+
+export const ApprovalDecisionOrderByRelevanceFieldEnum = {
+  id: 'id',
+  approvalRequestId: 'approvalRequestId',
+  approverUserId: 'approverUserId',
+  onBehalfOfUserId: 'onBehalfOfUserId',
+  comment: 'comment',
+  snapshotHash: 'snapshotHash',
+  documentSha256: 'documentSha256'
+} as const
+
+export type ApprovalDecisionOrderByRelevanceFieldEnum = (typeof ApprovalDecisionOrderByRelevanceFieldEnum)[keyof typeof ApprovalDecisionOrderByRelevanceFieldEnum]
+
+
+export const ApprovalDelegationOrderByRelevanceFieldEnum = {
+  id: 'id',
+  fromUserId: 'fromUserId',
+  toUserId: 'toUserId'
+} as const
+
+export type ApprovalDelegationOrderByRelevanceFieldEnum = (typeof ApprovalDelegationOrderByRelevanceFieldEnum)[keyof typeof ApprovalDelegationOrderByRelevanceFieldEnum]
 

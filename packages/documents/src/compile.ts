@@ -1,5 +1,5 @@
 import { uuidv7 } from '@cpq/shared';
-import type { PrismaClient } from '@cpq/db';
+import { fingerprint, type PrismaClient } from '@cpq/db';
 import { buildBlocks, type DocumentContext, type MergeIssue, type SectionInput } from './content.js';
 import { buildDocx } from './docx.js';
 import { buildPdf } from './pdf.js';
@@ -74,6 +74,14 @@ export async function loadProposal(prisma: PrismaClient, proposalId: string, now
   };
 }
 
+/** Impressão digital dos dados da cotação que entram no documento: deteta cotações alteradas depois de gerado. */
+export const quoteFingerprint = (ctx: DocumentContext): string => fingerprint(ctx.quote);
+
+/** Impressão digital atual da cotação corrente da proposta (para comparar com a dos documentos). */
+export async function currentQuoteFingerprint(prisma: PrismaClient, proposalId: string): Promise<string> {
+  return quoteFingerprint((await loadProposal(prisma, proposalId)).ctx);
+}
+
 /** Valida sem gerar: devolve os problemas de etiquetas (usado pela API antes de aceitar o pedido). */
 export async function validateProposal(prisma: PrismaClient, proposalId: string): Promise<void> {
   const { ctx, sections } = await loadProposal(prisma, proposalId);
@@ -105,6 +113,7 @@ export async function compileProposal(prisma: PrismaClient, repo: DocumentReposi
       data: {
         id, proposalId: input.proposalId, quoteVersionId, kind, origin: 'GENERATED', folder: 'F01_TRABALHO', fileName,
         storageKey: stored.storageKey, sha256: stored.sha256, sizeBytes: stored.sizeBytes, createdBy: input.requestedBy,
+        sourceFingerprint: quoteFingerprint(ctx),
       },
     });
     return { id, ...stored };

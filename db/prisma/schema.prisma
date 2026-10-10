@@ -47,6 +47,8 @@ model User {
   teamId      String?  @map("team_id") @db.Char(36)
   region      String?  @db.VarChar(50)
   isActive    Boolean  @default(true) @map("is_active")
+  rolesJson   Json?    @map("roles_json")
+  lastSeenAt  DateTime? @map("last_seen_at") @db.DateTime(6)
   team        Team?    @relation(fields: [teamId], references: [id])
 
   @@map("users")
@@ -278,6 +280,8 @@ model Proposal {
   language        String         @default("pt-PT") @db.Char(5)
   validUntil      DateTime?      @map("valid_until") @db.Date
   folderPath      String?        @map("folder_path") @db.VarChar(500)
+  sentAt          DateTime?      @map("sent_at") @db.DateTime(6)
+  statusReason    String?        @map("status_reason") @db.VarChar(500)
   rowVersion      Int            @default(1) @map("row_version")
   createdAt       DateTime       @default(now()) @map("created_at") @db.DateTime(6)
   updatedAt       DateTime       @default(now()) @updatedAt @map("updated_at") @db.DateTime(6)
@@ -456,9 +460,104 @@ model Document {
   sha256         String         @db.Char(64)
   sizeBytes      BigInt         @map("size_bytes")
   generatedFrom  String?        @map("generated_from") @db.Char(36)
+  sourceFingerprint String?     @map("source_fingerprint") @db.Char(64)
   createdBy      String?        @map("created_by") @db.Char(36)
   createdAt      DateTime       @default(now()) @map("created_at") @db.DateTime(6)
 
   @@index([proposalId, createdAt], map: "ix_doc_proposal")
   @@map("documents")
+}
+
+// ---------------------------------------------------------------------------------------------
+// Fase 4 — Workflow e aprovações (migração 0006)
+// ---------------------------------------------------------------------------------------------
+
+enum ApprovalScope {
+  COMMERCIAL
+  LEGAL
+}
+
+enum ApprovalMode {
+  SEQUENTIAL
+  PARALLEL
+}
+
+enum ApprovalRequestStatus {
+  OPEN
+  APPROVED
+  REJECTED
+  RETURNED
+  CANCELLED
+  SUPERSEDED
+}
+
+enum ApprovalDecisionKind {
+  APPROVED
+  REJECTED
+  RETURNED
+}
+
+model ApprovalPolicy {
+  id            String        @id @db.Char(36)
+  name          String        @db.VarChar(100)
+  scope         ApprovalScope
+  conditionJson Json          @map("condition_json")
+  mode          ApprovalMode  @default(SEQUENTIAL)
+  levelsJson    Json          @map("levels_json")
+  priority      Int           @default(100) @db.SmallInt
+  isActive      Boolean       @default(true) @map("is_active")
+  validFrom     DateTime      @map("valid_from") @db.Date
+  validTo       DateTime?     @map("valid_to") @db.Date
+
+  @@map("approval_policies")
+}
+
+model ApprovalRequest {
+  id                 String                @id @db.Char(36)
+  proposalId         String                @map("proposal_id") @db.Char(36)
+  quoteVersionId     String                @map("quote_version_id") @db.Char(36)
+  documentId         String                @map("document_id") @db.Char(36)
+  policyId           String                @map("policy_id") @db.Char(36)
+  policySnapshotJson Json                  @map("policy_snapshot_json")
+  scope              ApprovalScope
+  status             ApprovalRequestStatus @default(OPEN)
+  currentLevel       Int                   @default(1) @map("current_level") @db.TinyInt
+  levelDueAt         DateTime?             @map("level_due_at") @db.DateTime(6)
+  snapshotHash       String                @map("snapshot_hash") @db.Char(64)
+  documentSha256     String                @map("document_sha256") @db.Char(64)
+  requestedBy        String                @map("requested_by") @db.Char(36)
+  requestedAt        DateTime              @default(now()) @map("requested_at") @db.DateTime(6)
+  closedAt           DateTime?             @map("closed_at") @db.DateTime(6)
+  decisions          ApprovalDecision[]
+
+  @@index([status, levelDueAt], map: "ix_ar_open")
+  @@map("approval_requests")
+}
+
+model ApprovalDecision {
+  id                String               @id @db.Char(36)
+  approvalRequestId String               @map("approval_request_id") @db.Char(36)
+  levelNumber       Int                  @map("level_number") @db.TinyInt
+  approverUserId    String               @map("approver_user_id") @db.Char(36)
+  onBehalfOfUserId  String?              @map("on_behalf_of_user_id") @db.Char(36)
+  decision          ApprovalDecisionKind
+  comment           String?              @db.Text
+  snapshotHash      String               @map("snapshot_hash") @db.Char(64)
+  documentSha256    String?              @map("document_sha256") @db.Char(64)
+  decidedAt         DateTime             @default(now()) @map("decided_at") @db.DateTime(6)
+  request           ApprovalRequest      @relation(fields: [approvalRequestId], references: [id])
+
+  @@unique([approvalRequestId, levelNumber, approverUserId], map: "uq_ad")
+  @@map("approval_decisions")
+}
+
+model ApprovalDelegation {
+  id         String   @id @db.Char(36)
+  fromUserId String   @map("from_user_id") @db.Char(36)
+  toUserId   String   @map("to_user_id") @db.Char(36)
+  validFrom  DateTime @map("valid_from") @db.Date
+  validTo    DateTime @map("valid_to") @db.Date
+  createdAt  DateTime @default(now()) @map("created_at") @db.DateTime(6)
+
+  @@map("approval_delegations")
 }

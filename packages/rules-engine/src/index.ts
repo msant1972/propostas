@@ -7,3 +7,4 @@ export { fxRate } from './pricing/fx.js';
 export { calculateQuote } from './pricing/calculate.js';
 export { evaluateRules, validateCondition, type RuleEvaluation } from './rules/evaluate.js';
 export { canonicalJson, snapshotHash } from './snapshot.js';
+export * from './approvals.js';

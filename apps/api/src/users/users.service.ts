@@ -23,8 +23,9 @@ export class UsersService {
 
     const user = await this.prisma.user.upsert({
       where: { entraOid: p.oid.toLowerCase() },
-      update: { email: p.email, displayName: p.displayName },
-      create: { id: uuidv7(), entraOid: p.oid.toLowerCase(), email: p.email, displayName: p.displayName },
+      // Os papéis vêm do token; guarda-se o último conhecido para saber a quem notificar (ex.: aprovadores).
+      update: { email: p.email, displayName: p.displayName, rolesJson: p.roles, lastSeenAt: new Date() },
+      create: { id: uuidv7(), entraOid: p.oid.toLowerCase(), email: p.email, displayName: p.displayName, rolesJson: p.roles, lastSeenAt: new Date() },
     });
     if (!user.isActive) throw new UnauthorizedException('Utilizador desativado');
 

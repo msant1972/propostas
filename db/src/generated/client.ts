@@ -156,3 +156,23 @@ export type SectionDocument = Prisma.SectionDocumentModel
  * 
  */
 export type Document = Prisma.DocumentModel
+/**
+ * Model ApprovalPolicy
+ * 
+ */
+export type ApprovalPolicy = Prisma.ApprovalPolicyModel
+/**
+ * Model ApprovalRequest
+ * 
+ */
+export type ApprovalRequest = Prisma.ApprovalRequestModel
+/**
+ * Model ApprovalDecision
+ * 
+ */
+export type ApprovalDecision = Prisma.ApprovalDecisionModel
+/**
+ * Model ApprovalDelegation
+ * 
+ */
+export type ApprovalDelegation = Prisma.ApprovalDelegationModel

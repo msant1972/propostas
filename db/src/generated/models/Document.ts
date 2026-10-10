@@ -46,6 +46,7 @@ export type DocumentMinAggregateOutputType = {
   sha256: string | null
   sizeBytes: bigint | null
   generatedFrom: string | null
+  sourceFingerprint: string | null
   createdBy: string | null
   createdAt: Date | null
 }
@@ -62,6 +63,7 @@ export type DocumentMaxAggregateOutputType = {
   sha256: string | null
   sizeBytes: bigint | null
   generatedFrom: string | null
+  sourceFingerprint: string | null
   createdBy: string | null
   createdAt: Date | null
 }
@@ -78,6 +80,7 @@ export type DocumentCountAggregateOutputType = {
   sha256: number
   sizeBytes: number
   generatedFrom: number
+  sourceFingerprint: number
   createdBy: number
   createdAt: number
   _all: number
@@ -104,6 +107,7 @@ export type DocumentMinAggregateInputType = {
   sha256?: true
   sizeBytes?: true
   generatedFrom?: true
+  sourceFingerprint?: true
   createdBy?: true
   createdAt?: true
 }
@@ -120,6 +124,7 @@ export type DocumentMaxAggregateInputType = {
   sha256?: true
   sizeBytes?: true
   generatedFrom?: true
+  sourceFingerprint?: true
   createdBy?: true
   createdAt?: true
 }
@@ -136,6 +141,7 @@ export type DocumentCountAggregateInputType = {
   sha256?: true
   sizeBytes?: true
   generatedFrom?: true
+  sourceFingerprint?: true
   createdBy?: true
   createdAt?: true
   _all?: true
@@ -239,6 +245,7 @@ export type DocumentGroupByOutputType = {
   sha256: string
   sizeBytes: bigint
   generatedFrom: string | null
+  sourceFingerprint: string | null
   createdBy: string | null
   createdAt: Date
   _count: DocumentCountAggregateOutputType | null
@@ -278,6 +285,7 @@ export type DocumentWhereInput = {
   sha256?: Prisma.StringFilter<"Document"> | string
   sizeBytes?: Prisma.BigIntFilter<"Document"> | bigint | number
   generatedFrom?: Prisma.StringNullableFilter<"Document"> | string | null
+  sourceFingerprint?: Prisma.StringNullableFilter<"Document"> | string | null
   createdBy?: Prisma.StringNullableFilter<"Document"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Document"> | Date | string
 }
@@ -294,6 +302,7 @@ export type DocumentOrderByWithRelationInput = {
   sha256?: Prisma.SortOrder
   sizeBytes?: Prisma.SortOrder
   generatedFrom?: Prisma.SortOrderInput | Prisma.SortOrder
+  sourceFingerprint?: Prisma.SortOrderInput | Prisma.SortOrder
   createdBy?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _relevance?: Prisma.DocumentOrderByRelevanceInput
@@ -314,6 +323,7 @@ export type DocumentWhereUniqueInput = Prisma.AtLeast<{
   sha256?: Prisma.StringFilter<"Document"> | string
   sizeBytes?: Prisma.BigIntFilter<"Document"> | bigint | number
   generatedFrom?: Prisma.StringNullableFilter<"Document"> | string | null
+  sourceFingerprint?: Prisma.StringNullableFilter<"Document"> | string | null
   createdBy?: Prisma.StringNullableFilter<"Document"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Document"> | Date | string
 }, "id" | "storageKey">
@@ -330,6 +340,7 @@ export type DocumentOrderByWithAggregationInput = {
   sha256?: Prisma.SortOrder
   sizeBytes?: Prisma.SortOrder
   generatedFrom?: Prisma.SortOrderInput | Prisma.SortOrder
+  sourceFingerprint?: Prisma.SortOrderInput | Prisma.SortOrder
   createdBy?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.DocumentCountOrderByAggregateInput
@@ -354,6 +365,7 @@ export type DocumentScalarWhereWithAggregatesInput = {
   sha256?: Prisma.StringWithAggregatesFilter<"Document"> | string
   sizeBytes?: Prisma.BigIntWithAggregatesFilter<"Document"> | bigint | number
   generatedFrom?: Prisma.StringNullableWithAggregatesFilter<"Document"> | string | null
+  sourceFingerprint?: Prisma.StringNullableWithAggregatesFilter<"Document"> | string | null
   createdBy?: Prisma.StringNullableWithAggregatesFilter<"Document"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Document"> | Date | string
 }
@@ -370,6 +382,7 @@ export type DocumentCreateInput = {
   sha256: string
   sizeBytes: bigint | number
   generatedFrom?: string | null
+  sourceFingerprint?: string | null
   createdBy?: string | null
   createdAt?: Date | string
 }
@@ -386,6 +399,7 @@ export type DocumentUncheckedCreateInput = {
   sha256: string
   sizeBytes: bigint | number
   generatedFrom?: string | null
+  sourceFingerprint?: string | null
   createdBy?: string | null
   createdAt?: Date | string
 }
@@ -402,6 +416,7 @@ export type DocumentUpdateInput = {
   sha256?: Prisma.StringFieldUpdateOperationsInput | string
   sizeBytes?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   generatedFrom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceFingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -418,6 +433,7 @@ export type DocumentUncheckedUpdateInput = {
   sha256?: Prisma.StringFieldUpdateOperationsInput | string
   sizeBytes?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   generatedFrom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceFingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -434,6 +450,7 @@ export type DocumentCreateManyInput = {
   sha256: string
   sizeBytes: bigint | number
   generatedFrom?: string | null
+  sourceFingerprint?: string | null
   createdBy?: string | null
   createdAt?: Date | string
 }
@@ -450,6 +467,7 @@ export type DocumentUpdateManyMutationInput = {
   sha256?: Prisma.StringFieldUpdateOperationsInput | string
   sizeBytes?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   generatedFrom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceFingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -466,6 +484,7 @@ export type DocumentUncheckedUpdateManyInput = {
   sha256?: Prisma.StringFieldUpdateOperationsInput | string
   sizeBytes?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number
   generatedFrom?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceFingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -488,6 +507,7 @@ export type DocumentCountOrderByAggregateInput = {
   sha256?: Prisma.SortOrder
   sizeBytes?: Prisma.SortOrder
   generatedFrom?: Prisma.SortOrder
+  sourceFingerprint?: Prisma.SortOrder
   createdBy?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -508,6 +528,7 @@ export type DocumentMaxOrderByAggregateInput = {
   sha256?: Prisma.SortOrder
   sizeBytes?: Prisma.SortOrder
   generatedFrom?: Prisma.SortOrder
+  sourceFingerprint?: Prisma.SortOrder
   createdBy?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -524,6 +545,7 @@ export type DocumentMinOrderByAggregateInput = {
   sha256?: Prisma.SortOrder
   sizeBytes?: Prisma.SortOrder
   generatedFrom?: Prisma.SortOrder
+  sourceFingerprint?: Prisma.SortOrder
   createdBy?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -558,6 +580,7 @@ export type DocumentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   sha256?: boolean
   sizeBytes?: boolean
   generatedFrom?: boolean
+  sourceFingerprint?: boolean
   createdBy?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["document"]>
@@ -576,11 +599,12 @@ export type DocumentSelectScalar = {
   sha256?: boolean
   sizeBytes?: boolean
   generatedFrom?: boolean
+  sourceFingerprint?: boolean
   createdBy?: boolean
   createdAt?: boolean
 }
 
-export type DocumentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "proposalId" | "quoteVersionId" | "kind" | "origin" | "folder" | "fileName" | "storageKey" | "sha256" | "sizeBytes" | "generatedFrom" | "createdBy" | "createdAt", ExtArgs["result"]["document"]>
+export type DocumentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "proposalId" | "quoteVersionId" | "kind" | "origin" | "folder" | "fileName" | "storageKey" | "sha256" | "sizeBytes" | "generatedFrom" | "sourceFingerprint" | "createdBy" | "createdAt", ExtArgs["result"]["document"]>
 
 export type $DocumentPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Document"
@@ -597,6 +621,7 @@ export type $DocumentPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     sha256: string
     sizeBytes: bigint
     generatedFrom: string | null
+    sourceFingerprint: string | null
     createdBy: string | null
     createdAt: Date
   }, ExtArgs["result"]["document"]>
@@ -979,6 +1004,7 @@ export interface DocumentFieldRefs {
   readonly sha256: Prisma.FieldRef<"Document", 'String'>
   readonly sizeBytes: Prisma.FieldRef<"Document", 'BigInt'>
   readonly generatedFrom: Prisma.FieldRef<"Document", 'String'>
+  readonly sourceFingerprint: Prisma.FieldRef<"Document", 'String'>
   readonly createdBy: Prisma.FieldRef<"Document", 'String'>
   readonly createdAt: Prisma.FieldRef<"Document", 'DateTime'>
 }

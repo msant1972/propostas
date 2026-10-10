@@ -1,0 +1,24 @@
+{
+  "name": "@cpq/db",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "generate": "prisma generate",
+    "migrate": "node --import @swc-node/register/esm-register scripts/migrate.ts",
+    "seed": "node --import @swc-node/register/esm-register seed/seed.ts",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@cpq/shared": "workspace:*",
+    "@prisma/adapter-mariadb": "^7.10.0",
+    "@prisma/client": "^7.10.0",
+    "dotenv": "^18.0.7",
+    "mariadb": "^3.5.4"
+  },
+  "devDependencies": {
+    "@swc-node/register": "^1.12.1",
+    "@swc/core": "^1.16.13",
+    "prisma": "8.0.0-rc.22"
+  }
+}

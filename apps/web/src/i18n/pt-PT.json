@@ -1,0 +1,47 @@
+{
+  "app": { "title": "CPQ & Propostas" },
+  "nav": { "catalog": "Catálogo", "logout": "Terminar sessão" },
+  "login": {
+    "title": "Iniciar sessão",
+    "devNotice": "Modo de desenvolvimento: escolha um perfil.",
+    "role": "Perfil",
+    "name": "Nome",
+    "email": "Email",
+    "submit": "Entrar",
+    "entra": "Entrar com Microsoft",
+    "error": "Não foi possível iniciar sessão."
+  },
+  "forbidden": { "title": "Acesso negado", "text": "Não tem permissão para ver esta página." },
+  "catalog": {
+    "title": "Catálogo",
+    "sku": "SKU",
+    "name": "Nome",
+    "unit": "Unidade",
+    "billing": "Cobrança",
+    "active": "Ativo",
+    "loading": "A carregar…",
+    "error": "Não foi possível carregar o catálogo.",
+    "empty": "Sem produtos.",
+    "previous": "Anterior",
+    "next": "Seguinte",
+    "page": "Página {{page}} de {{pages}}",
+    "yes": "Sim",
+    "no": "Não",
+    "notFound": "Produto não encontrado.",
+    "back": "Voltar ao catálogo",
+    "description": "Descrição"
+  },
+  "billing": {
+    "ONE_TIME": "Pontual",
+    "RECURRING": "Recorrente",
+    "USAGE_BASED": "Consumo",
+    "MILESTONE": "Marcos"
+  },
+  "roles": {
+    "Comercial": "Comercial",
+    "Gestor_Comercial": "Gestor comercial",
+    "Aprovador_Financeiro": "Aprovador financeiro",
+    "Juridico": "Jurídico",
+    "Administrador": "Administrador"
+  }
+}

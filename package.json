@@ -1,0 +1,31 @@
+{
+  "name": "cpq",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@12.11.2",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev --parallel",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "gen:api": "pnpm --filter @cpq/api run openapi && pnpm --filter @cpq/api-client run generate",
+    "db:migrate": "pnpm --filter @cpq/db run migrate",
+    "db:seed": "pnpm --filter @cpq/db run seed",
+    "e2e": "pnpm --filter @cpq/e2e run test"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^26.6.5",
+    "eslint": "^10.12.0",
+    "prettier": "^3.9.9",
+    "turbo": "^2.11.7",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.71.1",
+    "vitest": "^5.0.3"
+  }
+}

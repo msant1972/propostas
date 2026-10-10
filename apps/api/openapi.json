@@ -2269,6 +2269,481 @@
           "content"
         ]
       }
+    },
+    "/api/v1/proposals/{id}/transitions": {
+      "get": {
+        "operationId": "getTransitions",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransitionResultDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Estado atual e ações possíveis",
+        "tags": [
+          "workflow"
+        ]
+      },
+      "post": {
+        "operationId": "transitionProposal",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TransitionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransitionResultDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Executa uma transição da máquina de estados",
+        "tags": [
+          "workflow"
+        ]
+      }
+    },
+    "/api/v1/proposals/{id}/timeline": {
+      "get": {
+        "operationId": "getTimeline",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TimelineEntryDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Histórico auditado da proposta",
+        "tags": [
+          "workflow"
+        ]
+      }
+    },
+    "/api/v1/approvals": {
+      "get": {
+        "operationId": "listApprovals",
+        "parameters": [
+          {
+            "name": "all",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ApprovalSummaryDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Pedidos que o utilizador pode decidir",
+        "tags": [
+          "workflow"
+        ]
+      }
+    },
+    "/api/v1/approvals/{id}": {
+      "get": {
+        "operationId": "getApproval",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApprovalDetailDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "",
+        "tags": [
+          "workflow"
+        ]
+      }
+    },
+    "/api/v1/approvals/{id}/decision": {
+      "post": {
+        "operationId": "decideApproval",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DecideDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApprovalDetailDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Aprova, rejeita ou devolve",
+        "tags": [
+          "workflow"
+        ]
+      }
+    },
+    "/api/v1/delegations": {
+      "get": {
+        "operationId": "listDelegations",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DelegationDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "",
+        "tags": [
+          "workflow"
+        ]
+      },
+      "post": {
+        "operationId": "createDelegation",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateDelegationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DelegationDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "",
+        "tags": [
+          "workflow"
+        ]
+      }
+    },
+    "/api/v1/delegations/targets": {
+      "get": {
+        "operationId": "listDelegationTargets",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UserOptionDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "",
+        "tags": [
+          "workflow"
+        ]
+      }
+    },
+    "/api/v1/delegations/{id}": {
+      "delete": {
+        "operationId": "removeDelegation",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "",
+        "tags": [
+          "workflow"
+        ]
+      }
+    },
+    "/api/v1/approval-policies": {
+      "get": {
+        "operationId": "listPolicies",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PolicyDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "",
+        "tags": [
+          "workflow"
+        ]
+      },
+      "post": {
+        "operationId": "createPolicy",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePolicyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PolicyDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "",
+        "tags": [
+          "workflow"
+        ]
+      }
+    },
+    "/api/v1/approval-policies/{id}": {
+      "patch": {
+        "operationId": "updatePolicy",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePolicyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PolicyDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "",
+        "tags": [
+          "workflow"
+        ]
+      }
     }
   },
   "info": {
@@ -2564,6 +3039,14 @@
           },
           "createdAt": {
             "type": "string"
+          },
+          "statusReason": {
+            "type": "string",
+            "nullable": true
+          },
+          "sentAt": {
+            "type": "string",
+            "nullable": true
           }
         },
         "required": [
@@ -2576,7 +3059,9 @@
           "currency",
           "language",
           "validUntil",
-          "createdAt"
+          "createdAt",
+          "statusReason",
+          "sentAt"
         ]
       },
       "ProposalPageDto": {
@@ -4007,6 +4492,572 @@
           "bodyHtml",
           "reviewDueDate"
         ]
+      },
+      "TransitionResultDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "availableEvents": {
+            "description": "Ações que o estado atual admite",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "status",
+          "availableEvents"
+        ]
+      },
+      "TransitionDto": {
+        "type": "object",
+        "properties": {
+          "event": {
+            "type": "string",
+            "enum": [
+              "COMPILE",
+              "EDIT",
+              "SUBMIT",
+              "RETURN",
+              "SEND",
+              "CUSTOMER_ACCEPT",
+              "CUSTOMER_REJECT",
+              "REVISE",
+              "REOPEN",
+              "CANCEL"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "description": "Motivo (obrigatório em alguns eventos)"
+          },
+          "confirm": {
+            "type": "boolean",
+            "description": "Confirmação explícita (obrigatória quando a ação invalida aprovações)"
+          }
+        },
+        "required": [
+          "event"
+        ]
+      },
+      "TimelineEntryDto": {
+        "type": "object",
+        "properties": {
+          "occurredAt": {
+            "type": "string"
+          },
+          "action": {
+            "type": "string"
+          },
+          "actorName": {
+            "type": "string",
+            "nullable": true
+          },
+          "detail": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
+        "required": [
+          "occurredAt",
+          "action",
+          "actorName",
+          "detail"
+        ]
+      },
+      "ApprovalSummaryDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "proposalId": {
+            "type": "string"
+          },
+          "proposalCode": {
+            "type": "string"
+          },
+          "proposalTitle": {
+            "type": "string"
+          },
+          "clientName": {
+            "type": "string"
+          },
+          "scope": {
+            "type": "string",
+            "enum": [
+              "COMMERCIAL",
+              "LEGAL"
+            ]
+          },
+          "status": {
+            "type": "string"
+          },
+          "currentLevel": {
+            "type": "number"
+          },
+          "levelCount": {
+            "type": "number"
+          },
+          "levelRole": {
+            "type": "string",
+            "nullable": true
+          },
+          "dueAt": {
+            "type": "string",
+            "nullable": true
+          },
+          "overdue": {
+            "type": "boolean"
+          },
+          "grandTotal": {
+            "type": "string"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "requestedAt": {
+            "type": "string"
+          },
+          "canDecide": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "proposalId",
+          "proposalCode",
+          "proposalTitle",
+          "clientName",
+          "scope",
+          "status",
+          "currentLevel",
+          "levelCount",
+          "levelRole",
+          "dueAt",
+          "overdue",
+          "grandTotal",
+          "currency",
+          "requestedAt",
+          "canDecide"
+        ]
+      },
+      "ApprovalDecisionDto": {
+        "type": "object",
+        "properties": {
+          "level": {
+            "type": "number"
+          },
+          "approverName": {
+            "type": "string"
+          },
+          "onBehalfOfName": {
+            "type": "string",
+            "nullable": true
+          },
+          "decision": {
+            "type": "string"
+          },
+          "comment": {
+            "type": "string",
+            "nullable": true
+          },
+          "decidedAt": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "level",
+          "approverName",
+          "onBehalfOfName",
+          "decision",
+          "comment",
+          "decidedAt"
+        ]
+      },
+      "ApprovalDetailDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "proposalId": {
+            "type": "string"
+          },
+          "proposalCode": {
+            "type": "string"
+          },
+          "proposalTitle": {
+            "type": "string"
+          },
+          "clientName": {
+            "type": "string"
+          },
+          "scope": {
+            "type": "string",
+            "enum": [
+              "COMMERCIAL",
+              "LEGAL"
+            ]
+          },
+          "status": {
+            "type": "string"
+          },
+          "currentLevel": {
+            "type": "number"
+          },
+          "levelCount": {
+            "type": "number"
+          },
+          "levelRole": {
+            "type": "string",
+            "nullable": true
+          },
+          "dueAt": {
+            "type": "string",
+            "nullable": true
+          },
+          "overdue": {
+            "type": "boolean"
+          },
+          "grandTotal": {
+            "type": "string"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "requestedAt": {
+            "type": "string"
+          },
+          "canDecide": {
+            "type": "boolean"
+          },
+          "marginPercent": {
+            "type": "string",
+            "nullable": true
+          },
+          "tcv": {
+            "type": "string"
+          },
+          "maxLineDiscountPercent": {
+            "type": "string"
+          },
+          "globalDiscountPercent": {
+            "type": "string"
+          },
+          "policyName": {
+            "type": "string"
+          },
+          "decisions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ApprovalDecisionDto"
+            }
+          },
+          "pdfDocumentId": {
+            "type": "string",
+            "nullable": true
+          },
+          "docxDocumentId": {
+            "type": "string",
+            "nullable": true
+          },
+          "snapshotHash": {
+            "type": "string"
+          },
+          "ownerName": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "proposalId",
+          "proposalCode",
+          "proposalTitle",
+          "clientName",
+          "scope",
+          "status",
+          "currentLevel",
+          "levelCount",
+          "levelRole",
+          "dueAt",
+          "overdue",
+          "grandTotal",
+          "currency",
+          "requestedAt",
+          "canDecide",
+          "marginPercent",
+          "tcv",
+          "maxLineDiscountPercent",
+          "globalDiscountPercent",
+          "policyName",
+          "decisions",
+          "pdfDocumentId",
+          "docxDocumentId",
+          "snapshotHash",
+          "ownerName"
+        ]
+      },
+      "DecideDto": {
+        "type": "object",
+        "properties": {
+          "decision": {
+            "type": "string",
+            "enum": [
+              "APPROVED",
+              "REJECTED",
+              "RETURNED"
+            ]
+          },
+          "comment": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "decision"
+        ]
+      },
+      "DelegationDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "toUserId": {
+            "type": "string"
+          },
+          "toUserName": {
+            "type": "string"
+          },
+          "validFrom": {
+            "type": "string"
+          },
+          "validTo": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "toUserId",
+          "toUserName",
+          "validFrom",
+          "validTo"
+        ]
+      },
+      "UserOptionDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "displayName": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "displayName",
+          "email"
+        ]
+      },
+      "CreateDelegationDto": {
+        "type": "object",
+        "properties": {
+          "toUserId": {
+            "type": "string"
+          },
+          "validFrom": {
+            "type": "string"
+          },
+          "validTo": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "toUserId",
+          "validFrom",
+          "validTo"
+        ]
+      },
+      "LevelDto": {
+        "type": "object",
+        "properties": {
+          "level": {
+            "type": "number"
+          },
+          "role": {
+            "type": "string"
+          },
+          "slaHours": {
+            "type": "number"
+          },
+          "escalateToRole": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "level",
+          "role",
+          "slaHours"
+        ]
+      },
+      "PolicyDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "scope": {
+            "type": "string"
+          },
+          "condition": {
+            "type": "object",
+            "additionalProperties": true,
+            "nullable": true
+          },
+          "mode": {
+            "type": "string"
+          },
+          "levels": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LevelDto"
+            }
+          },
+          "priority": {
+            "type": "number"
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "validFrom": {
+            "type": "string"
+          },
+          "validTo": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "scope",
+          "condition",
+          "mode",
+          "levels",
+          "priority",
+          "isActive",
+          "validFrom",
+          "validTo"
+        ]
+      },
+      "CreatePolicyDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "scope": {
+            "type": "string",
+            "enum": [
+              "COMMERCIAL",
+              "LEGAL"
+            ]
+          },
+          "condition": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "JSONLogic; vazio = sempre"
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "SEQUENTIAL",
+              "PARALLEL"
+            ]
+          },
+          "levels": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LevelDto"
+            }
+          },
+          "priority": {
+            "type": "number",
+            "default": 100
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "validFrom": {
+            "type": "string"
+          },
+          "validTo": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "scope",
+          "mode",
+          "levels",
+          "validFrom"
+        ]
+      },
+      "UpdatePolicyDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "scope": {
+            "type": "string",
+            "enum": [
+              "COMMERCIAL",
+              "LEGAL"
+            ]
+          },
+          "condition": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "JSONLogic; vazio = sempre"
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "SEQUENTIAL",
+              "PARALLEL"
+            ]
+          },
+          "levels": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LevelDto"
+            }
+          },
+          "priority": {
+            "type": "number",
+            "default": 100
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "validFrom": {
+            "type": "string"
+          },
+          "validTo": {
+            "type": "string"
+          }
+        }
       }
     }
   }

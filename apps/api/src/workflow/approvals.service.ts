@@ -104,12 +104,12 @@ export class ApprovalsService {
     return out;
   }
 
-  async detail(id: string, actor: Actor, canSeeCost: boolean): Promise<ApprovalDetailDto> {
+  async detail(id: string, actor: Actor, canSeeCost: boolean, justDecided = false): Promise<ApprovalDetailDto> {
     const r = (await this.prisma.approvalRequest.findUnique({ where: { id }, include: { decisions: true } })) as Request | null;
     if (!r) throw new NotFoundException('Pedido não encontrado');
     const { _p: p, ...s } = await this.summarize(r, actor);
     const isOwnerOrManager = p.ownerUserId === actor.userId || actor.roles.some((x) => ['Gestor_Comercial', 'Aprovador_Financeiro', 'Juridico', 'Administrador'].includes(x));
-    if (!s.canDecide && !isOwnerOrManager) throw new NotFoundException('Pedido não encontrado');
+    if (!justDecided && !s.canDecide && !isOwnerOrManager) throw new NotFoundException('Pedido não encontrado');
 
     const v = await this.prisma.quoteVersion.findUniqueOrThrow({ where: { id: r.quoteVersionId }, include: { items: true } });
     const owner = await this.prisma.user.findUniqueOrThrow({ where: { id: p.ownerUserId } });
@@ -162,7 +162,7 @@ export class ApprovalsService {
     });
     // a cotação aprovada fica no histórico; o rascunho novo cria-se já fora da transação
     if (dto.decision !== 'APPROVED') await this.reopenQuote(p.id, actor.userId);
-    return this.detail(id, actor, actor.roles.some((x) => ['Gestor_Comercial', 'Aprovador_Financeiro', 'Administrador'].includes(x)));
+    return this.detail(id, actor, actor.roles.some((x) => ['Gestor_Comercial', 'Aprovador_Financeiro', 'Administrador'].includes(x)), true);
   }
 
   private async afterApproval(tx: Tx, r: Request, p: { id: string }, actor: Actor, level: number) {

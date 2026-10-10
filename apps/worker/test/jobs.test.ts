@@ -95,7 +95,7 @@ run('tarefas periódicas e notificações', () => {
     expect(await runAuditExport(prisma, cfg, new Date('2026-10-11T12:00:00Z'))).toEqual([]);
     const f = join(outbox, 'audit-2026-10-01.jsonl');
     expect(((await stat(f)).mode & 0o222)).toBe(0); // sem escrita
-    expect(await readFile(`${f}.sha256`, 'utf8')).toMatch(/^[0-9a-f]{64}  audit-2026-10-01\.jsonl\n$/);
+    expect(await readFile(`${f}.sha256`, 'utf8')).toMatch(/^[0-9a-f]{64} {2}audit-2026-10-01\.jsonl\n$/);
 
     expect(await runChainVerification(prisma)).toEqual({ ok: true, checked: 2 });
     await prisma.$transaction(async (tx) => {

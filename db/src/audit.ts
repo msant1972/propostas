@@ -1,5 +1,4 @@
 import { createHash } from 'node:crypto';
-import { uuidv7 } from '@cpq/shared';
 import type { PrismaClient } from './generated/client.js';
 
 export const GENESIS_HASH = '0'.repeat(64);

@@ -640,6 +640,171 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/proposals/{id}/transitions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Estado atual e ações possíveis */
+        get: operations["getTransitions"];
+        put?: never;
+        /** Executa uma transição da máquina de estados */
+        post: operations["transitionProposal"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/proposals/{id}/timeline": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Histórico auditado da proposta */
+        get: operations["getTimeline"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/approvals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Pedidos que o utilizador pode decidir */
+        get: operations["listApprovals"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/approvals/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getApproval"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/approvals/{id}/decision": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Aprova, rejeita ou devolve */
+        post: operations["decideApproval"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/delegations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["listDelegations"];
+        put?: never;
+        post: operations["createDelegation"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/delegations/targets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["listDelegationTargets"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/delegations/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["removeDelegation"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/approval-policies": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["listPolicies"];
+        put?: never;
+        post: operations["createPolicy"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/approval-policies/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["updatePolicy"];
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -725,6 +890,8 @@ export interface components {
             language: string;
             validUntil: string | null;
             createdAt: string;
+            statusReason: string | null;
+            sentAt: string | null;
         };
         ProposalPageDto: {
             items: components["schemas"]["ProposalDto"][];
@@ -1118,6 +1285,159 @@ export interface components {
             language: string;
             bodyHtml: string;
             reviewDueDate: string;
+        };
+        TransitionResultDto: {
+            status: string;
+            /** @description Ações que o estado atual admite */
+            availableEvents: string[];
+        };
+        TransitionDto: {
+            /** @enum {string} */
+            event: "COMPILE" | "EDIT" | "SUBMIT" | "RETURN" | "SEND" | "CUSTOMER_ACCEPT" | "CUSTOMER_REJECT" | "REVISE" | "REOPEN" | "CANCEL";
+            /** @description Motivo (obrigatório em alguns eventos) */
+            reason?: string;
+            /** @description Confirmação explícita (obrigatória quando a ação invalida aprovações) */
+            confirm?: boolean;
+        };
+        TimelineEntryDto: {
+            occurredAt: string;
+            action: string;
+            actorName: string | null;
+            detail: {
+                [key: string]: unknown;
+            };
+        };
+        ApprovalSummaryDto: {
+            id: string;
+            proposalId: string;
+            proposalCode: string;
+            proposalTitle: string;
+            clientName: string;
+            /** @enum {string} */
+            scope: "COMMERCIAL" | "LEGAL";
+            status: string;
+            currentLevel: number;
+            levelCount: number;
+            levelRole: string | null;
+            dueAt: string | null;
+            overdue: boolean;
+            grandTotal: string;
+            currency: string;
+            requestedAt: string;
+            canDecide: boolean;
+        };
+        ApprovalDecisionDto: {
+            level: number;
+            approverName: string;
+            onBehalfOfName: string | null;
+            decision: string;
+            comment: string | null;
+            decidedAt: string;
+        };
+        ApprovalDetailDto: {
+            id: string;
+            proposalId: string;
+            proposalCode: string;
+            proposalTitle: string;
+            clientName: string;
+            /** @enum {string} */
+            scope: "COMMERCIAL" | "LEGAL";
+            status: string;
+            currentLevel: number;
+            levelCount: number;
+            levelRole: string | null;
+            dueAt: string | null;
+            overdue: boolean;
+            grandTotal: string;
+            currency: string;
+            requestedAt: string;
+            canDecide: boolean;
+            marginPercent: string | null;
+            tcv: string;
+            maxLineDiscountPercent: string;
+            globalDiscountPercent: string;
+            policyName: string;
+            decisions: components["schemas"]["ApprovalDecisionDto"][];
+            pdfDocumentId: string | null;
+            docxDocumentId: string | null;
+            snapshotHash: string;
+            ownerName: string;
+        };
+        DecideDto: {
+            /** @enum {string} */
+            decision: "APPROVED" | "REJECTED" | "RETURNED";
+            comment?: string;
+        };
+        DelegationDto: {
+            id: string;
+            toUserId: string;
+            toUserName: string;
+            validFrom: string;
+            validTo: string;
+        };
+        UserOptionDto: {
+            id: string;
+            displayName: string;
+            email: string;
+        };
+        CreateDelegationDto: {
+            toUserId: string;
+            validFrom: string;
+            validTo: string;
+        };
+        LevelDto: {
+            level: number;
+            role: string;
+            slaHours: number;
+            escalateToRole?: string;
+        };
+        PolicyDto: {
+            id: string;
+            name: string;
+            scope: string;
+            condition: {
+                [key: string]: unknown;
+            } | null;
+            mode: string;
+            levels: components["schemas"]["LevelDto"][];
+            priority: number;
+            isActive: boolean;
+            validFrom: string;
+            validTo: string | null;
+        };
+        CreatePolicyDto: {
+            name: string;
+            /** @enum {string} */
+            scope: "COMMERCIAL" | "LEGAL";
+            /** @description JSONLogic; vazio = sempre */
+            condition?: {
+                [key: string]: unknown;
+            };
+            /** @enum {string} */
+            mode: "SEQUENTIAL" | "PARALLEL";
+            levels: components["schemas"]["LevelDto"][];
+            /** @default 100 */
+            priority: number;
+            isActive?: boolean;
+            validFrom: string;
+            validTo?: string;
+        };
+        UpdatePolicyDto: {
+            name?: string;
+            /** @enum {string} */
+            scope?: "COMMERCIAL" | "LEGAL";
+            /** @description JSONLogic; vazio = sempre */
+            condition?: {
+                [key: string]: unknown;
+            };
+            /** @enum {string} */
+            mode?: "SEQUENTIAL" | "PARALLEL";
+            levels?: components["schemas"]["LevelDto"][];
+            /** @default 100 */
+            priority: number;
+            isActive?: boolean;
+            validFrom?: string;
+            validTo?: string;
         };
     };
     responses: never;
@@ -2388,6 +2708,287 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["BlockDto"];
+                };
+            };
+        };
+    };
+    getTransitions: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TransitionResultDto"];
+                };
+            };
+        };
+    };
+    transitionProposal: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TransitionDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TransitionResultDto"];
+                };
+            };
+        };
+    };
+    getTimeline: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TimelineEntryDto"][];
+                };
+            };
+        };
+    };
+    listApprovals: {
+        parameters: {
+            query: {
+                all: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApprovalSummaryDto"][];
+                };
+            };
+        };
+    };
+    getApproval: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApprovalDetailDto"];
+                };
+            };
+        };
+    };
+    decideApproval: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DecideDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApprovalDetailDto"];
+                };
+            };
+        };
+    };
+    listDelegations: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DelegationDto"][];
+                };
+            };
+        };
+    };
+    createDelegation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateDelegationDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DelegationDto"];
+                };
+            };
+        };
+    };
+    listDelegationTargets: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserOptionDto"][];
+                };
+            };
+        };
+    };
+    removeDelegation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listPolicies: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PolicyDto"][];
+                };
+            };
+        };
+    };
+    createPolicy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreatePolicyDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PolicyDto"];
+                };
+            };
+        };
+    };
+    updatePolicy: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdatePolicyDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PolicyDto"];
                 };
             };
         };

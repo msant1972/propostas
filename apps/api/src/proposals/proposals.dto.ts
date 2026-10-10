@@ -40,6 +40,8 @@ export class ProposalDto {
   @ApiProperty() language!: string;
   @ApiProperty({ nullable: true, type: String }) validUntil!: string | null;
   @ApiProperty() createdAt!: string;
+  @ApiProperty({ nullable: true, type: String }) statusReason!: string | null;
+  @ApiProperty({ nullable: true, type: String }) sentAt!: string | null;
 }
 
 export class ProposalPageDto {

@@ -7,6 +7,8 @@ import type { Catalog } from '@cpq/rules-engine';
 import { useAuth } from '../auth/store';
 import { evaluate, QuoteEditor, type EditorState } from '../components/QuoteEditor';
 import { DocumentPanel } from '../components/DocumentPanel';
+import { Timeline } from '../components/Timeline';
+import { WorkflowBar } from '../components/WorkflowBar';
 import { Button } from '../components/ui';
 import { ApiError, apiGet, apiPost, apiPut } from '../lib/api';
 
@@ -48,7 +50,7 @@ export function ProposalPage() {
   const [message, setMessage] = useState<string | null>(null);
   const [errors, setErrors] = useState<string[]>([]);
   const [verify, setVerify] = useState<Verify | null>(null);
-  const [tab, setTab] = useState<'quote' | 'document'>('quote');
+  const [tab, setTab] = useState<'quote' | 'document' | 'history'>('quote');
 
   useEffect(() => {
     if (quote.data) setState(fromQuote(quote.data));
@@ -112,15 +114,19 @@ export function ProposalPage() {
       </div>
 
       <div role="tablist" className="flex gap-1 border-b border-[var(--border)]">
-        {(['quote', 'document'] as const).map((k) => (
+        {(['quote', 'document', 'history'] as const).map((k) => (
           <button key={k} role="tab" aria-selected={tab === k} onClick={() => setTab(k)}
             className={`px-4 py-2 text-sm ${tab === k ? 'border-b-2 border-[var(--primary)] font-semibold' : 'opacity-70'}`}>
-            {t(k === 'quote' ? 'doc.tabQuote' : 'doc.tabDocument')}
+            {t(k === 'quote' ? 'doc.tabQuote' : k === 'document' ? 'doc.tabDocument' : 'wf.tabHistory')}
           </button>
         ))}
       </div>
 
+      <WorkflowBar proposalId={id} onChanged={refresh} />
+      {p.status === 'DRAFT' && p.statusReason && <p role="status" className="rounded-md border border-[var(--border)] bg-[var(--muted)] p-3 text-sm">{t('wf.statusReason', { reason: p.statusReason })}</p>}
+
       {tab === 'document' && <DocumentPanel proposalId={id} status={p.status} />}
+      {tab === 'history' && <Timeline proposalId={id} />}
 
       <div className={tab === 'quote' ? 'space-y-6' : 'hidden'}>
       <div className="flex flex-wrap items-center gap-3 text-sm">

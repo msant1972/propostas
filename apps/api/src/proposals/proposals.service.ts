@@ -15,6 +15,7 @@ function toDto(p: Row): ProposalDto {
   return {
     id: p.id, code: p.code, title: p.title, clientId: p.clientId, ownerUserId: p.ownerUserId, status: p.status,
     currency: p.currency, language: p.language, validUntil: day(p.validUntil), createdAt: p.createdAt.toISOString(),
+    statusReason: p.statusReason, sentAt: p.sentAt?.toISOString() ?? null,
   };
 }
 

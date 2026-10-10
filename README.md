@@ -12,7 +12,7 @@ Servidor de propostas (configurar, preçar, cotar e gerir propostas). A arquitet
 | `packages/rules-engine` | Motor de regras e preços (TypeScript puro, corre no browser e no servidor) |
 | `packages/shared` · `packages/api-client` | Tipos partilhados · cliente gerado do OpenAPI |
 | `db` | Schema Prisma, migrações SQL, seed |
-| `infra` | Terraform, Ansible e runbook de restauro |
+| `infra` | Ansible (servidor Ubuntu) e runbook de restauro |
 | `e2e` | Testes Playwright |
 
 ## Ambiente de testes local

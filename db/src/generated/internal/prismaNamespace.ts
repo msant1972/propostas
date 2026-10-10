@@ -423,7 +423,9 @@ export const ModelName = {
   ApprovalPolicy: 'ApprovalPolicy',
   ApprovalRequest: 'ApprovalRequest',
   ApprovalDecision: 'ApprovalDecision',
-  ApprovalDelegation: 'ApprovalDelegation'
+  ApprovalDelegation: 'ApprovalDelegation',
+  ShareLink: 'ShareLink',
+  CustomerResponse: 'CustomerResponse'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -439,7 +441,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "team" | "user" | "product" | "outboxEvent" | "auditLog" | "client" | "productAttribute" | "productBundleItem" | "taxRate" | "fxRate" | "priceList" | "priceListItem" | "cpqRule" | "proposal" | "quoteVersion" | "quoteItem" | "contentBlock" | "contentBlockVersion" | "tag" | "contentBlockTag" | "proposalSection" | "sectionDocument" | "document" | "approvalPolicy" | "approvalRequest" | "approvalDecision" | "approvalDelegation"
+    modelProps: "team" | "user" | "product" | "outboxEvent" | "auditLog" | "client" | "productAttribute" | "productBundleItem" | "taxRate" | "fxRate" | "priceList" | "priceListItem" | "cpqRule" | "proposal" | "quoteVersion" | "quoteItem" | "contentBlock" | "contentBlockVersion" | "tag" | "contentBlockTag" | "proposalSection" | "sectionDocument" | "document" | "approvalPolicy" | "approvalRequest" | "approvalDecision" | "approvalDelegation" | "shareLink" | "customerResponse"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2225,6 +2227,138 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ShareLink: {
+      payload: Prisma.$ShareLinkPayload<ExtArgs>
+      fields: Prisma.ShareLinkFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ShareLinkFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShareLinkPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ShareLinkFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShareLinkPayload>
+        }
+        findFirst: {
+          args: Prisma.ShareLinkFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShareLinkPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ShareLinkFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShareLinkPayload>
+        }
+        findMany: {
+          args: Prisma.ShareLinkFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShareLinkPayload>[]
+        }
+        create: {
+          args: Prisma.ShareLinkCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShareLinkPayload>
+        }
+        createMany: {
+          args: Prisma.ShareLinkCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.ShareLinkDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShareLinkPayload>
+        }
+        update: {
+          args: Prisma.ShareLinkUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShareLinkPayload>
+        }
+        deleteMany: {
+          args: Prisma.ShareLinkDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ShareLinkUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.ShareLinkUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ShareLinkPayload>
+        }
+        aggregate: {
+          args: Prisma.ShareLinkAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateShareLink>
+        }
+        groupBy: {
+          args: Prisma.ShareLinkGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ShareLinkGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ShareLinkCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ShareLinkCountAggregateOutputType> | number
+        }
+      }
+    }
+    CustomerResponse: {
+      payload: Prisma.$CustomerResponsePayload<ExtArgs>
+      fields: Prisma.CustomerResponseFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.CustomerResponseFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CustomerResponsePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.CustomerResponseFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CustomerResponsePayload>
+        }
+        findFirst: {
+          args: Prisma.CustomerResponseFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CustomerResponsePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.CustomerResponseFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CustomerResponsePayload>
+        }
+        findMany: {
+          args: Prisma.CustomerResponseFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CustomerResponsePayload>[]
+        }
+        create: {
+          args: Prisma.CustomerResponseCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CustomerResponsePayload>
+        }
+        createMany: {
+          args: Prisma.CustomerResponseCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.CustomerResponseDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CustomerResponsePayload>
+        }
+        update: {
+          args: Prisma.CustomerResponseUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CustomerResponsePayload>
+        }
+        deleteMany: {
+          args: Prisma.CustomerResponseDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.CustomerResponseUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.CustomerResponseUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CustomerResponsePayload>
+        }
+        aggregate: {
+          args: Prisma.CustomerResponseAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateCustomerResponse>
+        }
+        groupBy: {
+          args: Prisma.CustomerResponseGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CustomerResponseGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.CustomerResponseCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CustomerResponseCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -2680,6 +2814,40 @@ export const ApprovalDelegationScalarFieldEnum = {
 export type ApprovalDelegationScalarFieldEnum = (typeof ApprovalDelegationScalarFieldEnum)[keyof typeof ApprovalDelegationScalarFieldEnum]
 
 
+export const ShareLinkScalarFieldEnum = {
+  id: 'id',
+  proposalId: 'proposalId',
+  documentId: 'documentId',
+  tokenHash: 'tokenHash',
+  expiresAt: 'expiresAt',
+  revokedAt: 'revokedAt',
+  firstOpenedAt: 'firstOpenedAt',
+  lastOpenedAt: 'lastOpenedAt',
+  openCount: 'openCount',
+  createdBy: 'createdBy',
+  createdAt: 'createdAt'
+} as const
+
+export type ShareLinkScalarFieldEnum = (typeof ShareLinkScalarFieldEnum)[keyof typeof ShareLinkScalarFieldEnum]
+
+
+export const CustomerResponseScalarFieldEnum = {
+  id: 'id',
+  shareLinkId: 'shareLinkId',
+  proposalId: 'proposalId',
+  decision: 'decision',
+  signerName: 'signerName',
+  signerEmail: 'signerEmail',
+  comment: 'comment',
+  documentSha256: 'documentSha256',
+  ipAddress: 'ipAddress',
+  userAgent: 'userAgent',
+  decidedAt: 'decidedAt'
+} as const
+
+export type CustomerResponseScalarFieldEnum = (typeof CustomerResponseScalarFieldEnum)[keyof typeof CustomerResponseScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -3022,6 +3190,32 @@ export const ApprovalDelegationOrderByRelevanceFieldEnum = {
 export type ApprovalDelegationOrderByRelevanceFieldEnum = (typeof ApprovalDelegationOrderByRelevanceFieldEnum)[keyof typeof ApprovalDelegationOrderByRelevanceFieldEnum]
 
 
+export const ShareLinkOrderByRelevanceFieldEnum = {
+  id: 'id',
+  proposalId: 'proposalId',
+  documentId: 'documentId',
+  tokenHash: 'tokenHash',
+  createdBy: 'createdBy'
+} as const
+
+export type ShareLinkOrderByRelevanceFieldEnum = (typeof ShareLinkOrderByRelevanceFieldEnum)[keyof typeof ShareLinkOrderByRelevanceFieldEnum]
+
+
+export const CustomerResponseOrderByRelevanceFieldEnum = {
+  id: 'id',
+  shareLinkId: 'shareLinkId',
+  proposalId: 'proposalId',
+  signerName: 'signerName',
+  signerEmail: 'signerEmail',
+  comment: 'comment',
+  documentSha256: 'documentSha256',
+  ipAddress: 'ipAddress',
+  userAgent: 'userAgent'
+} as const
+
+export type CustomerResponseOrderByRelevanceFieldEnum = (typeof CustomerResponseOrderByRelevanceFieldEnum)[keyof typeof CustomerResponseOrderByRelevanceFieldEnum]
+
+
 
 /**
  * Field references
@@ -3200,6 +3394,13 @@ export type EnumApprovalRequestStatusFieldRefInput<$PrismaModel> = FieldRefInput
  * Reference to a field of type 'ApprovalDecisionKind'
  */
 export type EnumApprovalDecisionKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ApprovalDecisionKind'>
+    
+
+
+/**
+ * Reference to a field of type 'CustomerDecision'
+ */
+export type EnumCustomerDecisionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CustomerDecision'>
     
 
 
@@ -3387,6 +3588,8 @@ export type GlobalOmitConfig = {
   approvalRequest?: Prisma.ApprovalRequestOmit
   approvalDecision?: Prisma.ApprovalDecisionOmit
   approvalDelegation?: Prisma.ApprovalDelegationOmit
+  shareLink?: Prisma.ShareLinkOmit
+  customerResponse?: Prisma.CustomerResponseOmit
 }
 
 /* Types for Logging */

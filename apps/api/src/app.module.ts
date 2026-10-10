@@ -5,6 +5,8 @@ import { AdminModule } from './admin/admin.module.js';
 import { AuthGuard } from './auth/auth.guard.js';
 import { AuthModule } from './auth/auth.module.js';
 import { AuthzGuard } from './authz/authz.js';
+import { AuditModule } from './workflow/audit.service.js';
+import { WorkflowModule } from './workflow/workflow.module.js';
 import { ContentModule } from './content/content.module.js';
 import { ClientsModule } from './clients/clients.module.js';
 import { CpqModule } from './cpq/cpq.module.js';
@@ -40,6 +42,8 @@ import { HealthController } from './health.controller.js';
     ProposalsModule,
     AdminModule,
     ContentModule,
+    AuditModule,
+    WorkflowModule,
   ],
   controllers: [HealthController],
   providers: [

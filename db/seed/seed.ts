@@ -122,7 +122,31 @@ async function main() {
     }
   }
 
-  console.log(`seed: ${products.length + SEED_PRODUCTS.length} produtos, ${SEED_BLOCKS.length} blocos de conteúdo, ${ROLES.length} utilizadores, 2 equipas`);
+
+  // Políticas de aprovação de exemplo (os limites são ilustrativos e devem ser definidos pela direção financeira).
+  const policies = [
+    {
+      name: 'Comercial — desconto, margem ou valor', scope: 'COMMERCIAL' as const, mode: 'SEQUENTIAL' as const, priority: 100,
+      condition: { or: [{ '>': [{ var: 'max_line_discount_percent' }, 15] }, { '<': [{ var: 'margin_percent' }, 25] }, { '>': [{ var: 'grand_total' }, 100000] }] },
+      levels: [
+        { level: 1, role: 'Gestor_Comercial', slaHours: 24, escalateToRole: 'Aprovador_Financeiro' },
+        { level: 2, role: 'Aprovador_Financeiro', slaHours: 48, escalateToRole: 'Administrador' },
+      ],
+    },
+    {
+      name: 'Jurídico — cláusulas alteradas', scope: 'LEGAL' as const, mode: 'SEQUENTIAL' as const, priority: 100,
+      condition: { '==': [{ var: 'has_modified_legal_section' }, true] },
+      levels: [{ level: 1, role: 'Juridico', slaHours: 48, escalateToRole: 'Administrador' }],
+    },
+  ];
+  for (const pol of policies) {
+    if (await prisma.approvalPolicy.findFirst({ where: { name: pol.name } })) continue;
+    await prisma.approvalPolicy.create({
+      data: { id: uuidv7(), name: pol.name, scope: pol.scope, mode: pol.mode, priority: pol.priority, conditionJson: pol.condition as never, levelsJson: pol.levels as never, validFrom: new Date('2026-01-01') },
+    });
+  }
+
+  console.log(`seed: ${products.length + SEED_PRODUCTS.length} produtos, ${SEED_BLOCKS.length} blocos de conteúdo, 2 políticas de aprovação, ${ROLES.length} utilizadores, 2 equipas`);
 }
 
 await main().finally(() => prisma.$disconnect());

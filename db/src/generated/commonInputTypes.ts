@@ -674,6 +674,23 @@ export type EnumApprovalDecisionKindWithAggregatesFilter<$PrismaModel = never> =
   _max?: Prisma.NestedEnumApprovalDecisionKindFilter<$PrismaModel>
 }
 
+export type EnumCustomerDecisionFilter<$PrismaModel = never> = {
+  equals?: $Enums.CustomerDecision | Prisma.EnumCustomerDecisionFieldRefInput<$PrismaModel>
+  in?: $Enums.CustomerDecision[]
+  notIn?: $Enums.CustomerDecision[]
+  not?: Prisma.NestedEnumCustomerDecisionFilter<$PrismaModel> | $Enums.CustomerDecision
+}
+
+export type EnumCustomerDecisionWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.CustomerDecision | Prisma.EnumCustomerDecisionFieldRefInput<$PrismaModel>
+  in?: $Enums.CustomerDecision[]
+  notIn?: $Enums.CustomerDecision[]
+  not?: Prisma.NestedEnumCustomerDecisionWithAggregatesFilter<$PrismaModel> | $Enums.CustomerDecision
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumCustomerDecisionFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumCustomerDecisionFilter<$PrismaModel>
+}
+
 export type NestedStringFilter<$PrismaModel = never> = {
   equals?: string | Prisma.StringFieldRefInput<$PrismaModel>
   in?: string[]
@@ -1295,6 +1312,23 @@ export type NestedEnumApprovalDecisionKindWithAggregatesFilter<$PrismaModel = ne
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumApprovalDecisionKindFilter<$PrismaModel>
   _max?: Prisma.NestedEnumApprovalDecisionKindFilter<$PrismaModel>
+}
+
+export type NestedEnumCustomerDecisionFilter<$PrismaModel = never> = {
+  equals?: $Enums.CustomerDecision | Prisma.EnumCustomerDecisionFieldRefInput<$PrismaModel>
+  in?: $Enums.CustomerDecision[]
+  notIn?: $Enums.CustomerDecision[]
+  not?: Prisma.NestedEnumCustomerDecisionFilter<$PrismaModel> | $Enums.CustomerDecision
+}
+
+export type NestedEnumCustomerDecisionWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.CustomerDecision | Prisma.EnumCustomerDecisionFieldRefInput<$PrismaModel>
+  in?: $Enums.CustomerDecision[]
+  notIn?: $Enums.CustomerDecision[]
+  not?: Prisma.NestedEnumCustomerDecisionWithAggregatesFilter<$PrismaModel> | $Enums.CustomerDecision
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumCustomerDecisionFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumCustomerDecisionFilter<$PrismaModel>
 }
 
 

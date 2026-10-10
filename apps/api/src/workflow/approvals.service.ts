@@ -160,6 +160,8 @@ export class ApprovalsService {
       if (dto.decision === 'APPROVED') await this.afterApproval(tx, r, p, actor, who.level);
       else await this.afterRejection(tx, r, p, actor, dto);
     });
+    // a cotação aprovada fica no histórico; o rascunho novo cria-se já fora da transação
+    if (dto.decision !== 'APPROVED') await this.reopenQuote(p.id, actor.userId);
     return this.detail(id, actor, actor.roles.some((x) => ['Gestor_Comercial', 'Aprovador_Financeiro', 'Administrador'].includes(x)));
   }
 
@@ -190,22 +192,12 @@ export class ApprovalsService {
     await tx.proposal.update({ where: { id: p.id }, data: { status: 'DRAFT', statusReason: dto.comment ?? null, rowVersion: { increment: 1 } } });
     await this.audit.record(tx, { actorUserId: actor.userId, entityType: 'proposal', entityId: p.id, action: 'proposal.status_changed', diff: { from: 'PENDING_APPROVAL', to: 'DRAFT', event: 'RETURN', reason: dto.comment ?? null, decision: dto.decision } });
     await this.outbox.enqueue(tx, { aggregateId: p.id, eventType: 'proposal.returned', payload: { requestId: r.id, decision: dto.decision, comment: dto.comment ?? null } });
-    // a cotação aprovada fica no histórico; a nova versão (rascunho) é criada abaixo, fora desta transação
-    this.afterTx.push(() => this.reopenQuote(p.id, actor.userId));
   }
-
-  private afterTx: Array<() => Promise<unknown>> = [];
 
   private async reopenQuote(proposalId: string, actorId: string) {
     const p = await this.prisma.proposal.findUniqueOrThrow({ where: { id: proposalId } });
     const cur = await this.prisma.quoteVersion.findFirst({ where: { proposalId, isCurrent: true } });
     if (cur?.status === 'LOCKED') await this.quotes.newVersion(p, actorId);
-  }
-
-  /** Executa o que tem de correr depois do commit (ex.: nova versão de cotação). */
-  async flush(): Promise<void> {
-    const todo = this.afterTx.splice(0);
-    for (const f of todo) await f();
   }
 
   // -- políticas e delegações -------------------------------------------------------------------

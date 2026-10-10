@@ -166,3 +166,11 @@ export const ApprovalDecisionKind = {
 } as const
 
 export type ApprovalDecisionKind = (typeof ApprovalDecisionKind)[keyof typeof ApprovalDecisionKind]
+
+
+export const CustomerDecision = {
+  ACCEPTED: 'ACCEPTED',
+  DECLINED: 'DECLINED'
+} as const
+
+export type CustomerDecision = (typeof CustomerDecision)[keyof typeof CustomerDecision]

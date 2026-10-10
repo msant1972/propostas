@@ -561,3 +561,45 @@ model ApprovalDelegation {
 
   @@map("approval_delegations")
 }
+
+// ---------------------------------------------------------------------------------------------
+// Fase 5 — Portal de aceitação do cliente (migração 0009)
+// ---------------------------------------------------------------------------------------------
+
+enum CustomerDecision {
+  ACCEPTED
+  DECLINED
+}
+
+model ShareLink {
+  id            String    @id @db.Char(36)
+  proposalId    String    @map("proposal_id") @db.Char(36)
+  documentId    String    @map("document_id") @db.Char(36)
+  tokenHash     String    @unique @map("token_hash") @db.Char(64)
+  expiresAt     DateTime  @map("expires_at") @db.DateTime(6)
+  revokedAt     DateTime? @map("revoked_at") @db.DateTime(6)
+  firstOpenedAt DateTime? @map("first_opened_at") @db.DateTime(6)
+  lastOpenedAt  DateTime? @map("last_opened_at") @db.DateTime(6)
+  openCount     Int       @default(0) @map("open_count")
+  createdBy     String    @map("created_by") @db.Char(36)
+  createdAt     DateTime  @default(now()) @map("created_at") @db.DateTime(6)
+
+  @@index([proposalId], map: "ix_sl_proposal")
+  @@map("share_links")
+}
+
+model CustomerResponse {
+  id             String           @id @db.Char(36)
+  shareLinkId    String           @unique @map("share_link_id") @db.Char(36)
+  proposalId     String           @map("proposal_id") @db.Char(36)
+  decision       CustomerDecision
+  signerName     String           @map("signer_name") @db.VarChar(255)
+  signerEmail    String           @map("signer_email") @db.VarChar(255)
+  comment        String?          @db.Text
+  documentSha256 String           @map("document_sha256") @db.Char(64)
+  ipAddress      String?          @map("ip_address") @db.VarChar(45)
+  userAgent      String?          @map("user_agent") @db.VarChar(500)
+  decidedAt      DateTime         @default(now()) @map("decided_at") @db.DateTime(6)
+
+  @@map("customer_responses")
+}

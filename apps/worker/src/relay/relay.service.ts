@@ -2,7 +2,7 @@ import { Logger } from '@nestjs/common';
 import type { Queue } from 'bullmq';
 import { Prisma, type PrismaClient } from '@cpq/db';
 import type { WorkerConfig } from '../config.js';
-import type { OutboxJob } from '../queues/handlers.js';
+import { isAuditEvent, type OutboxJob } from '../queues/handlers.js';
 import { backoffMs } from './backoff.js';
 
 interface Claimed {
@@ -23,7 +23,7 @@ export class OutboxRelay {
 
   constructor(
     private readonly prisma: PrismaClient,
-    private readonly queue: Queue<OutboxJob>,
+    private readonly queues: { events: Queue<OutboxJob>; audit: Queue<OutboxJob> },
     private readonly cfg: WorkerConfig,
   ) {}
 
@@ -43,7 +43,7 @@ export class OutboxRelay {
       await this.requeueStale();
       const claimed = await this.claim();
       for (const e of claimed) {
-        await this.queue.add(
+        await (isAuditEvent(e.event_type) ? this.queues.audit : this.queues.events).add(
           e.event_type,
           {
             eventId: e.id,

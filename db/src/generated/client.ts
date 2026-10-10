@@ -176,3 +176,13 @@ export type ApprovalDecision = Prisma.ApprovalDecisionModel
  * 
  */
 export type ApprovalDelegation = Prisma.ApprovalDelegationModel
+/**
+ * Model ShareLink
+ * 
+ */
+export type ShareLink = Prisma.ShareLinkModel
+/**
+ * Model CustomerResponse
+ * 
+ */
+export type CustomerResponse = Prisma.CustomerResponseModel

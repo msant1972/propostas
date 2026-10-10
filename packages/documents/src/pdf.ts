@@ -50,8 +50,8 @@ function table(doc: Doc, rows: Array<Array<{ runs: Run[]; span?: number; right?:
 }
 
 /**
- * PDF gerado diretamente do modelo de documento. É o conversor local (testes e desenvolvimento); em produção
- * o PDF vem da conversão do .docx pelo SharePoint (Microsoft Graph), que dá fidelidade total ao Word.
+ * PDF gerado diretamente do modelo de documento (o mesmo que alimenta o DOCX). Não reproduz tudo o que o Word faz;
+ * quando for preciso, um PDF revisto à mão pode ser carregado em substituição.
  */
 export function buildPdf(blocks: Block[], ctx: DocumentContext): Promise<Buffer> {
   return new Promise((resolve, reject) => {

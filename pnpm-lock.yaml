@@ -414,6 +414,9 @@ importers:
       '@cpq/documents':
         specifier: workspace:*
         version: link:../../packages/documents
+      '@cpq/rules-engine':
+        specifier: workspace:*
+        version: link:../../packages/rules-engine
       '@cpq/shared':
         specifier: workspace:*
         version: link:../../packages/shared
@@ -429,6 +432,9 @@ importers:
       ioredis:
         specifier: ^6.0.0
         version: 6.0.0(supports-color@10.2.2)
+      nodemailer:
+        specifier: ^10.0.16
+        version: 10.0.16
       reflect-metadata:
         specifier: ^0.2.2
         version: 0.2.2
@@ -445,6 +451,9 @@ importers:
       '@swc/core':
         specifier: ^1.16.13
         version: 1.16.13(@swc/helpers@0.5.23)
+      '@types/nodemailer':
+        specifier: ^8.0.2
+        version: 8.0.2
       unplugin-swc:
         specifier: ^2.0.0
         version: 2.0.0(@swc/core@1.16.13(@swc/helpers@0.5.23))(esbuild@0.28.2)(rolldown@1.2.13)(vite@8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1))
@@ -2197,6 +2206,9 @@ packages:
   '@types/node@26.6.5':
     resolution: {integrity: sha512-uMzsv9stDdofIZBx4UGh4Z9ZgXnGC9seRDscilBcTHAeOFk67MZg/k9bWVfO+bk4qZmG+l52hRnLwUiH2LnJTg==}
 
+  '@types/nodemailer@8.0.2':
+    resolution: {integrity: sha512-c7M5ox8p0nEOfbJ2E9Qcmt8/QCu/VzsiAhzBiZbvky2PhKZDHpKB3sQHBM5MEZNkCfBOaS6S9//AGPRTNB7IaA==}
+
   '@types/pdfkit@0.17.6':
     resolution: {integrity: sha512-tIwzxk2uWKp0Cq9JIluQXJid77lYhF52EsIOwhsMF4iWLA6YneoBR1xVKYYdAysHuepUB0OX4tdwMiUDdGKmig==}
 
@@ -3606,6 +3618,10 @@ packages:
 
   node-html-parser@9.0.4:
     resolution: {integrity: sha512-reUSrZkF1rO7hEYe5mJwtbVcQ6mB5QrViCZH6Wv+iz3er/PA9Q50gol15dMLQRDfdli4VzqPMPR24HNRFgVKFw==}
+
+  nodemailer@10.0.16:
+    resolution: {integrity: sha512-VL9xKErxN+el77o8eBOuYKUPMyEx7F9hfnDCuiUKJRp9v3wnWMOudYgP/SWbwSHy8rUL4cylobuXtki1LpQS7A==}
+    engines: {node: '>=20.0.0'}
 
   nth-check@2.1.1:
     resolution: {integrity: sha512-lqjrjmaOoAnWfMmBPL+XNnynZh2+swxiX3WUE0s4yEHI6m+AwrK2UZOimIRl3X/4QctVqS8AiZjFqyOGrMXb/w==}
@@ -5884,6 +5900,10 @@ snapshots:
     dependencies:
       undici-types: 8.9.0
 
+  '@types/nodemailer@8.0.2':
+    dependencies:
+      '@types/node': 26.6.5
+
   '@types/pdfkit@0.17.6':
     dependencies:
       '@types/node': 26.6.5
@@ -7362,6 +7382,8 @@ snapshots:
     dependencies:
       css-select: 5.2.2
       entities: 8.1.0
+
+  nodemailer@10.0.16: {}
 
   nth-check@2.1.1:
     dependencies:

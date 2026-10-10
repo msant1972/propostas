@@ -9,7 +9,7 @@ const xmlEsc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').rep
 
 // ---------------------------------------------------------------------------------------------
 // Modelo base (.docx): estilos, cabeçalho/rodapé e o marcador {@conteudo}, onde o Docxtemplater
-// insere o corpo. Em produção pode ser substituído por um modelo da empresa guardado no SharePoint.
+// insere o corpo. Pode ser substituído por um modelo da empresa com o mesmo marcador.
 // ---------------------------------------------------------------------------------------------
 let baseTemplate: Promise<Buffer> | undefined;
 

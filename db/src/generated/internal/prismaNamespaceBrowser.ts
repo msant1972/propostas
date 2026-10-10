@@ -77,7 +77,9 @@ export const ModelName = {
   ApprovalPolicy: 'ApprovalPolicy',
   ApprovalRequest: 'ApprovalRequest',
   ApprovalDecision: 'ApprovalDecision',
-  ApprovalDelegation: 'ApprovalDelegation'
+  ApprovalDelegation: 'ApprovalDelegation',
+  ShareLink: 'ShareLink',
+  CustomerResponse: 'CustomerResponse'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -512,6 +514,40 @@ export const ApprovalDelegationScalarFieldEnum = {
 export type ApprovalDelegationScalarFieldEnum = (typeof ApprovalDelegationScalarFieldEnum)[keyof typeof ApprovalDelegationScalarFieldEnum]
 
 
+export const ShareLinkScalarFieldEnum = {
+  id: 'id',
+  proposalId: 'proposalId',
+  documentId: 'documentId',
+  tokenHash: 'tokenHash',
+  expiresAt: 'expiresAt',
+  revokedAt: 'revokedAt',
+  firstOpenedAt: 'firstOpenedAt',
+  lastOpenedAt: 'lastOpenedAt',
+  openCount: 'openCount',
+  createdBy: 'createdBy',
+  createdAt: 'createdAt'
+} as const
+
+export type ShareLinkScalarFieldEnum = (typeof ShareLinkScalarFieldEnum)[keyof typeof ShareLinkScalarFieldEnum]
+
+
+export const CustomerResponseScalarFieldEnum = {
+  id: 'id',
+  shareLinkId: 'shareLinkId',
+  proposalId: 'proposalId',
+  decision: 'decision',
+  signerName: 'signerName',
+  signerEmail: 'signerEmail',
+  comment: 'comment',
+  documentSha256: 'documentSha256',
+  ipAddress: 'ipAddress',
+  userAgent: 'userAgent',
+  decidedAt: 'decidedAt'
+} as const
+
+export type CustomerResponseScalarFieldEnum = (typeof CustomerResponseScalarFieldEnum)[keyof typeof CustomerResponseScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -852,4 +888,30 @@ export const ApprovalDelegationOrderByRelevanceFieldEnum = {
 } as const
 
 export type ApprovalDelegationOrderByRelevanceFieldEnum = (typeof ApprovalDelegationOrderByRelevanceFieldEnum)[keyof typeof ApprovalDelegationOrderByRelevanceFieldEnum]
+
+
+export const ShareLinkOrderByRelevanceFieldEnum = {
+  id: 'id',
+  proposalId: 'proposalId',
+  documentId: 'documentId',
+  tokenHash: 'tokenHash',
+  createdBy: 'createdBy'
+} as const
+
+export type ShareLinkOrderByRelevanceFieldEnum = (typeof ShareLinkOrderByRelevanceFieldEnum)[keyof typeof ShareLinkOrderByRelevanceFieldEnum]
+
+
+export const CustomerResponseOrderByRelevanceFieldEnum = {
+  id: 'id',
+  shareLinkId: 'shareLinkId',
+  proposalId: 'proposalId',
+  signerName: 'signerName',
+  signerEmail: 'signerEmail',
+  comment: 'comment',
+  documentSha256: 'documentSha256',
+  ipAddress: 'ipAddress',
+  userAgent: 'userAgent'
+} as const
+
+export type CustomerResponseOrderByRelevanceFieldEnum = (typeof CustomerResponseOrderByRelevanceFieldEnum)[keyof typeof CustomerResponseOrderByRelevanceFieldEnum]
 

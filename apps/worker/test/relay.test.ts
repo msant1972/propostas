@@ -6,6 +6,7 @@ import { createPrisma, migrate, testDatabase, type PrismaClient } from '@cpq/db'
 import { uuidv7 } from '@cpq/shared';
 import { loadConfig } from '../src/config.js';
 import { dispatch, type OutboxJob } from '../src/queues/handlers.js';
+import { Notifier } from '../src/notify/notifier.js';
 import { OutboxRelay } from '../src/relay/relay.service.js';
 
 const DB = process.env['TEST_DATABASE_URL'];
@@ -25,6 +26,7 @@ run('relay do outbox com MariaDB e Redis', () => {
   let prisma: PrismaClient;
   let redis: Redis;
   let queue: Queue<OutboxJob>;
+  let auditQueue: Queue<OutboxJob>;
   let worker: Worker<OutboxJob>;
   let relay: OutboxRelay;
   const queueName = `events-test-${uuidv7()}`;
@@ -43,8 +45,10 @@ run('relay do outbox com MariaDB e Redis', () => {
     await prisma.outboxEvent.deleteMany();
     redis = new Redis(REDIS!, { maxRetriesPerRequest: null });
     queue = new Queue<OutboxJob>(queueName, { connection: redis });
-    relay = new OutboxRelay(prisma, queue, cfg);
-    worker = new Worker<OutboxJob>(queueName, async (job) => dispatch(job.data, { prisma, repo: undefined as never, cfg }), { connection: redis.duplicate() });
+    const audit = new Queue<OutboxJob>(`${queueName}-audit`, { connection: redis });
+    auditQueue = audit;
+    relay = new OutboxRelay(prisma, { events: queue, audit }, cfg);
+    worker = new Worker<OutboxJob>(queueName, async (job) => dispatch(job.data, { prisma, repo: undefined as never, notifier: new Notifier(cfg), cfg }), { connection: redis.duplicate() });
     worker.on('completed', (job) => void relay.markDone(job.data.eventId));
     worker.on('failed', (job, err) => { if (job) void relay.markFailed(job.data.eventId, err); });
   });
@@ -53,6 +57,7 @@ run('relay do outbox com MariaDB e Redis', () => {
     await worker?.close();
     await queue?.obliterate({ force: true }).catch(() => undefined);
     await queue?.close();
+    await auditQueue?.close();
     await redis?.quit();
     await prisma?.$disconnect();
   });
@@ -89,7 +94,7 @@ run('relay do outbox com MariaDB e Redis', () => {
     expect((await prisma.outboxEvent.findUniqueOrThrow({ where: { id: future.id } })).status).toBe('PENDING');
 
     const ev = await add('system.ping');
-    const [a, b] = await Promise.all([new OutboxRelay(prisma, queue, cfg).tick(), new OutboxRelay(prisma, queue, cfg).tick()]);
+    const [a, b] = await Promise.all([new OutboxRelay(prisma, { events: queue, audit: auditQueue }, cfg).tick(), new OutboxRelay(prisma, { events: queue, audit: auditQueue }, cfg).tick()]);
     expect(a + b).toBeGreaterThanOrEqual(1);
     await until(async () => (await prisma.outboxEvent.findUniqueOrThrow({ where: { id: ev.id } })).status === 'DONE');
   });

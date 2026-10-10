@@ -1,0 +1,10 @@
+[mysqld]
+bind-address = 127.0.0.1
+character-set-server = utf8mb4
+collation-server = utf8mb4_unicode_ci
+default-time-zone = '+00:00'
+default-storage-engine = InnoDB
+innodb_buffer_pool_size = 256M
+# Desenvolvimento e testes: sem binlog nem encriptação (a produção usa ambos, ver infra/ansible).
+skip-log-bin
+max_connections = 100

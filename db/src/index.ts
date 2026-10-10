@@ -18,3 +18,5 @@ export function createPrisma(databaseUrl: string): PrismaClient {
   });
   return new PrismaClient({ adapter });
 }
+
+export { migrate } from './migrate.js';

@@ -16,7 +16,10 @@
     "gen:api": "pnpm --filter @cpq/api run openapi && pnpm --filter @cpq/api-client run generate",
     "db:migrate": "pnpm --filter @cpq/db run migrate",
     "db:seed": "pnpm --filter @cpq/db run seed",
-    "e2e": "pnpm --filter @cpq/e2e run e2e"
+    "e2e": "pnpm --filter @cpq/e2e run e2e",
+    "env:setup": "scripts/env/setup.sh",
+    "env:stop": "scripts/env/stop.sh",
+    "test:all": "scripts/env/test.sh"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

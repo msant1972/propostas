@@ -3,7 +3,7 @@ import mariadb from 'mariadb';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { uuidv7 } from '@cpq/shared';
 import { createPrisma } from '../src/index.js';
-import { migrate } from '../scripts/migrate.js';
+import { migrate } from '../src/migrate.js';
 
 /**
  * Teste decisivo da tarefa 1.2 (ver Planeamento.md): o tipo nativo UUID da MariaDB serve para UUIDv7?

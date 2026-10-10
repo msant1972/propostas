@@ -1,0 +1,10 @@
+# Variáveis partilhadas pelos scripts do ambiente de testes local (MariaDB e Redis compilados em ~/tools).
+export TOOLS="${CPQ_TOOLS:-$HOME/tools}"
+export MARIADB_HOME="$TOOLS/mariadb"
+export REDIS_HOME="$TOOLS/redis"
+export DATA="$TOOLS/data"
+export MARIADB_DATA="$DATA/mariadb"
+export REDIS_DATA="$DATA/redis"
+export DB_PORT="${DB_PORT:-3306}"
+export REDIS_PORT="${REDIS_PORT:-6379}"
+export DB_SOCKET="$DATA/mariadb.sock"

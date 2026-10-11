@@ -19,7 +19,8 @@
     "e2e": "pnpm --filter @cpq/e2e run e2e",
     "env:setup": "scripts/env/setup.sh",
     "env:stop": "scripts/env/stop.sh",
-    "test:all": "scripts/env/test.sh"
+    "test:all": "scripts/env/test.sh",
+    "ops:verify": "pnpm --filter @cpq/db run ops:verify --"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

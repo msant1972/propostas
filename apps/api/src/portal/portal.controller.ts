@@ -20,8 +20,8 @@ export class PortalPublicController {
   @Public() @Throttle({ default: { limit: RATE, ttl: 60_000 } })
   @Get(':token')
   @ApiOperation({ operationId: 'portalView' }) @ApiOkResponse({ type: PortalViewDto })
-  view(@Param('token') token: string, @Ip() ip: string, @Headers('user-agent') ua?: string) {
-    return this.portal.view(token, ip, ua);
+  view(@Param('token') token: string) {
+    return this.portal.view(token);
   }
 
   @Public() @Throttle({ default: { limit: RATE, ttl: 60_000 } })

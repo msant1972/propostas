@@ -80,7 +80,8 @@ export const ModelName = {
   ApprovalDelegation: 'ApprovalDelegation',
   ShareLink: 'ShareLink',
   CustomerResponse: 'CustomerResponse',
-  ApiKey: 'ApiKey'
+  ApiKey: 'ApiKey',
+  AuditHead: 'AuditHead'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -573,6 +574,14 @@ export const ApiKeyScalarFieldEnum = {
 export type ApiKeyScalarFieldEnum = (typeof ApiKeyScalarFieldEnum)[keyof typeof ApiKeyScalarFieldEnum]
 
 
+export const AuditHeadScalarFieldEnum = {
+  id: 'id',
+  lastHash: 'lastHash'
+} as const
+
+export type AuditHeadScalarFieldEnum = (typeof AuditHeadScalarFieldEnum)[keyof typeof AuditHeadScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -953,4 +962,11 @@ export const ApiKeyOrderByRelevanceFieldEnum = {
 } as const
 
 export type ApiKeyOrderByRelevanceFieldEnum = (typeof ApiKeyOrderByRelevanceFieldEnum)[keyof typeof ApiKeyOrderByRelevanceFieldEnum]
+
+
+export const AuditHeadOrderByRelevanceFieldEnum = {
+  lastHash: 'lastHash'
+} as const
+
+export type AuditHeadOrderByRelevanceFieldEnum = (typeof AuditHeadOrderByRelevanceFieldEnum)[keyof typeof AuditHeadOrderByRelevanceFieldEnum]
 

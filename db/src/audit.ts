@@ -24,13 +24,13 @@ export const rowHash = (prevHash: string, e: AuditEntry): string =>
   createHash('sha256').update(prevHash + canonicalJson(e)).digest('hex');
 
 /**
- * Acrescenta uma entrada à cadeia. Tem de ser chamada por UM escritor de cada vez (a fila `audit` do worker,
- * com concorrência 1): lê o último hash e insere a seguinte.
+ * Acrescenta uma entrada à cadeia. Qualquer número de processos pode chamá-la ao mesmo tempo: a linha única de
+ * `audit_head` é bloqueada (FOR UPDATE) até ao fim da transação, o que serializa a ordem da cadeia na base de dados.
  */
 export async function appendAudit(prisma: PrismaClient, e: AuditEntry): Promise<{ seq: bigint; rowHash: string }> {
   return prisma.$transaction(async (tx) => {
-    const last = await tx.auditLog.findFirst({ orderBy: { seq: 'desc' } });
-    const prev = last?.rowHash ?? GENESIS_HASH;
+    const head = await tx.$queryRaw<Array<{ last_hash: string }>>`SELECT last_hash FROM audit_head WHERE id = 1 FOR UPDATE`;
+    const prev = head[0]?.last_hash ?? GENESIS_HASH;
     const hash = rowHash(prev, e);
     const row = await tx.auditLog.create({
       data: {
@@ -38,6 +38,8 @@ export async function appendAudit(prisma: PrismaClient, e: AuditEntry): Promise<
         action: e.action, diffJson: (e.diff ?? {}) as never, prevHash: prev, rowHash: hash,
       },
     });
+    if (head.length === 0) await tx.$executeRaw`INSERT INTO audit_head (id, last_hash) VALUES (1, ${hash})`;
+    else await tx.$executeRaw`UPDATE audit_head SET last_hash = ${hash} WHERE id = 1`;
     return { seq: row.seq, rowHash: hash };
   });
 }

@@ -426,7 +426,8 @@ export const ModelName = {
   ApprovalDelegation: 'ApprovalDelegation',
   ShareLink: 'ShareLink',
   CustomerResponse: 'CustomerResponse',
-  ApiKey: 'ApiKey'
+  ApiKey: 'ApiKey',
+  AuditHead: 'AuditHead'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -442,7 +443,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "team" | "user" | "product" | "outboxEvent" | "auditLog" | "client" | "productAttribute" | "productBundleItem" | "taxRate" | "fxRate" | "priceList" | "priceListItem" | "cpqRule" | "proposal" | "quoteVersion" | "quoteItem" | "contentBlock" | "contentBlockVersion" | "tag" | "contentBlockTag" | "proposalSection" | "sectionDocument" | "document" | "approvalPolicy" | "approvalRequest" | "approvalDecision" | "approvalDelegation" | "shareLink" | "customerResponse" | "apiKey"
+    modelProps: "team" | "user" | "product" | "outboxEvent" | "auditLog" | "client" | "productAttribute" | "productBundleItem" | "taxRate" | "fxRate" | "priceList" | "priceListItem" | "cpqRule" | "proposal" | "quoteVersion" | "quoteItem" | "contentBlock" | "contentBlockVersion" | "tag" | "contentBlockTag" | "proposalSection" | "sectionDocument" | "document" | "approvalPolicy" | "approvalRequest" | "approvalDecision" | "approvalDelegation" | "shareLink" | "customerResponse" | "apiKey" | "auditHead"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2426,6 +2427,72 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    AuditHead: {
+      payload: Prisma.$AuditHeadPayload<ExtArgs>
+      fields: Prisma.AuditHeadFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.AuditHeadFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditHeadPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.AuditHeadFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditHeadPayload>
+        }
+        findFirst: {
+          args: Prisma.AuditHeadFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditHeadPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.AuditHeadFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditHeadPayload>
+        }
+        findMany: {
+          args: Prisma.AuditHeadFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditHeadPayload>[]
+        }
+        create: {
+          args: Prisma.AuditHeadCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditHeadPayload>
+        }
+        createMany: {
+          args: Prisma.AuditHeadCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.AuditHeadDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditHeadPayload>
+        }
+        update: {
+          args: Prisma.AuditHeadUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditHeadPayload>
+        }
+        deleteMany: {
+          args: Prisma.AuditHeadDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.AuditHeadUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.AuditHeadUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AuditHeadPayload>
+        }
+        aggregate: {
+          args: Prisma.AuditHeadAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateAuditHead>
+        }
+        groupBy: {
+          args: Prisma.AuditHeadGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AuditHeadGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.AuditHeadCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AuditHeadCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -2939,6 +3006,14 @@ export const ApiKeyScalarFieldEnum = {
 export type ApiKeyScalarFieldEnum = (typeof ApiKeyScalarFieldEnum)[keyof typeof ApiKeyScalarFieldEnum]
 
 
+export const AuditHeadScalarFieldEnum = {
+  id: 'id',
+  lastHash: 'lastHash'
+} as const
+
+export type AuditHeadScalarFieldEnum = (typeof AuditHeadScalarFieldEnum)[keyof typeof AuditHeadScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -3321,6 +3396,13 @@ export const ApiKeyOrderByRelevanceFieldEnum = {
 export type ApiKeyOrderByRelevanceFieldEnum = (typeof ApiKeyOrderByRelevanceFieldEnum)[keyof typeof ApiKeyOrderByRelevanceFieldEnum]
 
 
+export const AuditHeadOrderByRelevanceFieldEnum = {
+  lastHash: 'lastHash'
+} as const
+
+export type AuditHeadOrderByRelevanceFieldEnum = (typeof AuditHeadOrderByRelevanceFieldEnum)[keyof typeof AuditHeadOrderByRelevanceFieldEnum]
+
+
 
 /**
  * Field references
@@ -3696,6 +3778,7 @@ export type GlobalOmitConfig = {
   shareLink?: Prisma.ShareLinkOmit
   customerResponse?: Prisma.CustomerResponseOmit
   apiKey?: Prisma.ApiKeyOmit
+  auditHead?: Prisma.AuditHeadOmit
 }
 
 /* Types for Logging */

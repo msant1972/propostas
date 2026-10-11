@@ -89,7 +89,7 @@ export class OutboxRelay {
     const ev = await this.prisma.outboxEvent.findUnique({ where: { id: eventId } });
     const payload = ev?.payload as Record<string, unknown> | null;
     if (!payload || !('token' in payload)) return {};
-    const { token: _t, ...rest } = payload;
+    const rest = Object.fromEntries(Object.entries(payload).filter(([k]) => k !== 'token'));
     return { payload: rest };
   }
 

@@ -16,6 +16,7 @@ run('cadeia de auditoria', () => {
     await migrate(url, 'up');
     prisma = createPrisma(url);
     await prisma.$executeRawUnsafe('TRUNCATE TABLE audit_log');
+    await prisma.$executeRawUnsafe("UPDATE audit_head SET last_hash = REPEAT('0', 64)");
   });
   afterAll(() => prisma?.$disconnect());
 
@@ -32,6 +33,18 @@ run('cadeia de auditoria', () => {
     expect(ex.count).toBe(3);
     expect(ex.sha256).toMatch(/^[0-9a-f]{64}$/);
     expect((await exportDay(prisma, '2026-10-12')).count).toBe(0);
+  });
+
+  it('escritas em simultâneo (vários processos) não quebram a cadeia', async () => {
+    const other = createPrisma(process.env['TEST_DATABASE_URL']!.replace(/\/[^/]*$/, `/${new URL(await testDatabase(base!, 'audit')).pathname.slice(1)}`));
+    try {
+      await Promise.all(Array.from({ length: 30 }, (_, i) => appendAudit(i % 2 ? prisma : other, { ...entry(1), action: `par.${i}`, occurredAt: `2026-10-11T11:00:${String(i).padStart(2, '0')}.000Z` })));
+      const r = await verifyChain(prisma);
+      expect(r.ok).toBe(true);
+      expect(r.checked).toBe(33);
+    } finally {
+      await other.$disconnect();
+    }
   });
 
   it('a base de dados recusa alterar ou apagar linhas (append-only)', async () => {

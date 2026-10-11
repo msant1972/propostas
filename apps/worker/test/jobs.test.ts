@@ -32,6 +32,7 @@ run('tarefas periódicas e notificações', () => {
       for (const t of ['approval_policies', 'audit_log', 'outbox_events', 'approval_decisions', 'approval_requests', 'approval_delegations', 'documents', 'share_links', 'quote_items', 'quote_versions', 'proposals', 'clients', 'price_lists', 'users', 'teams']) await tx.$executeRawUnsafe(`TRUNCATE TABLE \`${t}\``);
       await tx.$executeRawUnsafe('SET FOREIGN_KEY_CHECKS = 1');
     });
+    await prisma.$executeRawUnsafe("UPDATE audit_head SET last_hash = REPEAT('0', 64)"); // a cadeia recomeça do génesis
     await prisma.team.createMany({ data: [{ id: ids.team, name: 'Norte' }, { id: ids.team2, name: 'Sul' }] });
     const u = (id: string, name: string, roles: string[], teamId: string | null) => ({ id, email: `${name.toLowerCase()}@x.pt`, displayName: name, rolesJson: roles, teamId });
     await prisma.user.createMany({ data: [u(ids.owner, 'Dono', ['Comercial'], ids.team), u(ids.mgr, 'GestorNorte', ['Gestor_Comercial'], ids.team), u(ids.mgr2, 'GestorSul', ['Gestor_Comercial'], ids.team2), u(ids.fin, 'Financeiro', ['Aprovador_Financeiro'], null)] });

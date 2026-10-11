@@ -454,6 +454,9 @@ importers:
 
   db:
     dependencies:
+      '@cpq/rules-engine':
+        specifier: workspace:*
+        version: link:../packages/rules-engine
       '@cpq/shared':
         specifier: workspace:*
         version: link:../packages/shared

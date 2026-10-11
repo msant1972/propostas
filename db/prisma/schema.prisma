@@ -630,3 +630,10 @@ model ApiKey {
 
   @@map("api_keys")
 }
+
+model AuditHead {
+  id       Int    @id @db.TinyInt
+  lastHash String @map("last_hash") @db.Char(64)
+
+  @@map("audit_head")
+}

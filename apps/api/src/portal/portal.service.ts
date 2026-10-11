@@ -99,7 +99,7 @@ export class PortalService {
     return l;
   }
 
-  async view(token: string, ip: string | undefined, userAgent: string | undefined): Promise<PortalViewDto> {
+  async view(token: string): Promise<PortalViewDto> {
     const l = await this.resolve(token);
     const [p, doc, resp] = await Promise.all([
       this.prisma.proposal.findUniqueOrThrow({ where: { id: l.proposalId } }),
@@ -169,6 +169,6 @@ export class PortalService {
       if (e instanceof P.PrismaClientKnownRequestError && e.code === 'P2002') throw new ConflictException('Esta ligação já tem uma resposta');
       throw e;
     }
-    return this.view(token, ip, userAgent);
+    return this.view(token);
   }
 }

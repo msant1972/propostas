@@ -191,3 +191,8 @@ export type CustomerResponse = Prisma.CustomerResponseModel
  * 
  */
 export type ApiKey = Prisma.ApiKeyModel
+/**
+ * Model AuditHead
+ * 
+ */
+export type AuditHead = Prisma.AuditHeadModel

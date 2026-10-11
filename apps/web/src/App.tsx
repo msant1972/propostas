@@ -3,6 +3,8 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { RequireAuth } from './auth/RequireAuth';
 import { Layout } from './components/Layout';
 import { CatalogPage } from './pages/CatalogPage';
+import { IntegrationsPage } from './pages/IntegrationsPage';
+import { PortalPage } from './pages/PortalPage';
 import { ApprovalDetailPage } from './pages/ApprovalDetailPage';
 import { ApprovalsPage } from './pages/ApprovalsPage';
 import { ChangePasswordPage } from './pages/ChangePasswordPage';
@@ -24,6 +26,7 @@ export function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/portal/:token" element={<PortalPage />} />
           <Route path="/acesso-negado" element={<ForbiddenPage />} />
           <Route
             element={
@@ -41,6 +44,7 @@ export function App() {
             <Route path="/aprovacoes/:id" element={<ApprovalDetailPage />} />
             <Route path="/mudar-palavra-passe" element={<ChangePasswordPage />} />
             <Route path="/politicas" element={<RequireAuth roles={['Administrador']}><PoliciesPage /></RequireAuth>} />
+            <Route path="/integracoes" element={<RequireAuth roles={['Administrador']}><IntegrationsPage /></RequireAuth>} />
             <Route path="/utilizadores" element={<RequireAuth roles={['Administrador']}><UsersPage /></RequireAuth>} />
             <Route path="/propostas/:id" element={<ProposalPage />} />
           </Route>

@@ -8,7 +8,7 @@ import { apiDelete, apiGet, apiPatch, apiPost } from '../lib/api';
 type Client = components['schemas']['ClientDto'];
 type Page = components['schemas']['ClientPageDto'];
 
-const empty = { code: '', name: '', vatNumber: '', countryCode: 'PT', tier: '', vatValid: false };
+const empty = { code: '', name: '', vatNumber: '', countryCode: 'PT', tier: '', vatValid: false, contactName: '', contactEmail: '' };
 
 export function ClientsPage() {
   const { t } = useTranslation();
@@ -29,6 +29,7 @@ export function ClientsPage() {
       const body = {
         code: form.code, name: form.name, countryCode: form.countryCode.toUpperCase(),
         vatNumber: form.vatNumber || undefined, tier: form.tier || undefined, vatValid: form.vatValid,
+        contactName: form.contactName || undefined, contactEmail: form.contactEmail || undefined,
       };
       return editing === 'new' ? apiPost('/clients', body) : apiPatch(`/clients/${(editing as Client).id}`, body);
     },
@@ -47,7 +48,7 @@ export function ClientsPage() {
   function open(c: Client | 'new') {
     setError(null);
     setEditing(c);
-    setForm(c === 'new' ? empty : { code: c.code, name: c.name, vatNumber: c.vatNumber ?? '', countryCode: c.countryCode, tier: c.tier ?? '', vatValid: c.vatValid });
+    setForm(c === 'new' ? empty : { code: c.code, name: c.name, vatNumber: c.vatNumber ?? '', countryCode: c.countryCode, tier: c.tier ?? '', vatValid: c.vatValid, contactName: c.contactName ?? '', contactEmail: c.contactEmail ?? '' });
   }
 
   function submit(e: FormEvent) {
@@ -74,6 +75,8 @@ export function ClientsPage() {
           <div><Label htmlFor="c-vat">{t('clients.vat')}</Label><Input id="c-vat" value={form.vatNumber} onChange={(e) => setForm({ ...form, vatNumber: e.target.value })} /></div>
           <div><Label htmlFor="c-country">{t('clients.country')}</Label><Input id="c-country" required maxLength={2} value={form.countryCode} onChange={(e) => setForm({ ...form, countryCode: e.target.value })} /></div>
           <div><Label htmlFor="c-tier">{t('clients.tier')}</Label><Input id="c-tier" value={form.tier} onChange={(e) => setForm({ ...form, tier: e.target.value })} /></div>
+          <div><Label htmlFor="c-cn">{t('clients.contactName')}</Label><Input id="c-cn" value={form.contactName} onChange={(e) => setForm({ ...form, contactName: e.target.value })} /></div>
+          <div><Label htmlFor="c-ce">{t('clients.contactEmail')}</Label><Input id="c-ce" type="email" value={form.contactEmail} onChange={(e) => setForm({ ...form, contactEmail: e.target.value })} /></div>
           <label className="flex items-center gap-2 self-end text-sm"><input type="checkbox" checked={form.vatValid} onChange={(e) => setForm({ ...form, vatValid: e.target.checked })} />{t('clients.vatValid')}</label>
           {error && <p role="alert" className="col-span-2 text-sm text-red-600">{error}</p>}
           <div className="col-span-2 flex gap-2">

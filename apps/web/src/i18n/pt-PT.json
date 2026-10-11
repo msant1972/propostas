@@ -11,7 +11,8 @@
     "approvals": "Aprovações",
     "policies": "Políticas",
     "users": "Utilizadores",
-    "password": "Palavra-passe"
+    "password": "Palavra-passe",
+    "integrations": "Integrações e privacidade"
   },
   "login": {
     "title": "Iniciar sessão",
@@ -85,7 +86,9 @@
     "vatValid": "VAT validado",
     "created": "Cliente criado.",
     "saved": "Cliente guardado.",
-    "confirmDelete": "Eliminar este cliente?"
+    "confirmDelete": "Eliminar este cliente?",
+    "contactName": "Pessoa de contacto",
+    "contactEmail": "Email de contacto"
   },
   "proposals": {
     "title": "Propostas",
@@ -253,7 +256,9 @@
       "portal.opened": "Cliente abriu a proposta",
       "portal.accepted": "Cliente aceitou",
       "portal.declined": "Cliente recusou",
-      "portal.link_created": "Ligação do portal criada"
+      "portal.link_created": "Ligação do portal criada",
+      "portal.link_revoked": "Ligação do portal revogada",
+      "portal.receipt_generated": "Comprovativo de aceitação gerado"
     },
     "by": "por {{name}}"
   },
@@ -352,5 +357,80 @@
     "newTeam": "Nova equipa",
     "createTeam": "Criar equipa",
     "confirmReset": "Repor a palavra-passe deste utilizador? As sessões abertas terminam."
+  },
+  "portal": {
+    "tab": "Portal do cliente",
+    "links": "Ligações",
+    "create": "Criar ligação",
+    "sendTo": "Enviar por email para",
+    "send": "Criar e enviar",
+    "createOnly": "Criar sem enviar",
+    "urlOnce": "Ligação criada. Copie-a agora: depois só fica guardado o hash.",
+    "copy": "Copiar",
+    "copied": "Copiada",
+    "revoke": "Revogar",
+    "opens": "{{n}} aberturas",
+    "neverOpened": "Ainda não aberta",
+    "expires": "Expira em {{date}}",
+    "status": {
+      "ACTIVE": "Ativa",
+      "EXPIRED": "Expirada",
+      "REVOKED": "Revogada",
+      "RESPONDED": "Respondida"
+    },
+    "response": {
+      "ACCEPTED": "Aceite por {{name}} ({{email}})",
+      "DECLINED": "Recusada por {{name}} ({{email}})"
+    },
+    "onlySent": "A ligação cria-se depois de a proposta ser enviada.",
+    "none": "Ainda não há ligações.",
+    "public": {
+      "title": "Proposta",
+      "for": "Preparada para {{client}}",
+      "validUntil": "Válida até {{date}}",
+      "total": "Valor total",
+      "document": "Documento",
+      "hash": "SHA-256 do documento",
+      "certTitle": "Ligação segura",
+      "certText": "Este servidor usa um certificado próprio. Se o seu browser mostrou um aviso, confirme que a impressão digital SHA-256 do certificado é:",
+      "answer": "A sua resposta",
+      "accept": "Aceito a proposta",
+      "decline": "Recuso a proposta",
+      "name": "Nome completo",
+      "email": "Email",
+      "comment": "Comentário (opcional)",
+      "read": "Li o documento acima e confirmo a minha decisão.",
+      "submit": "Enviar resposta",
+      "accepted": "Proposta aceite. Obrigado!",
+      "declined": "Resposta registada: proposta recusada.",
+      "closed": "Esta proposta já não aceita resposta.",
+      "invalid": "Ligação inválida ou expirada.",
+      "by": "Por {{name}} em {{date}}",
+      "receipt": "Guarde esta página: o comprovativo ficou registado.",
+      "error": "Não foi possível enviar a resposta."
+    }
+  },
+  "integrations": {
+    "title": "Integrações e privacidade",
+    "keys": "Chaves de API (CRM)",
+    "newKey": "Nova chave",
+    "keyName": "Nome",
+    "scopes": "Permissões",
+    "clientsWrite": "Escrever clientes",
+    "proposalsRead": "Ler propostas",
+    "create": "Criar chave",
+    "keyOnce": "Copie a chave agora; não voltará a ser mostrada:",
+    "revoke": "Revogar",
+    "revoked": "Revogada",
+    "lastUsed": "Último uso",
+    "neverUsed": "nunca",
+    "privacy": "Direitos do titular (RGPD)",
+    "email": "Email do titular",
+    "export": "Exportar dados",
+    "anonymize": "Anonimizar",
+    "confirm": "Anonimizar estes dados? A operação não é reversível.",
+    "exported": "Exportação gerada.",
+    "anonymized": "Anonimizado: {{clients}} clientes, {{responses}} respostas, {{users}} utilizadores.",
+    "docs": "O CRM envia clientes para POST /api/v1/integrations/crm/clients e lê propostas em GET /api/v1/integrations/crm/proposals, com o cabeçalho X-Api-Key."
   }
 }

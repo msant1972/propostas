@@ -30,6 +30,7 @@ export function Layout() {
           {link('/catalogo', t('nav.catalog'))}
           {admin && link('/politicas', t('nav.policies'))}
           {admin && link('/utilizadores', t('nav.users'))}
+          {admin && link('/integracoes', t('nav.integrations'))}
         </nav>
         <div className="flex items-center gap-3 text-sm">
           <Link to="/mudar-palavra-passe" className="hover:underline" title={t('nav.password')}>{session?.user.displayName}</Link>

@@ -919,6 +919,189 @@ export interface paths {
         patch: operations["updatePolicy"];
         trace?: never;
     };
+    "/api/v1/portal/{token}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["portalView"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/portal/{token}/document": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["portalDocument"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/portal/{token}/response": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** O cliente aceita ou recusa a proposta */
+        post: operations["portalRespond"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/proposals/{id}/share-links": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["listShareLinks"];
+        put?: never;
+        /** Cria uma ligação do portal (revoga as anteriores); opcionalmente envia por email */
+        post: operations["createShareLink"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/proposals/{id}/share-links/{linkId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["revokeShareLink"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/api-keys": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["listApiKeys"];
+        put?: never;
+        /** Cria uma chave de API; a chave só é mostrada uma vez */
+        post: operations["createApiKey"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/api-keys/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["revokeApiKey"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/integrations/crm/clients": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** O CRM envia clientes (cria/atualiza por externalId) */
+        post: operations["crmSyncClients"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/integrations/crm/proposals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** O CRM lê as propostas alteradas desde um instante */
+        get: operations["crmProposals"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/privacy/export": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Exporta os dados pessoais de um titular */
+        post: operations["privacyExport"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/privacy/anonymize": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Anonimiza os dados pessoais de um titular (irreversível) */
+        post: operations["privacyAnonymize"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1034,6 +1217,8 @@ export interface components {
             countryCode: string;
             tier: string | null;
             vatValid: boolean;
+            contactName: string | null;
+            contactEmail: string | null;
         };
         ClientPageDto: {
             items: components["schemas"]["ClientDto"][];
@@ -1050,6 +1235,9 @@ export interface components {
             tier?: string;
             /** @description VAT intracomunitário validado (VIES) */
             vatValid?: boolean;
+            /** @description Contacto para envio da proposta (dado pessoal: o mínimo necessário) */
+            contactName?: string;
+            contactEmail?: string;
         };
         UpdateClientDto: {
             code?: string;
@@ -1060,6 +1248,9 @@ export interface components {
             tier?: string;
             /** @description VAT intracomunitário validado (VIES) */
             vatValid?: boolean;
+            /** @description Contacto para envio da proposta (dado pessoal: o mínimo necessário) */
+            contactName?: string;
+            contactEmail?: string;
         };
         ProposalDto: {
             id: string;
@@ -1620,6 +1811,160 @@ export interface components {
             isActive?: boolean;
             validFrom?: string;
             validTo?: string;
+        };
+        LinkResponseDto: {
+            /** @enum {string} */
+            decision: "ACCEPTED" | "DECLINED";
+            signerName: string;
+            signerEmail: string;
+            decidedAt: string;
+        };
+        PortalViewDto: {
+            proposalCode: string;
+            proposalTitle: string;
+            clientName: string;
+            validUntil: string | null;
+            documentName: string;
+            documentSha256: string;
+            grandTotal: string;
+            currency: string;
+            /** @enum {string} */
+            state: "OPEN" | "ACCEPTED" | "DECLINED" | "CLOSED";
+            response: components["schemas"]["LinkResponseDto"] | null;
+            /** @description Impressão digital SHA-256 do certificado do servidor, para o cliente confirmar */
+            certificateFingerprint: string | null;
+        };
+        PortalResponseDto: {
+            /** @enum {string} */
+            decision: "ACCEPTED" | "DECLINED";
+            signerName: string;
+            signerEmail: string;
+            comment?: string;
+            /** @description Declaração de que leu o documento (obrigatória para aceitar) */
+            confirmRead: boolean;
+        };
+        LinkDto: {
+            id: string;
+            /** @enum {string} */
+            status: "ACTIVE" | "EXPIRED" | "REVOKED" | "RESPONDED";
+            createdAt: string;
+            expiresAt: string;
+            revokedAt: string | null;
+            openCount: number;
+            firstOpenedAt: string | null;
+            lastOpenedAt: string | null;
+            response: components["schemas"]["LinkResponseDto"] | null;
+        };
+        CreateLinkDto: {
+            /** @description Se indicado, envia a ligação por email a este endereço */
+            sendTo?: string;
+        };
+        LinkCreatedDto: {
+            id: string;
+            /** @description Mostrado só agora: depois só o hash fica guardado */
+            url: string;
+            expiresAt: string;
+            sentTo: string | null;
+        };
+        ApiKeyDto: {
+            id: string;
+            name: string;
+            /** @description Primeiros caracteres da chave, para a identificar */
+            prefix: string;
+            scopes: string[];
+            createdAt: string;
+            lastUsedAt: string | null;
+            revokedAt: string | null;
+        };
+        CreateApiKeyDto: {
+            name: string;
+            scopes: ("clients:write" | "proposals:read")[];
+        };
+        ApiKeyCreatedDto: {
+            id: string;
+            name: string;
+            /** @description Primeiros caracteres da chave, para a identificar */
+            prefix: string;
+            scopes: string[];
+            createdAt: string;
+            lastUsedAt: string | null;
+            revokedAt: string | null;
+            /** @description A chave completa: só é mostrada agora */
+            key: string;
+        };
+        CrmClientDto: {
+            externalId: string;
+            /** @description Se omitido, gera-se CRM-<externalId> */
+            code?: string;
+            name: string;
+            vatNumber?: string;
+            countryCode: string;
+            tier?: string;
+            contactName?: string;
+            contactEmail?: string;
+            /** @description Marca o cliente como eliminado (eliminação lógica) */
+            deleted?: boolean;
+        };
+        CrmSyncDto: {
+            clients: components["schemas"]["CrmClientDto"][];
+        };
+        CrmSyncErrorDto: {
+            index: number;
+            externalId: string;
+            code: string;
+            message: string;
+        };
+        CrmSyncResultDto: {
+            created: number;
+            updated: number;
+            deleted: number;
+            errors: components["schemas"]["CrmSyncErrorDto"][];
+        };
+        CrmProposalDto: {
+            id: string;
+            code: string;
+            title: string;
+            status: string;
+            clientExternalId: string | null;
+            clientCode: string;
+            currency: string;
+            grandTotal: string;
+            tcv: string;
+            sentAt: string | null;
+            updatedAt: string;
+        };
+        CrmProposalsPageDto: {
+            items: components["schemas"]["CrmProposalDto"][];
+            /** @description Use como `since` no pedido seguinte */
+            nextSince: string | null;
+        };
+        PrivacyRequestDto: {
+            /** @description Email do titular dos dados */
+            email: string;
+        };
+        PrivacyExportDto: {
+            email: string;
+            generatedAt: string;
+            clients: {
+                [key: string]: unknown;
+            }[];
+            customerResponses: {
+                [key: string]: unknown;
+            }[];
+            users: {
+                [key: string]: unknown;
+            }[];
+        };
+        AnonymizeDto: {
+            /** @description Email do titular dos dados */
+            email: string;
+            /** @description Confirmação explícita: a operação não é reversível */
+            confirm: boolean;
+        };
+        AnonymizeResultDto: {
+            clients: number;
+            customerResponses: number;
+            users: number;
         };
     };
     responses: never;
@@ -3376,6 +3721,298 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PolicyDto"];
+                };
+            };
+        };
+    };
+    portalView: {
+        parameters: {
+            query?: never;
+            header: {
+                "user-agent": string;
+            };
+            path: {
+                token: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PortalViewDto"];
+                };
+            };
+        };
+    };
+    portalDocument: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                token: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    portalRespond: {
+        parameters: {
+            query?: never;
+            header: {
+                "user-agent": string;
+            };
+            path: {
+                token: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PortalResponseDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PortalViewDto"];
+                };
+            };
+        };
+    };
+    listShareLinks: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LinkDto"][];
+                };
+            };
+        };
+    };
+    createShareLink: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateLinkDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LinkCreatedDto"];
+                };
+            };
+        };
+    };
+    revokeShareLink: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                linkId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    listApiKeys: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiKeyDto"][];
+                };
+            };
+        };
+    };
+    createApiKey: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateApiKeyDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiKeyCreatedDto"];
+                };
+            };
+        };
+    };
+    revokeApiKey: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    crmSyncClients: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-Api-Key": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CrmSyncDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CrmSyncResultDto"];
+                };
+            };
+        };
+    };
+    crmProposals: {
+        parameters: {
+            query?: {
+                /** @description ISO 8601: só propostas alteradas depois deste instante */
+                since?: string;
+                pageSize?: number;
+            };
+            header: {
+                "X-Api-Key": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CrmProposalsPageDto"];
+                };
+            };
+        };
+    };
+    privacyExport: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PrivacyRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PrivacyExportDto"];
+                };
+            };
+        };
+    };
+    privacyAnonymize: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AnonymizeDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnonymizeResultDto"];
                 };
             };
         };

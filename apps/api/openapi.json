@@ -3101,6 +3101,496 @@
           "workflow"
         ]
       }
+    },
+    "/api/v1/portal/{token}": {
+      "get": {
+        "operationId": "portalView",
+        "parameters": [
+          {
+            "name": "token",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "user-agent",
+            "required": true,
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PortalViewDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "",
+        "tags": [
+          "portal"
+        ]
+      }
+    },
+    "/api/v1/portal/{token}/document": {
+      "get": {
+        "operationId": "portalDocument",
+        "parameters": [
+          {
+            "name": "token",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "",
+        "tags": [
+          "portal"
+        ]
+      }
+    },
+    "/api/v1/portal/{token}/response": {
+      "post": {
+        "operationId": "portalRespond",
+        "parameters": [
+          {
+            "name": "token",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "user-agent",
+            "required": true,
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PortalResponseDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PortalViewDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "O cliente aceita ou recusa a proposta",
+        "tags": [
+          "portal"
+        ]
+      }
+    },
+    "/api/v1/proposals/{id}/share-links": {
+      "get": {
+        "operationId": "listShareLinks",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/LinkDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "",
+        "tags": [
+          "portal"
+        ]
+      },
+      "post": {
+        "operationId": "createShareLink",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateLinkDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LinkCreatedDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Cria uma ligação do portal (revoga as anteriores); opcionalmente envia por email",
+        "tags": [
+          "portal"
+        ]
+      }
+    },
+    "/api/v1/proposals/{id}/share-links/{linkId}": {
+      "delete": {
+        "operationId": "revokeShareLink",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "linkId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "",
+        "tags": [
+          "portal"
+        ]
+      }
+    },
+    "/api/v1/api-keys": {
+      "get": {
+        "operationId": "listApiKeys",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ApiKeyDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "",
+        "tags": [
+          "integrations"
+        ]
+      },
+      "post": {
+        "operationId": "createApiKey",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateApiKeyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiKeyCreatedDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Cria uma chave de API; a chave só é mostrada uma vez",
+        "tags": [
+          "integrations"
+        ]
+      }
+    },
+    "/api/v1/api-keys/{id}": {
+      "delete": {
+        "operationId": "revokeApiKey",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "",
+        "tags": [
+          "integrations"
+        ]
+      }
+    },
+    "/api/v1/integrations/crm/clients": {
+      "post": {
+        "operationId": "crmSyncClients",
+        "parameters": [
+          {
+            "name": "X-Api-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CrmSyncDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CrmSyncResultDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "O CRM envia clientes (cria/atualiza por externalId)",
+        "tags": [
+          "integrations"
+        ]
+      }
+    },
+    "/api/v1/integrations/crm/proposals": {
+      "get": {
+        "operationId": "crmProposals",
+        "parameters": [
+          {
+            "name": "X-Api-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "since",
+            "required": false,
+            "in": "query",
+            "description": "ISO 8601: só propostas alteradas depois deste instante",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 100,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CrmProposalsPageDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "O CRM lê as propostas alteradas desde um instante",
+        "tags": [
+          "integrations"
+        ]
+      }
+    },
+    "/api/v1/privacy/export": {
+      "post": {
+        "operationId": "privacyExport",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PrivacyRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PrivacyExportDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Exporta os dados pessoais de um titular",
+        "tags": [
+          "privacy"
+        ]
+      }
+    },
+    "/api/v1/privacy/anonymize": {
+      "post": {
+        "operationId": "privacyAnonymize",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AnonymizeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnonymizeResultDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Anonimiza os dados pessoais de um titular (irreversível)",
+        "tags": [
+          "privacy"
+        ]
+      }
     }
   },
   "info": {
@@ -3552,6 +4042,14 @@
           },
           "vatValid": {
             "type": "boolean"
+          },
+          "contactName": {
+            "type": "string",
+            "nullable": true
+          },
+          "contactEmail": {
+            "type": "string",
+            "nullable": true
           }
         },
         "required": [
@@ -3561,7 +4059,9 @@
           "vatNumber",
           "countryCode",
           "tier",
-          "vatValid"
+          "vatValid",
+          "contactName",
+          "contactEmail"
         ]
       },
       "ClientPageDto": {
@@ -3612,6 +4112,13 @@
           "vatValid": {
             "type": "boolean",
             "description": "VAT intracomunitário validado (VIES)"
+          },
+          "contactName": {
+            "type": "string",
+            "description": "Contacto para envio da proposta (dado pessoal: o mínimo necessário)"
+          },
+          "contactEmail": {
+            "type": "string"
           }
         },
         "required": [
@@ -3642,6 +4149,13 @@
           "vatValid": {
             "type": "boolean",
             "description": "VAT intracomunitário validado (VIES)"
+          },
+          "contactName": {
+            "type": "string",
+            "description": "Contacto para envio da proposta (dado pessoal: o mínimo necessário)"
+          },
+          "contactEmail": {
+            "type": "string"
           }
         }
       },
@@ -5697,6 +6211,593 @@
             "type": "string"
           }
         }
+      },
+      "LinkResponseDto": {
+        "type": "object",
+        "properties": {
+          "decision": {
+            "type": "string",
+            "enum": [
+              "ACCEPTED",
+              "DECLINED"
+            ]
+          },
+          "signerName": {
+            "type": "string"
+          },
+          "signerEmail": {
+            "type": "string"
+          },
+          "decidedAt": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "decision",
+          "signerName",
+          "signerEmail",
+          "decidedAt"
+        ]
+      },
+      "PortalViewDto": {
+        "type": "object",
+        "properties": {
+          "proposalCode": {
+            "type": "string"
+          },
+          "proposalTitle": {
+            "type": "string"
+          },
+          "clientName": {
+            "type": "string"
+          },
+          "validUntil": {
+            "type": "string",
+            "nullable": true
+          },
+          "documentName": {
+            "type": "string"
+          },
+          "documentSha256": {
+            "type": "string"
+          },
+          "grandTotal": {
+            "type": "string"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "OPEN",
+              "ACCEPTED",
+              "DECLINED",
+              "CLOSED"
+            ]
+          },
+          "response": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/LinkResponseDto"
+              }
+            ]
+          },
+          "certificateFingerprint": {
+            "type": "string",
+            "nullable": true,
+            "description": "Impressão digital SHA-256 do certificado do servidor, para o cliente confirmar"
+          }
+        },
+        "required": [
+          "proposalCode",
+          "proposalTitle",
+          "clientName",
+          "validUntil",
+          "documentName",
+          "documentSha256",
+          "grandTotal",
+          "currency",
+          "state",
+          "response",
+          "certificateFingerprint"
+        ]
+      },
+      "PortalResponseDto": {
+        "type": "object",
+        "properties": {
+          "decision": {
+            "type": "string",
+            "enum": [
+              "ACCEPTED",
+              "DECLINED"
+            ]
+          },
+          "signerName": {
+            "type": "string"
+          },
+          "signerEmail": {
+            "type": "string"
+          },
+          "comment": {
+            "type": "string"
+          },
+          "confirmRead": {
+            "type": "boolean",
+            "description": "Declaração de que leu o documento (obrigatória para aceitar)"
+          }
+        },
+        "required": [
+          "decision",
+          "signerName",
+          "signerEmail",
+          "confirmRead"
+        ]
+      },
+      "LinkDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ACTIVE",
+              "EXPIRED",
+              "REVOKED",
+              "RESPONDED"
+            ]
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "expiresAt": {
+            "type": "string"
+          },
+          "revokedAt": {
+            "type": "string",
+            "nullable": true
+          },
+          "openCount": {
+            "type": "number"
+          },
+          "firstOpenedAt": {
+            "type": "string",
+            "nullable": true
+          },
+          "lastOpenedAt": {
+            "type": "string",
+            "nullable": true
+          },
+          "response": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/LinkResponseDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "status",
+          "createdAt",
+          "expiresAt",
+          "revokedAt",
+          "openCount",
+          "firstOpenedAt",
+          "lastOpenedAt",
+          "response"
+        ]
+      },
+      "CreateLinkDto": {
+        "type": "object",
+        "properties": {
+          "sendTo": {
+            "type": "string",
+            "description": "Se indicado, envia a ligação por email a este endereço"
+          }
+        }
+      },
+      "LinkCreatedDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string",
+            "description": "Mostrado só agora: depois só o hash fica guardado"
+          },
+          "expiresAt": {
+            "type": "string"
+          },
+          "sentTo": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "url",
+          "expiresAt",
+          "sentTo"
+        ]
+      },
+      "ApiKeyDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "prefix": {
+            "type": "string",
+            "description": "Primeiros caracteres da chave, para a identificar"
+          },
+          "scopes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "lastUsedAt": {
+            "type": "string",
+            "nullable": true
+          },
+          "revokedAt": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "prefix",
+          "scopes",
+          "createdAt",
+          "lastUsedAt",
+          "revokedAt"
+        ]
+      },
+      "CreateApiKeyDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "scopes": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "clients:write",
+                "proposals:read"
+              ]
+            }
+          }
+        },
+        "required": [
+          "name",
+          "scopes"
+        ]
+      },
+      "ApiKeyCreatedDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "prefix": {
+            "type": "string",
+            "description": "Primeiros caracteres da chave, para a identificar"
+          },
+          "scopes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "lastUsedAt": {
+            "type": "string",
+            "nullable": true
+          },
+          "revokedAt": {
+            "type": "string",
+            "nullable": true
+          },
+          "key": {
+            "type": "string",
+            "description": "A chave completa: só é mostrada agora"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "prefix",
+          "scopes",
+          "createdAt",
+          "lastUsedAt",
+          "revokedAt",
+          "key"
+        ]
+      },
+      "CrmClientDto": {
+        "type": "object",
+        "properties": {
+          "externalId": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string",
+            "description": "Se omitido, gera-se CRM-<externalId>"
+          },
+          "name": {
+            "type": "string"
+          },
+          "vatNumber": {
+            "type": "string"
+          },
+          "countryCode": {
+            "type": "string"
+          },
+          "tier": {
+            "type": "string"
+          },
+          "contactName": {
+            "type": "string"
+          },
+          "contactEmail": {
+            "type": "string"
+          },
+          "deleted": {
+            "type": "boolean",
+            "description": "Marca o cliente como eliminado (eliminação lógica)"
+          }
+        },
+        "required": [
+          "externalId",
+          "name",
+          "countryCode"
+        ]
+      },
+      "CrmSyncDto": {
+        "type": "object",
+        "properties": {
+          "clients": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CrmClientDto"
+            }
+          }
+        },
+        "required": [
+          "clients"
+        ]
+      },
+      "CrmSyncErrorDto": {
+        "type": "object",
+        "properties": {
+          "index": {
+            "type": "number"
+          },
+          "externalId": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "index",
+          "externalId",
+          "code",
+          "message"
+        ]
+      },
+      "CrmSyncResultDto": {
+        "type": "object",
+        "properties": {
+          "created": {
+            "type": "number"
+          },
+          "updated": {
+            "type": "number"
+          },
+          "deleted": {
+            "type": "number"
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CrmSyncErrorDto"
+            }
+          }
+        },
+        "required": [
+          "created",
+          "updated",
+          "deleted",
+          "errors"
+        ]
+      },
+      "CrmProposalDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "clientExternalId": {
+            "type": "string",
+            "nullable": true
+          },
+          "clientCode": {
+            "type": "string"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "grandTotal": {
+            "type": "string"
+          },
+          "tcv": {
+            "type": "string"
+          },
+          "sentAt": {
+            "type": "string",
+            "nullable": true
+          },
+          "updatedAt": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "code",
+          "title",
+          "status",
+          "clientExternalId",
+          "clientCode",
+          "currency",
+          "grandTotal",
+          "tcv",
+          "sentAt",
+          "updatedAt"
+        ]
+      },
+      "CrmProposalsPageDto": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CrmProposalDto"
+            }
+          },
+          "nextSince": {
+            "type": "string",
+            "nullable": true,
+            "description": "Use como `since` no pedido seguinte"
+          }
+        },
+        "required": [
+          "items",
+          "nextSince"
+        ]
+      },
+      "PrivacyRequestDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "Email do titular dos dados"
+          }
+        },
+        "required": [
+          "email"
+        ]
+      },
+      "PrivacyExportDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "generatedAt": {
+            "type": "string"
+          },
+          "clients": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          },
+          "customerResponses": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          },
+          "users": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          }
+        },
+        "required": [
+          "email",
+          "generatedAt",
+          "clients",
+          "customerResponses",
+          "users"
+        ]
+      },
+      "AnonymizeDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "Email do titular dos dados"
+          },
+          "confirm": {
+            "type": "boolean",
+            "description": "Confirmação explícita: a operação não é reversível"
+          }
+        },
+        "required": [
+          "email",
+          "confirm"
+        ]
+      },
+      "AnonymizeResultDto": {
+        "type": "object",
+        "properties": {
+          "clients": {
+            "type": "number"
+          },
+          "customerResponses": {
+            "type": "number"
+          },
+          "users": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "clients",
+          "customerResponses",
+          "users"
+        ]
       }
     }
   }

@@ -33,6 +33,9 @@ export class PortalPublicController {
     res.setHeader('Content-Disposition', `inline; filename="${encodeURIComponent(d.fileName)}"`);
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('Cache-Control', 'private, no-store');
+    // O PDF aparece dentro da página do portal (mesma origem): permite-se só esse enquadramento.
+    res.setHeader('Content-Security-Policy', "frame-ancestors 'self'");
+    res.setHeader('X-Frame-Options', 'SAMEORIGIN');
     res.send(d.bytes);
   }
 

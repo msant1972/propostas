@@ -1,0 +1,6 @@
+codigo;nome;nif;pais;contacto_email
+CLI-200;Cliente válido;500200200;PT;ok@cliente.pt
+CLI-201;;500200201;PT;
+CLI-202;País errado;500200202;PORTUGAL;
+CLI-203;Email errado;500200203;PT;isto-nao-e-email
+CLI-200;Código repetido;500200204;PT;

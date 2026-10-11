@@ -38,3 +38,7 @@ O servidor usa um certificado autoassinado. Em produção é gerado pelo Ansible
 ```bash
 scripts/tls/selfsigned.sh propostas.exemplo.pt --ip 10.0.0.5     # imprime a impressão digital SHA-256
 ```
+
+## Operação e go-live
+
+Manual de operação, plano de implantação e checklist do piloto estão em [docs/](docs/): [OPERACAO.md](docs/OPERACAO.md), [IMPLANTACAO.md](docs/IMPLANTACAO.md) e [PILOTO.md](docs/PILOTO.md).

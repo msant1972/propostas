@@ -1,0 +1,8 @@
+sku;nome;descricao;unidade;modelo_cobranca;periodo;custo;moeda_custo;categoria_fiscal;ativo
+LIC-STD;Licença Standard;Licença mensal por utilizador;UN;RECORRENTE;MES;"8,50";EUR;STANDARD;sim
+LIC-ANUAL;Licença Anual;Licença anual por utilizador;UN;RECORRENTE;ANO;"90,00";EUR;STANDARD;sim
+IMP-REDE;Instalação de rede;Instalação e configuração por equipamento;UN;PONTUAL;;"160,00";EUR;STANDARD;sim
+FOR-ONL;Formação online;Sessão de formação online;H;PONTUAL;;"30,00";EUR;REDUCED;sim
+API-USO;Chamadas de API (milhares);Consumo estimado;MIL;CONSUMO;;"0,40";EUR;STANDARD;sim
+MIG-DAD;Migração de dados;Por marcos;H;MARCOS;;"50,00";EUR;STANDARD;sim
+LIC-ANT;Licença antiga;Descontinuada;UN;RECORRENTE;MES;"7,00";EUR;STANDARD;não

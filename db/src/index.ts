@@ -22,3 +22,5 @@ export function createPrisma(databaseUrl: string): PrismaClient {
 export { migrate } from './migrate.js';
 export { testDatabase } from './testing.js';
 export * from './audit.js';
+export { importCsv, type ImportOptions, type ImportReport, type ImportType } from './import/import.js';
+export { parseCsv, parseDecimal, detectDelimiter } from './import/csv.js';

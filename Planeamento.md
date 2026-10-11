@@ -231,15 +231,19 @@ Objetivo: nenhum documento sai se o hash não for o aprovado.
 
 ## 10. Fase 6 — Endurecimento e go-live
 
-| ID | Tarefa | Esf. |
-| --- | --- | --- |
-| 6.1 | Testes de carga: geração concorrente de documentos, cotações de 200 linhas | M |
-| 6.2 | Ensaio de recuperação completo: perda do servidor e restauro por código, incluindo falha de zona (RTO ≤ 4 h, RPO ≤ 15 min) | M |
-| 6.3 | Revisão de segurança: cabeçalhos e CSP, segredos, portal do cliente, dependências; teste de intrusão | L |
-| 6.4 | Migração de dados reais (clientes, catálogo, listas de preços, blocos de conteúdo) com reconciliação | L |
-| 6.5 | Formação por perfil (Comercial, Gestor, Aprovador, Jurídico, Administrador) e manual de operação (runbooks, alertas, restauro) | M |
-| 6.6 | Piloto com um grupo reduzido de comerciais; correção de defeitos; decisão de go-live | L |
-| 6.7 | Revisão de custos (NAT, CloudWatch, licenças) e plano de migração da BD para RDS se a carga o exigir | S |
+**Estado (11 de outubro de 2026):** feitos o ensaio de restauro e a verificação de integridade (`pnpm ops:restore-rehearsal`, `pnpm ops:verify`) e a documentação de operação, implantação e piloto. Desempenho, importação de dados e segurança estão **em curso**. O ensaio de recuperação completo num servidor Ubuntu e o piloto ainda não começaram.
+
+| ID | Tarefa | Esf. | Estado |
+| --- | --- | --- | --- |
+| 6.1 | Testes de carga: geração concorrente de documentos, cotações de 200 linhas | M | Em curso |
+| 6.2 | Ensaio de recuperação completo: perda do servidor e restauro por código, incluindo falha de zona (RTO ≤ 4 h, RPO ≤ 15 min) | M | Parcial: o script de ensaio e a verificação de integridade estão feitos e validados no ambiente local; falta o ensaio completo em Ubuntu com o destino de backups real |
+| 6.3 | Revisão de segurança: cabeçalhos e CSP, segredos, portal do cliente, dependências; teste de intrusão | L | Em curso |
+| 6.4 | Migração de dados reais (clientes, catálogo, listas de preços, blocos de conteúdo) com reconciliação | L | Em curso |
+| 6.5 | Formação por perfil (Comercial, Gestor, Aprovador, Jurídico, Administrador) e manual de operação (runbooks, alertas, restauro) | M | Manual de operação e guiões de formação escritos (por validar no piloto) |
+| 6.6 | Piloto com um grupo reduzido de comerciais; correção de defeitos; decisão de go-live | L | Plano e checklist escritos; piloto por agendar |
+| 6.7 | Revisão de custos (NAT, CloudWatch, licenças) e plano de migração da BD para RDS se a carga o exigir | S | Por fazer (texto herdado da versão AWS; a instalação é um servidor Ubuntu único) |
+
+Documentação desta fase: [docs/OPERACAO.md](docs/OPERACAO.md) (manual de operação e runbooks), [docs/IMPLANTACAO.md](docs/IMPLANTACAO.md) (plano de colocação em produção) e [docs/PILOTO.md](docs/PILOTO.md) (checklist do piloto e formação). A secção 16 do manual lista as lacunas de infraestrutura a fechar antes do go-live.
 
 **Saída:** metas de desempenho e disponibilidade medidas em produção; restauro validado; piloto sem defeitos críticos abertos.
 

@@ -1,0 +1,6 @@
+codigo;nome;nif;pais;tier;contacto_nome;contacto_email;id_crm
+CLI-100;Alfa Tecnologias, Lda.;500100100;PT;gold;Ana Rodrigues;ana.rodrigues@alfa.pt;CRM-1001
+CLI-101;Beta Comércio, S.A.;500100101;PT;;Rui Pinto;rui.pinto@beta.pt;CRM-1002
+CLI-102;"Gama ""Norte"", Unipessoal";500100102;PT;silver;;;CRM-1003
+CLI-103;Delta Iberia, S.L.;B12345678;ES;gold;Carmen Ruiz;carmen@delta.es;CRM-1004
+CLI-104;Épsilon Consultoria;500100104;PT;;;;

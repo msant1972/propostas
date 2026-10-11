@@ -25,23 +25,39 @@ trap cleanup EXIT
 rm -rf "$WORK"; mkdir -p "$WORK/backup" "$WORK/data"
 T0=$(now)
 
-step "1. Backup completo (mariadb-backup) da instância em funcionamento"
-S=$(now)
-"$DB/mariadb-backup" --backup --target-dir="$WORK/backup" --socket="$DB_SOCKET" --user=root >"$WORK/backup.log" 2>&1
-"$DB/mariadb-backup" --prepare --target-dir="$WORK/backup" >>"$WORK/backup.log" 2>&1
-echo "   $(( $(now) - S )) s, $(du -sh "$WORK/backup" | cut -f1)"
+METHOD="${CPQ_BACKUP_METHOD:-$([ "$(uname)" = Darwin ] && echo dump || echo physical)}"
+echo "Método de backup: $METHOD (em macOS usa-se a cópia lógica: o mariadb-backup deste ambiente fica preso; em Ubuntu usa-se a física)"
 
-step "2. Restauro para uma pasta de dados nova (copy-back)"
+step "1. Backup completo da instância em funcionamento"
 S=$(now)
-"$DB/mariadb-backup" --copy-back --target-dir="$WORK/backup" --datadir="$WORK/data" >"$WORK/restore.log" 2>&1
+if [ "$METHOD" = physical ]; then
+  "$DB/mariadb-backup" --backup --target-dir="$WORK/backup" --socket="$DB_SOCKET" --user=root >"$WORK/backup.log" 2>&1
+  "$DB/mariadb-backup" --prepare --target-dir="$WORK/backup" >>"$WORK/backup.log" 2>&1
+  echo "   $(( $(now) - S )) s, $(du -sh "$WORK/backup" | cut -f1)"
+else
+  "$DB/mariadb-dump" --socket="$DB_SOCKET" -uroot --single-transaction --routines --triggers --events --hex-blob --databases cpq_dev | gzip -c >"$WORK/backup/cpq_dev.sql.gz"
+  echo "   $(( $(now) - S )) s, $(du -sh "$WORK/backup" | cut -f1)"
+fi
+
+step "2. Preparação da pasta de dados da instância de restauro"
+S=$(now)
+if [ "$METHOD" = physical ]; then
+  "$DB/mariadb-backup" --copy-back --target-dir="$WORK/backup" --datadir="$WORK/data" >"$WORK/restore.log" 2>&1
+else
+  "$MARIADB_HOME/scripts/mariadb-install-db" --basedir="$MARIADB_HOME" --datadir="$WORK/data" --auth-root-authentication-method=normal --skip-test-db >/dev/null
+fi
 echo "   $(( $(now) - S )) s"
 
-step "3. Arranque da instância restaurada (porta $PORT)"
+step "3. Arranque da instância de restauro (porta $PORT)"
 S=$(now)
 nohup "$DB/mariadbd" --defaults-file="$ROOT/scripts/env/mariadb.cnf" --basedir="$MARIADB_HOME" --datadir="$WORK/data" \
   --socket="$SOCK" --port=$PORT --pid-file="$WORK/mariadb.pid" >"$WORK/mariadb.log" 2>&1 &
 for _ in $(seq 1 60); do "$DB/mariadb-admin" --socket="$SOCK" -uroot ping >/dev/null 2>&1 && break; sleep 1; done
 "$DB/mariadb-admin" --socket="$SOCK" -uroot ping >/dev/null
+if [ "$METHOD" = dump ]; then
+  gunzip -c "$WORK/backup/cpq_dev.sql.gz" | "$DB/mariadb" --socket="$SOCK" -uroot
+  "$DB/mariadb" --socket="$SOCK" -uroot -e "CREATE USER IF NOT EXISTS 'cpq'@'127.0.0.1' IDENTIFIED BY 'cpq'; GRANT ALL ON cpq_dev.* TO 'cpq'@'127.0.0.1';"
+fi
 echo "   $(( $(now) - S )) s"
 
 step "4. Comparação de contagens (original vs restaurada)"

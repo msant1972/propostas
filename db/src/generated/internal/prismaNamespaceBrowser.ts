@@ -79,7 +79,8 @@ export const ModelName = {
   ApprovalDecision: 'ApprovalDecision',
   ApprovalDelegation: 'ApprovalDelegation',
   ShareLink: 'ShareLink',
-  CustomerResponse: 'CustomerResponse'
+  CustomerResponse: 'CustomerResponse',
+  ApiKey: 'ApiKey'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -187,6 +188,9 @@ export const ClientScalarFieldEnum = {
   tier: 'tier',
   vatValid: 'vatValid',
   crmExternalId: 'crmExternalId',
+  contactName: 'contactName',
+  contactEmail: 'contactEmail',
+  crmSyncedAt: 'crmSyncedAt',
   createdAt: 'createdAt',
   deletedAt: 'deletedAt'
 } as const
@@ -554,6 +558,21 @@ export const CustomerResponseScalarFieldEnum = {
 export type CustomerResponseScalarFieldEnum = (typeof CustomerResponseScalarFieldEnum)[keyof typeof CustomerResponseScalarFieldEnum]
 
 
+export const ApiKeyScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  keyPrefix: 'keyPrefix',
+  keyHash: 'keyHash',
+  scopes: 'scopes',
+  createdBy: 'createdBy',
+  createdAt: 'createdAt',
+  lastUsedAt: 'lastUsedAt',
+  revokedAt: 'revokedAt'
+} as const
+
+export type ApiKeyScalarFieldEnum = (typeof ApiKeyScalarFieldEnum)[keyof typeof ApiKeyScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -665,7 +684,9 @@ export const ClientOrderByRelevanceFieldEnum = {
   vatNumber: 'vatNumber',
   countryCode: 'countryCode',
   tier: 'tier',
-  crmExternalId: 'crmExternalId'
+  crmExternalId: 'crmExternalId',
+  contactName: 'contactName',
+  contactEmail: 'contactEmail'
 } as const
 
 export type ClientOrderByRelevanceFieldEnum = (typeof ClientOrderByRelevanceFieldEnum)[keyof typeof ClientOrderByRelevanceFieldEnum]
@@ -920,4 +941,16 @@ export const CustomerResponseOrderByRelevanceFieldEnum = {
 } as const
 
 export type CustomerResponseOrderByRelevanceFieldEnum = (typeof CustomerResponseOrderByRelevanceFieldEnum)[keyof typeof CustomerResponseOrderByRelevanceFieldEnum]
+
+
+export const ApiKeyOrderByRelevanceFieldEnum = {
+  id: 'id',
+  name: 'name',
+  keyPrefix: 'keyPrefix',
+  keyHash: 'keyHash',
+  scopes: 'scopes',
+  createdBy: 'createdBy'
+} as const
+
+export type ApiKeyOrderByRelevanceFieldEnum = (typeof ApiKeyOrderByRelevanceFieldEnum)[keyof typeof ApiKeyOrderByRelevanceFieldEnum]
 

@@ -3,7 +3,7 @@ import type { Redis } from 'ioredis';
 import type { PrismaClient } from '@cpq/db';
 import type { DocumentRepository } from '@cpq/documents';
 import type { WorkerConfig } from '../config.js';
-import { runAuditExport, runChainVerification, runExpiry, runManualEditCheck, runSlaEscalation } from './scheduled.js';
+import { runAuditExport, runChainVerification, runExpiry, runManualEditCheck, runRetention, runSlaEscalation } from './scheduled.js';
 
 /**
  * Tarefas periódicas. Cada execução toma um *lock* no Redis, para que, com vários workers, só um a faça.
@@ -34,6 +34,7 @@ export function startScheduler(deps: { prisma: PrismaClient; repo: DocumentRepos
     every('manual-edits', 900_000, () => runManualEditCheck(prisma, repo)),
     every('audit-verify', 6 * 3_600_000, () => runChainVerification(prisma)),
     every('audit-export', 6 * 3_600_000, () => runAuditExport(prisma, cfg)),
+    every('retention', 24 * 3_600_000, () => runRetention(prisma, cfg)),
   ];
   return () => timers.forEach(clearInterval);
 }

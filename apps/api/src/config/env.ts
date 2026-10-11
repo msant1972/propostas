@@ -17,6 +17,9 @@ const schema = z
     LOGIN_LOCK_MINUTES: z.coerce.number().int().min(1).default(15),
     DOCUMENT_STORAGE_DIR: z.string().default('./storage'), // repositório documental: pasta local do servidor
     ISSUER_COUNTRY: z.string().length(2).default('PT'), // país da entidade emitente (determina o IVA)
+    TLS_CERT_FILE: z.string().optional(), // certificado autoassinado do servidor: a impressão digital vai para o portal e para as mensagens
+    PORTAL_RATE_PER_MINUTE: z.coerce.number().int().min(1).default(30), // pedidos ao portal por IP e por minuto
+    PORTAL_LINK_DAYS: z.coerce.number().int().min(1).max(180).default(30),
     PORTAL_BASE_URL: z.string().default('http://localhost:5173'), // base das ligações do portal do cliente
     THROTTLE_LIMIT: z.coerce.number().int().default(120),
   })

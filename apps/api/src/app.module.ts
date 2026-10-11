@@ -6,6 +6,9 @@ import { AuthGuard } from './auth/auth.guard.js';
 import { AuthModule } from './auth/auth.module.js';
 import { AuthzGuard } from './authz/authz.js';
 import { AuditModule } from './workflow/audit.service.js';
+import { IntegrationsModule } from './integrations/integrations.module.js';
+import { PrivacyModule } from './privacy/privacy.module.js';
+import { PortalModule } from './portal/portal.module.js';
 import { WorkflowModule } from './workflow/workflow.module.js';
 import { ContentModule } from './content/content.module.js';
 import { ClientsModule } from './clients/clients.module.js';
@@ -44,6 +47,9 @@ import { HealthController } from './health.controller.js';
     ContentModule,
     AuditModule,
     WorkflowModule,
+    PortalModule,
+    IntegrationsModule,
+    PrivacyModule,
   ],
   controllers: [HealthController],
   providers: [

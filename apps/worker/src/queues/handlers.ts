@@ -3,6 +3,7 @@ import { compileProposal, type DocumentRepository } from '@cpq/documents';
 import type { WorkerConfig } from '../config.js';
 import { appendFromEvent, eventHandlers } from '../notify/events.js';
 import type { Notifier } from '../notify/notifier.js';
+import { makeReceipt, sendInvite } from '../notify/portal.js';
 
 export interface OutboxJob {
   eventId: string;
@@ -33,6 +34,8 @@ export const handlers = new Map<string, Handler>([
   ['quote.locked', async () => undefined],
   ['proposal.sent', async () => undefined],
   ['proposal.cancelled', async () => undefined],
+  ['portal.invite', async (job, ctx) => sendInvite(ctx, job.aggregateId, job.payload)],
+  ['portal.receipt', async (job, ctx) => makeReceipt(ctx, job.aggregateId, job.payload)],
   ['audit.record', async (job, ctx) => appendFromEvent(ctx.prisma, job.payload)],
   ['document.compile', async (job, ctx) => {
     await compileProposal(ctx.prisma, ctx.repo, {

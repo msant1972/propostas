@@ -3,7 +3,7 @@ import { uuidv7 } from '@cpq/shared';
 import { PRISMA, type Prisma } from '../prisma/prisma.module.js';
 import type { ClientDto, ClientPageDto, CreateClientDto, ListClientsQuery, UpdateClientDto } from './clients.dto.js';
 
-const select = { id: true, code: true, name: true, vatNumber: true, countryCode: true, tier: true, vatValid: true } as const;
+const select = { id: true, code: true, name: true, vatNumber: true, countryCode: true, tier: true, vatValid: true, contactName: true, contactEmail: true } as const;
 
 @Injectable()
 export class ClientsService {

@@ -33,6 +33,9 @@ export type ClientMinAggregateOutputType = {
   tier: string | null
   vatValid: boolean | null
   crmExternalId: string | null
+  contactName: string | null
+  contactEmail: string | null
+  crmSyncedAt: Date | null
   createdAt: Date | null
   deletedAt: Date | null
 }
@@ -46,6 +49,9 @@ export type ClientMaxAggregateOutputType = {
   tier: string | null
   vatValid: boolean | null
   crmExternalId: string | null
+  contactName: string | null
+  contactEmail: string | null
+  crmSyncedAt: Date | null
   createdAt: Date | null
   deletedAt: Date | null
 }
@@ -59,6 +65,9 @@ export type ClientCountAggregateOutputType = {
   tier: number
   vatValid: number
   crmExternalId: number
+  contactName: number
+  contactEmail: number
+  crmSyncedAt: number
   createdAt: number
   deletedAt: number
   _all: number
@@ -74,6 +83,9 @@ export type ClientMinAggregateInputType = {
   tier?: true
   vatValid?: true
   crmExternalId?: true
+  contactName?: true
+  contactEmail?: true
+  crmSyncedAt?: true
   createdAt?: true
   deletedAt?: true
 }
@@ -87,6 +99,9 @@ export type ClientMaxAggregateInputType = {
   tier?: true
   vatValid?: true
   crmExternalId?: true
+  contactName?: true
+  contactEmail?: true
+  crmSyncedAt?: true
   createdAt?: true
   deletedAt?: true
 }
@@ -100,6 +115,9 @@ export type ClientCountAggregateInputType = {
   tier?: true
   vatValid?: true
   crmExternalId?: true
+  contactName?: true
+  contactEmail?: true
+  crmSyncedAt?: true
   createdAt?: true
   deletedAt?: true
   _all?: true
@@ -186,6 +204,9 @@ export type ClientGroupByOutputType = {
   tier: string | null
   vatValid: boolean
   crmExternalId: string | null
+  contactName: string | null
+  contactEmail: string | null
+  crmSyncedAt: Date | null
   createdAt: Date
   deletedAt: Date | null
   _count: ClientCountAggregateOutputType | null
@@ -220,6 +241,9 @@ export type ClientWhereInput = {
   tier?: Prisma.StringNullableFilter<"Client"> | string | null
   vatValid?: Prisma.BoolFilter<"Client"> | boolean
   crmExternalId?: Prisma.StringNullableFilter<"Client"> | string | null
+  contactName?: Prisma.StringNullableFilter<"Client"> | string | null
+  contactEmail?: Prisma.StringNullableFilter<"Client"> | string | null
+  crmSyncedAt?: Prisma.DateTimeNullableFilter<"Client"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Client"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"Client"> | Date | string | null
   proposals?: Prisma.ProposalListRelationFilter
@@ -234,6 +258,9 @@ export type ClientOrderByWithRelationInput = {
   tier?: Prisma.SortOrderInput | Prisma.SortOrder
   vatValid?: Prisma.SortOrder
   crmExternalId?: Prisma.SortOrderInput | Prisma.SortOrder
+  contactName?: Prisma.SortOrderInput | Prisma.SortOrder
+  contactEmail?: Prisma.SortOrderInput | Prisma.SortOrder
+  crmSyncedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   proposals?: Prisma.ProposalOrderByRelationAggregateInput
@@ -252,6 +279,9 @@ export type ClientWhereUniqueInput = Prisma.AtLeast<{
   countryCode?: Prisma.StringFilter<"Client"> | string
   tier?: Prisma.StringNullableFilter<"Client"> | string | null
   vatValid?: Prisma.BoolFilter<"Client"> | boolean
+  contactName?: Prisma.StringNullableFilter<"Client"> | string | null
+  contactEmail?: Prisma.StringNullableFilter<"Client"> | string | null
+  crmSyncedAt?: Prisma.DateTimeNullableFilter<"Client"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Client"> | Date | string
   deletedAt?: Prisma.DateTimeNullableFilter<"Client"> | Date | string | null
   proposals?: Prisma.ProposalListRelationFilter
@@ -266,6 +296,9 @@ export type ClientOrderByWithAggregationInput = {
   tier?: Prisma.SortOrderInput | Prisma.SortOrder
   vatValid?: Prisma.SortOrder
   crmExternalId?: Prisma.SortOrderInput | Prisma.SortOrder
+  contactName?: Prisma.SortOrderInput | Prisma.SortOrder
+  contactEmail?: Prisma.SortOrderInput | Prisma.SortOrder
+  crmSyncedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.ClientCountOrderByAggregateInput
@@ -285,6 +318,9 @@ export type ClientScalarWhereWithAggregatesInput = {
   tier?: Prisma.StringNullableWithAggregatesFilter<"Client"> | string | null
   vatValid?: Prisma.BoolWithAggregatesFilter<"Client"> | boolean
   crmExternalId?: Prisma.StringNullableWithAggregatesFilter<"Client"> | string | null
+  contactName?: Prisma.StringNullableWithAggregatesFilter<"Client"> | string | null
+  contactEmail?: Prisma.StringNullableWithAggregatesFilter<"Client"> | string | null
+  crmSyncedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Client"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Client"> | Date | string
   deletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Client"> | Date | string | null
 }
@@ -298,6 +334,9 @@ export type ClientCreateInput = {
   tier?: string | null
   vatValid?: boolean
   crmExternalId?: string | null
+  contactName?: string | null
+  contactEmail?: string | null
+  crmSyncedAt?: Date | string | null
   createdAt?: Date | string
   deletedAt?: Date | string | null
   proposals?: Prisma.ProposalCreateNestedManyWithoutClientInput
@@ -312,6 +351,9 @@ export type ClientUncheckedCreateInput = {
   tier?: string | null
   vatValid?: boolean
   crmExternalId?: string | null
+  contactName?: string | null
+  contactEmail?: string | null
+  crmSyncedAt?: Date | string | null
   createdAt?: Date | string
   deletedAt?: Date | string | null
   proposals?: Prisma.ProposalUncheckedCreateNestedManyWithoutClientInput
@@ -326,6 +368,9 @@ export type ClientUpdateInput = {
   tier?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   vatValid?: Prisma.BoolFieldUpdateOperationsInput | boolean
   crmExternalId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  crmSyncedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   proposals?: Prisma.ProposalUpdateManyWithoutClientNestedInput
@@ -340,6 +385,9 @@ export type ClientUncheckedUpdateInput = {
   tier?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   vatValid?: Prisma.BoolFieldUpdateOperationsInput | boolean
   crmExternalId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  crmSyncedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   proposals?: Prisma.ProposalUncheckedUpdateManyWithoutClientNestedInput
@@ -354,6 +402,9 @@ export type ClientCreateManyInput = {
   tier?: string | null
   vatValid?: boolean
   crmExternalId?: string | null
+  contactName?: string | null
+  contactEmail?: string | null
+  crmSyncedAt?: Date | string | null
   createdAt?: Date | string
   deletedAt?: Date | string | null
 }
@@ -367,6 +418,9 @@ export type ClientUpdateManyMutationInput = {
   tier?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   vatValid?: Prisma.BoolFieldUpdateOperationsInput | boolean
   crmExternalId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  crmSyncedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
@@ -380,6 +434,9 @@ export type ClientUncheckedUpdateManyInput = {
   tier?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   vatValid?: Prisma.BoolFieldUpdateOperationsInput | boolean
   crmExternalId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  crmSyncedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
@@ -399,6 +456,9 @@ export type ClientCountOrderByAggregateInput = {
   tier?: Prisma.SortOrder
   vatValid?: Prisma.SortOrder
   crmExternalId?: Prisma.SortOrder
+  contactName?: Prisma.SortOrder
+  contactEmail?: Prisma.SortOrder
+  crmSyncedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
 }
@@ -412,6 +472,9 @@ export type ClientMaxOrderByAggregateInput = {
   tier?: Prisma.SortOrder
   vatValid?: Prisma.SortOrder
   crmExternalId?: Prisma.SortOrder
+  contactName?: Prisma.SortOrder
+  contactEmail?: Prisma.SortOrder
+  crmSyncedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
 }
@@ -425,6 +488,9 @@ export type ClientMinOrderByAggregateInput = {
   tier?: Prisma.SortOrder
   vatValid?: Prisma.SortOrder
   crmExternalId?: Prisma.SortOrder
+  contactName?: Prisma.SortOrder
+  contactEmail?: Prisma.SortOrder
+  crmSyncedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   deletedAt?: Prisma.SortOrder
 }
@@ -457,6 +523,9 @@ export type ClientCreateWithoutProposalsInput = {
   tier?: string | null
   vatValid?: boolean
   crmExternalId?: string | null
+  contactName?: string | null
+  contactEmail?: string | null
+  crmSyncedAt?: Date | string | null
   createdAt?: Date | string
   deletedAt?: Date | string | null
 }
@@ -470,6 +539,9 @@ export type ClientUncheckedCreateWithoutProposalsInput = {
   tier?: string | null
   vatValid?: boolean
   crmExternalId?: string | null
+  contactName?: string | null
+  contactEmail?: string | null
+  crmSyncedAt?: Date | string | null
   createdAt?: Date | string
   deletedAt?: Date | string | null
 }
@@ -499,6 +571,9 @@ export type ClientUpdateWithoutProposalsInput = {
   tier?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   vatValid?: Prisma.BoolFieldUpdateOperationsInput | boolean
   crmExternalId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  crmSyncedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
@@ -512,6 +587,9 @@ export type ClientUncheckedUpdateWithoutProposalsInput = {
   tier?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   vatValid?: Prisma.BoolFieldUpdateOperationsInput | boolean
   crmExternalId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  contactEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  crmSyncedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
@@ -556,6 +634,9 @@ export type ClientSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   tier?: boolean
   vatValid?: boolean
   crmExternalId?: boolean
+  contactName?: boolean
+  contactEmail?: boolean
+  crmSyncedAt?: boolean
   createdAt?: boolean
   deletedAt?: boolean
   proposals?: boolean | Prisma.Client$proposalsArgs<ExtArgs>
@@ -573,11 +654,14 @@ export type ClientSelectScalar = {
   tier?: boolean
   vatValid?: boolean
   crmExternalId?: boolean
+  contactName?: boolean
+  contactEmail?: boolean
+  crmSyncedAt?: boolean
   createdAt?: boolean
   deletedAt?: boolean
 }
 
-export type ClientOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "code" | "name" | "vatNumber" | "countryCode" | "tier" | "vatValid" | "crmExternalId" | "createdAt" | "deletedAt", ExtArgs["result"]["client"]>
+export type ClientOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "code" | "name" | "vatNumber" | "countryCode" | "tier" | "vatValid" | "crmExternalId" | "contactName" | "contactEmail" | "crmSyncedAt" | "createdAt" | "deletedAt", ExtArgs["result"]["client"]>
 export type ClientInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   proposals?: boolean | Prisma.Client$proposalsArgs<ExtArgs>
   _count?: boolean | Prisma.ClientCountOutputTypeDefaultArgs<ExtArgs>
@@ -597,6 +681,9 @@ export type $ClientPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     tier: string | null
     vatValid: boolean
     crmExternalId: string | null
+    contactName: string | null
+    contactEmail: string | null
+    crmSyncedAt: Date | null
     createdAt: Date
     deletedAt: Date | null
   }, ExtArgs["result"]["client"]>
@@ -977,6 +1064,9 @@ export interface ClientFieldRefs {
   readonly tier: Prisma.FieldRef<"Client", 'String'>
   readonly vatValid: Prisma.FieldRef<"Client", 'Boolean'>
   readonly crmExternalId: Prisma.FieldRef<"Client", 'String'>
+  readonly contactName: Prisma.FieldRef<"Client", 'String'>
+  readonly contactEmail: Prisma.FieldRef<"Client", 'String'>
+  readonly crmSyncedAt: Prisma.FieldRef<"Client", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"Client", 'DateTime'>
   readonly deletedAt: Prisma.FieldRef<"Client", 'DateTime'>
 }

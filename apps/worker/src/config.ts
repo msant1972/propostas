@@ -8,6 +8,9 @@ const schema = z.object({
   MAIL_OUTBOX_DIR: z.string().default('./mail-outbox'),
   SMTP_URL: z.string().optional(), // ex.: smtp://user:pass@servidor:587; sem isto, as mensagens ficam em ficheiros .eml
   MAIL_FROM: z.string().default('propostas@localhost'),
+  TLS_CERT_FILE: z.string().optional(), // impressão digital do certificado autoassinado nas mensagens ao cliente
+  RETENTION_IP_DAYS: z.coerce.number().int().min(1).default(365), // IP e agente de utilizador das respostas do portal
+  RETENTION_LINK_DAYS: z.coerce.number().int().min(1).default(180), // ligações expiradas e sem resposta
   TEAMS_WEBHOOK_URL: z.string().optional(),
   APP_BASE_URL: z.string().default('http://localhost:5173'),
   RELAY_INTERVAL_MS: z.coerce.number().int().default(1000),

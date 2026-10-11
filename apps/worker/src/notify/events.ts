@@ -69,6 +69,10 @@ export const eventHandlers: Record<string, (ctx: Ctx, aggregateId: string, paylo
     const { p, owner, client } = await proposalOf(prisma, proposalId);
     await notifier.send({ to: [person(owner)], subject: `Proposta recusada: ${p.code}`, text: `${client.name} recusou a proposta "${p.title}".\n${String(payload['reason'] ?? '')}`, link: link(cfg, `/propostas/${p.id}`) });
   },
+  'portal.opened': async ({ prisma, notifier, cfg }, proposalId) => {
+    const { p, owner, client } = await proposalOf(prisma, proposalId);
+    await notifier.send({ to: [person(owner)], subject: `O cliente abriu a proposta ${p.code}`, text: `${client.name} abriu pela primeira vez a proposta "${p.title}" no portal.`, link: link(cfg, `/propostas/${p.id}`) });
+  },
   'proposal.expired': async ({ prisma, notifier, cfg }, proposalId) => {
     const { p, owner, client } = await proposalOf(prisma, proposalId);
     await notifier.send({ to: [person(owner)], subject: `Proposta expirada: ${p.code}`, text: `A validade da proposta "${p.title}" (${client.name}) terminou sem resposta.`, link: link(cfg, `/propostas/${p.id}`) });

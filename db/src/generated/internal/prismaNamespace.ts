@@ -425,7 +425,8 @@ export const ModelName = {
   ApprovalDecision: 'ApprovalDecision',
   ApprovalDelegation: 'ApprovalDelegation',
   ShareLink: 'ShareLink',
-  CustomerResponse: 'CustomerResponse'
+  CustomerResponse: 'CustomerResponse',
+  ApiKey: 'ApiKey'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -441,7 +442,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "team" | "user" | "product" | "outboxEvent" | "auditLog" | "client" | "productAttribute" | "productBundleItem" | "taxRate" | "fxRate" | "priceList" | "priceListItem" | "cpqRule" | "proposal" | "quoteVersion" | "quoteItem" | "contentBlock" | "contentBlockVersion" | "tag" | "contentBlockTag" | "proposalSection" | "sectionDocument" | "document" | "approvalPolicy" | "approvalRequest" | "approvalDecision" | "approvalDelegation" | "shareLink" | "customerResponse"
+    modelProps: "team" | "user" | "product" | "outboxEvent" | "auditLog" | "client" | "productAttribute" | "productBundleItem" | "taxRate" | "fxRate" | "priceList" | "priceListItem" | "cpqRule" | "proposal" | "quoteVersion" | "quoteItem" | "contentBlock" | "contentBlockVersion" | "tag" | "contentBlockTag" | "proposalSection" | "sectionDocument" | "document" | "approvalPolicy" | "approvalRequest" | "approvalDecision" | "approvalDelegation" | "shareLink" | "customerResponse" | "apiKey"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2359,6 +2360,72 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ApiKey: {
+      payload: Prisma.$ApiKeyPayload<ExtArgs>
+      fields: Prisma.ApiKeyFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ApiKeyFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApiKeyPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ApiKeyFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApiKeyPayload>
+        }
+        findFirst: {
+          args: Prisma.ApiKeyFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApiKeyPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ApiKeyFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApiKeyPayload>
+        }
+        findMany: {
+          args: Prisma.ApiKeyFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApiKeyPayload>[]
+        }
+        create: {
+          args: Prisma.ApiKeyCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApiKeyPayload>
+        }
+        createMany: {
+          args: Prisma.ApiKeyCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.ApiKeyDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApiKeyPayload>
+        }
+        update: {
+          args: Prisma.ApiKeyUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApiKeyPayload>
+        }
+        deleteMany: {
+          args: Prisma.ApiKeyDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ApiKeyUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.ApiKeyUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ApiKeyPayload>
+        }
+        aggregate: {
+          args: Prisma.ApiKeyAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateApiKey>
+        }
+        groupBy: {
+          args: Prisma.ApiKeyGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ApiKeyGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ApiKeyCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ApiKeyCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -2487,6 +2554,9 @@ export const ClientScalarFieldEnum = {
   tier: 'tier',
   vatValid: 'vatValid',
   crmExternalId: 'crmExternalId',
+  contactName: 'contactName',
+  contactEmail: 'contactEmail',
+  crmSyncedAt: 'crmSyncedAt',
   createdAt: 'createdAt',
   deletedAt: 'deletedAt'
 } as const
@@ -2854,6 +2924,21 @@ export const CustomerResponseScalarFieldEnum = {
 export type CustomerResponseScalarFieldEnum = (typeof CustomerResponseScalarFieldEnum)[keyof typeof CustomerResponseScalarFieldEnum]
 
 
+export const ApiKeyScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  keyPrefix: 'keyPrefix',
+  keyHash: 'keyHash',
+  scopes: 'scopes',
+  createdBy: 'createdBy',
+  createdAt: 'createdAt',
+  lastUsedAt: 'lastUsedAt',
+  revokedAt: 'revokedAt'
+} as const
+
+export type ApiKeyScalarFieldEnum = (typeof ApiKeyScalarFieldEnum)[keyof typeof ApiKeyScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -2965,7 +3050,9 @@ export const ClientOrderByRelevanceFieldEnum = {
   vatNumber: 'vatNumber',
   countryCode: 'countryCode',
   tier: 'tier',
-  crmExternalId: 'crmExternalId'
+  crmExternalId: 'crmExternalId',
+  contactName: 'contactName',
+  contactEmail: 'contactEmail'
 } as const
 
 export type ClientOrderByRelevanceFieldEnum = (typeof ClientOrderByRelevanceFieldEnum)[keyof typeof ClientOrderByRelevanceFieldEnum]
@@ -3220,6 +3307,18 @@ export const CustomerResponseOrderByRelevanceFieldEnum = {
 } as const
 
 export type CustomerResponseOrderByRelevanceFieldEnum = (typeof CustomerResponseOrderByRelevanceFieldEnum)[keyof typeof CustomerResponseOrderByRelevanceFieldEnum]
+
+
+export const ApiKeyOrderByRelevanceFieldEnum = {
+  id: 'id',
+  name: 'name',
+  keyPrefix: 'keyPrefix',
+  keyHash: 'keyHash',
+  scopes: 'scopes',
+  createdBy: 'createdBy'
+} as const
+
+export type ApiKeyOrderByRelevanceFieldEnum = (typeof ApiKeyOrderByRelevanceFieldEnum)[keyof typeof ApiKeyOrderByRelevanceFieldEnum]
 
 
 
@@ -3596,6 +3695,7 @@ export type GlobalOmitConfig = {
   approvalDelegation?: Prisma.ApprovalDelegationOmit
   shareLink?: Prisma.ShareLinkOmit
   customerResponse?: Prisma.CustomerResponseOmit
+  apiKey?: Prisma.ApiKeyOmit
 }
 
 /* Types for Logging */

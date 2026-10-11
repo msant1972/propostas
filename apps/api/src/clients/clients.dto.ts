@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsBoolean, IsInt, IsOptional, IsString, Length, Matches, Max, MaxLength, Min } from 'class-validator';
+import { IsBoolean, IsEmail, IsInt, IsOptional, IsString, Length, Matches, Max, MaxLength, Min } from 'class-validator';
 
 export class CreateClientDto {
   @ApiProperty() @IsString() @Length(1, 50) code!: string;
@@ -9,6 +9,8 @@ export class CreateClientDto {
   @ApiProperty({ description: 'ISO 3166-1 alpha-2' }) @IsString() @Matches(/^[A-Z]{2}$/) countryCode!: string;
   @ApiPropertyOptional() @IsOptional() @IsString() @MaxLength(30) tier?: string;
   @ApiPropertyOptional({ description: 'VAT intracomunitário validado (VIES)' }) @IsOptional() @IsBoolean() vatValid?: boolean;
+  @ApiPropertyOptional({ description: 'Contacto para envio da proposta (dado pessoal: o mínimo necessário)' }) @IsOptional() @IsString() @MaxLength(255) contactName?: string;
+  @ApiPropertyOptional() @IsOptional() @IsEmail() contactEmail?: string;
 }
 
 export class UpdateClientDto extends PartialType(CreateClientDto) {}
@@ -27,6 +29,8 @@ export class ClientDto {
   @ApiProperty() countryCode!: string;
   @ApiProperty({ nullable: true, type: String }) tier!: string | null;
   @ApiProperty() vatValid!: boolean;
+  @ApiProperty({ nullable: true, type: String }) contactName!: string | null;
+  @ApiProperty({ nullable: true, type: String }) contactEmail!: string | null;
 }
 
 export class ClientPageDto {

@@ -9,6 +9,8 @@ import type { Env } from './config/env.js';
 export function configureApp(app: INestApplication): void {
   const env = app.get<Env>(ENV);
   app.setGlobalPrefix('api/v1');
+  // Atrás do Nginx (mesmo servidor): o IP do cliente vem em X-Forwarded-For, para o limite de pedidos e para o comprovativo.
+  (app.getHttpAdapter().getInstance() as { set: (k: string, v: unknown) => void }).set('trust proxy', 'loopback');
   app.use(
     helmet({
       contentSecurityPolicy: { directives: { defaultSrc: ["'none'"], frameAncestors: ["'none'"] } },

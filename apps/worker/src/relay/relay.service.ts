@@ -84,8 +84,17 @@ export class OutboxRelay {
     });
   }
 
+  /** O token da ligação do portal só vive no evento enquanto o email não sai: depois, apaga-se. */
+  private async redacted(eventId: string): Promise<{ payload: object } | Record<string, never>> {
+    const ev = await this.prisma.outboxEvent.findUnique({ where: { id: eventId } });
+    const payload = ev?.payload as Record<string, unknown> | null;
+    if (!payload || !('token' in payload)) return {};
+    const { token: _t, ...rest } = payload;
+    return { payload: rest };
+  }
+
   async markDone(eventId: string): Promise<void> {
-    await this.prisma.outboxEvent.update({ where: { id: eventId }, data: { status: 'DONE', lastError: null } });
+    await this.prisma.outboxEvent.update({ where: { id: eventId }, data: { status: 'DONE', lastError: null, ...(await this.redacted(eventId)) } });
   }
 
   /** Falha: incrementa tentativas e agenda com *backoff*; esgotadas, o evento passa a FAILED (gera alerta). */
@@ -102,6 +111,7 @@ export class OutboxRelay {
         lastError: (error instanceof Error ? error.message : String(error)).slice(0, 2000),
         status: exhausted ? 'FAILED' : 'PENDING',
         nextAttemptAt: new Date(Date.now() + backoffMs(attempts)),
+        ...(exhausted ? await this.redacted(eventId) : {}),
       },
     });
   }

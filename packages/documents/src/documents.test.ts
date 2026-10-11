@@ -120,3 +120,31 @@ describe('buildPdf', () => {
     expect((pdf.toString('latin1').match(/\/Type \/Page\b/g) ?? []).length).toBeGreaterThan(1);
   });
 });
+
+import { execFileSync } from 'node:child_process';
+import { mkdtempSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { buildReceiptPdf, certificateFingerprint } from './receipt.js';
+
+describe('comprovativo de aceitação', () => {
+  const data = {
+    proposalCode: 'P-2026-0001', proposalTitle: 'Proposta', clientName: 'Cliente', decision: 'ACCEPTED' as const, signerName: 'Rui Silva',
+    signerEmail: 'rui@cliente.pt', comment: null, decidedAt: '2026-10-11T10:00:00.123Z', ipAddress: '203.0.113.7', userAgent: 'Mozilla/5.0',
+    documentFileName: 'P-2026-0001.pdf', documentSha256: 'a'.repeat(64), quoteSnapshotHash: 'b'.repeat(64),
+  };
+  it('gera um PDF para aceitação e para recusa', async () => {
+    for (const decision of ['ACCEPTED', 'DECLINED'] as const) {
+      const pdf = await buildReceiptPdf({ ...data, decision });
+      expect(pdf.subarray(0, 5).toString()).toBe('%PDF-');
+      expect(pdf.length).toBeGreaterThan(1500);
+    }
+  });
+  it('lê a impressão digital de um certificado autoassinado', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'cert-'));
+    execFileSync('openssl', ['req', '-x509', '-newkey', 'ec', '-pkeyopt', 'ec_paramgen_curve:prime256v1', '-nodes', '-days', '2', '-subj', '/CN=teste', '-keyout', join(dir, 'k.pem'), '-out', join(dir, 'c.pem')], { stdio: 'ignore' });
+    expect(certificateFingerprint(join(dir, 'c.pem'))).toMatch(/^([0-9A-F]{2}:){31}[0-9A-F]{2}$/);
+    expect(certificateFingerprint(join(dir, 'nao-existe.pem'))).toBeNull();
+    expect(certificateFingerprint(undefined)).toBeNull();
+  });
+});

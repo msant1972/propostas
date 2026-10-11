@@ -186,3 +186,8 @@ export type ShareLink = Prisma.ShareLinkModel
  * 
  */
 export type CustomerResponse = Prisma.CustomerResponseModel
+/**
+ * Model ApiKey
+ * 
+ */
+export type ApiKey = Prisma.ApiKeyModel

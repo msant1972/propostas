@@ -1,4 +1,5 @@
 import { HttpException, HttpStatus, Inject, Injectable, UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
+import { createHash } from 'node:crypto';
 import { DUMMY_HASH_PROMISE, hashPassword, validatePassword, verifyPassword } from '@cpq/shared';
 import { isRole } from '@cpq/shared/roles';
 import { ENV } from '../config/config.module.js';
@@ -10,6 +11,8 @@ import type { LoginResultDto } from './auth.dto.js';
 import { TokenService } from './token.service.js';
 
 const NIL = '00000000-0000-4000-8000-000000000000';
+// A auditoria é imutável: não guarda emails digitados por desconhecidos, só uma impressão (permite correlacionar tentativas).
+const emailFingerprint = (e: string) => createHash('sha256').update(e).digest('hex').slice(0, 16);
 
 @Injectable()
 export class AuthService {
@@ -36,7 +39,7 @@ export class AuthService {
     // Gasta sempre o mesmo tempo, exista ou não o utilizador, para não revelar quais os emails registados.
     const okPassword = await verifyPassword(password, u?.passwordHash ?? (await DUMMY_HASH_PROMISE));
     const fail = async (reason: string, userId: string | null) => {
-      await this.prisma.$transaction((tx) => this.audit.record(tx, { actorUserId: userId, entityType: 'user', entityId: userId ?? NIL, action: 'auth.login_failed', diff: { email, reason, ip: ip ?? null } }));
+      await this.prisma.$transaction((tx) => this.audit.record(tx, { actorUserId: userId, entityType: 'user', entityId: userId ?? NIL, action: 'auth.login_failed', diff: { emailFingerprint: emailFingerprint(email), reason, ip: ip ?? null } }));
     };
 
     if (!u || !u.isActive || !u.passwordHash) {
@@ -52,7 +55,7 @@ export class AuthService {
       const lock = failed >= this.env.LOGIN_MAX_ATTEMPTS;
       await this.prisma.$transaction(async (tx) => {
         await tx.user.update({ where: { id: u.id }, data: { failedLogins: lock ? 0 : failed, lockedUntil: lock ? new Date(Date.now() + this.env.LOGIN_LOCK_MINUTES * 60_000) : null } });
-        await this.audit.record(tx, { actorUserId: u.id, entityType: 'user', entityId: u.id, action: lock ? 'auth.locked' : 'auth.login_failed', diff: { email, ip: ip ?? null, attempts: failed } });
+        await this.audit.record(tx, { actorUserId: u.id, entityType: 'user', entityId: u.id, action: lock ? 'auth.locked' : 'auth.login_failed', diff: { ip: ip ?? null, attempts: failed } });
       });
       throw new UnauthorizedException('Email ou palavra-passe incorretos');
     }

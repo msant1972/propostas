@@ -167,6 +167,9 @@ model Client {
   tier          String?   @db.VarChar(30)
   vatValid      Boolean   @default(false) @map("vat_valid")
   crmExternalId String?   @unique @map("crm_external_id") @db.VarChar(100)
+  contactName   String?   @map("contact_name") @db.VarChar(255)
+  contactEmail  String?   @map("contact_email") @db.VarChar(255)
+  crmSyncedAt   DateTime? @map("crm_synced_at") @db.DateTime(6)
   createdAt     DateTime  @default(now()) @map("created_at") @db.DateTime(6)
   deletedAt     DateTime? @map("deleted_at") @db.DateTime(6)
   proposals     Proposal[]
@@ -608,4 +611,22 @@ model CustomerResponse {
   decidedAt      DateTime         @default(now()) @map("decided_at") @db.DateTime(6)
 
   @@map("customer_responses")
+}
+
+// ---------------------------------------------------------------------------------------------
+// Fase 5 — Integrações (migração 0011)
+// ---------------------------------------------------------------------------------------------
+
+model ApiKey {
+  id         String    @id @db.Char(36)
+  name       String    @db.VarChar(100)
+  keyPrefix  String    @map("key_prefix") @db.Char(8)
+  keyHash    String    @unique @map("key_hash") @db.Char(64)
+  scopes     String    @db.VarChar(255)
+  createdBy  String    @map("created_by") @db.Char(36)
+  createdAt  DateTime  @default(now()) @map("created_at") @db.DateTime(6)
+  lastUsedAt DateTime? @map("last_used_at") @db.DateTime(6)
+  revokedAt  DateTime? @map("revoked_at") @db.DateTime(6)
+
+  @@map("api_keys")
 }

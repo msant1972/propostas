@@ -83,3 +83,20 @@ export async function runManualEditCheck(prisma: PrismaClient, repo: DocumentRep
   }
   return ids;
 }
+
+/**
+ * Retenção de dados pessoais (RGPD): o IP e o agente de utilizador das respostas do portal só se guardam durante
+ * `RETENTION_IP_DAYS`; ligações expiradas, sem resposta, apagam-se passado `RETENTION_LINK_DAYS`.
+ * A decisão, o nome, o email e os hashes mantêm-se: são a prova de uma aceitação, que a lei manda conservar.
+ */
+export async function runRetention(prisma: PrismaClient, cfg: Pick<WorkerConfig, 'RETENTION_IP_DAYS' | 'RETENTION_LINK_DAYS'>, now = new Date()): Promise<{ ipsCleared: number; linksDeleted: number }> {
+  const ipCut = new Date(now.getTime() - cfg.RETENTION_IP_DAYS * 864e5);
+  const linkCut = new Date(now.getTime() - cfg.RETENTION_LINK_DAYS * 864e5);
+  const cleared = await prisma.customerResponse.updateMany({ where: { decidedAt: { lt: ipCut }, OR: [{ ipAddress: { not: null } }, { userAgent: { not: null } }] }, data: { ipAddress: null, userAgent: null } });
+  const answered = (await prisma.customerResponse.findMany({ select: { shareLinkId: true } })).map((r) => r.shareLinkId);
+  const links = await prisma.shareLink.deleteMany({ where: { expiresAt: { lt: linkCut }, id: { notIn: answered.length ? answered : ['-'] } } });
+  if (cleared.count || links.count) {
+    await audit(prisma, uuidv7(), 'privacy.retention', { ipsCleared: cleared.count, linksDeleted: links.count, ipDays: cfg.RETENTION_IP_DAYS, linkDays: cfg.RETENTION_LINK_DAYS }, 'system');
+  }
+  return { ipsCleared: cleared.count, linksDeleted: links.count };
+}

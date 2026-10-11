@@ -21,6 +21,120 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/users": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["listUsers"];
+        put?: never;
+        /** Cria um utilizador com palavra-passe temporária */
+        post: operations["createUser"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/users/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["updateUser"];
+        trace?: never;
+    };
+    "/api/v1/users/{id}/reset-password": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["resetUserPassword"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/users/{id}/unlock": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["unlockUser"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/teams": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["listTeams"];
+        put?: never;
+        post: operations["createTeam"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["login"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/change-password": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Muda a palavra-passe e devolve um token novo */
+        post: operations["changePassword"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/me": {
         parameters: {
             query?: never;
@@ -29,7 +143,7 @@ export interface paths {
             cookie?: never;
         };
         /** Utilizador autenticado e respetivos papéis */
-        get: operations["MeController_me"];
+        get: operations["getMe"];
         put?: never;
         post?: never;
         delete?: never;
@@ -809,6 +923,74 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        UserDto: {
+            id: string;
+            email: string;
+            displayName: string;
+            roles: string[];
+            teamId: string | null;
+            teamName: string | null;
+            region: string | null;
+            isActive: boolean;
+            mustChangePassword: boolean;
+            locked: boolean;
+            lastLoginAt: string | null;
+        };
+        UserPageDto: {
+            items: components["schemas"]["UserDto"][];
+            total: number;
+            page: number;
+            pageSize: number;
+        };
+        CreateUserDto: {
+            email: string;
+            displayName: string;
+            roles: ("Comercial" | "Gestor_Comercial" | "Aprovador_Financeiro" | "Juridico" | "Administrador")[];
+            teamId?: string;
+            region?: string;
+            /** @description Se omitida, é gerada uma palavra-passe temporária */
+            password?: string;
+        };
+        UserWithPasswordDto: {
+            user: components["schemas"]["UserDto"];
+            /** @description Palavra-passe temporária; só é mostrada uma vez */
+            temporaryPassword: string | null;
+        };
+        UpdateUserDto: {
+            displayName?: string;
+            roles?: ("Comercial" | "Gestor_Comercial" | "Aprovador_Financeiro" | "Juridico" | "Administrador")[];
+            teamId?: Record<string, never> | null;
+            region?: Record<string, never> | null;
+            isActive?: boolean;
+        };
+        TeamDto: {
+            id: string;
+            name: string;
+        };
+        CreateTeamDto: {
+            name: string;
+        };
+        LoginDto: {
+            email: string;
+            password: string;
+        };
+        SessionUserDto: {
+            id: string;
+            email: string;
+            displayName: string;
+            roles: string[];
+            teamId: string | null;
+            mustChangePassword: boolean;
+        };
+        LoginResultDto: {
+            accessToken: string;
+            expiresAt: string;
+            user: components["schemas"]["SessionUserDto"];
+        };
+        ChangePasswordDto: {
+            currentPassword: string;
+            newPassword: string;
+        };
         ProductDto: {
             id: string;
             sku: string;
@@ -1465,7 +1647,120 @@ export interface operations {
             };
         };
     };
-    MeController_me: {
+    listUsers: {
+        parameters: {
+            query?: {
+                q?: string;
+                page?: number;
+                pageSize?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserPageDto"];
+                };
+            };
+        };
+    };
+    createUser: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateUserDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserWithPasswordDto"];
+                };
+            };
+        };
+    };
+    updateUser: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateUserDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserDto"];
+                };
+            };
+        };
+    };
+    resetUserPassword: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserWithPasswordDto"];
+                };
+            };
+        };
+    };
+    unlockUser: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserDto"];
+                };
+            };
+        };
+    };
+    listTeams: {
         parameters: {
             query?: never;
             header?: never;
@@ -1478,7 +1773,99 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["TeamDto"][];
+                };
+            };
+        };
+    };
+    createTeam: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateTeamDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TeamDto"];
+                };
+            };
+        };
+    };
+    login: {
+        parameters: {
+            query?: never;
+            header: {
+                "user-agent": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LoginDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LoginResultDto"];
+                };
+            };
+        };
+    };
+    changePassword: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChangePasswordDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LoginResultDto"];
+                };
+            };
+        };
+    };
+    getMe: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SessionUserDto"];
+                };
             };
         };
     };

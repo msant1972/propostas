@@ -73,7 +73,7 @@ Objetivo: um utilizador autentica-se e vê o catálogo em QA, com traces ponta a
 | --- | --- | --- |
 | 1.1 | Monorepo (pnpm/turborepo), lint, formatação, tsconfig partilhado | S |
 | 1.2 | Prisma + MariaDB 12.3 local (compose); migração inicial das tabelas base; teste de ordenação de UUIDv7 (decide `UUID` vs `BINARY(16)`) e de `ON UPDATE CURRENT_TIMESTAMP(6)` | M |
-| 1.3 | Preparação do servidor: Nginx com TLS, firewall, discos dedicados (LUKS) para a base de dados e para os documentos | L |
+| 1.3 | Preparação do servidor: Nginx com certificado TLS autoassinado (gerado pelo Ansible), firewall, discos dedicados (LUKS) para a base de dados e para os documentos | L |
 | 1.4 | Ansible: Ubuntu, Docker Compose, Nginx, MariaDB oficial com encriptação (`file_key_management` em tmpfs), Redis com AOF | L |
 | 1.5 | Backups: mariabackup diário, binlogs e documentos copiados para o destino separado a cada 5 min; **primeiro restauro testado** noutra instância | M |
 | 1.6 | CI/CD: build, testes, SAST, análise de dependências, imagens assinadas; deploy para dev e QA; migrações automáticas | L |
@@ -217,7 +217,7 @@ Objetivo: nenhum documento sai se o hash não for o aprovado.
 
 | ID | Camada | Tarefa | Esf. |
 | --- | --- | --- | --- |
-| 5.1 | API | Portal de aceitação: ligação com token aleatório (só o hash fica guardado), validade, revogação, limite de tentativas por IP | L |
+| 5.1 | API | Portal de aceitação: ligação com token aleatório (só o hash fica guardado), validade, revogação, limite de tentativas por IP; impressão digital do certificado autoassinado na mensagem e no portal | L |
 | 5.2 | API | Resposta do cliente (aceitar/recusar) com nome, email, hash do documento, data e IP; resposta única por ligação; transição para `ACCEPTED`/`REJECTED` | L |
 | 5.3 | Worker | Comprovativo de aceitação em PDF, guardado em `03_Assinado`; notificação ao comercial | M |
 | 5.4 | API | Acompanhamento de abertura (primeira e última abertura, contagem), sem píxeis de rastreio | M |

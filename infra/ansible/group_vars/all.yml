@@ -11,3 +11,8 @@ audit_export_dir: /srv/cpq/audit            # exportações diárias da auditori
 backup_target: "{{ lookup('env', 'CPQ_BACKUP_TARGET') }}"   # ex.: backup@servidor-copias:/backups/cpq (rsync por SSH) ou um caminho montado
 app_dir: /opt/cpq
 app_image_tag: latest
+tls_dir: /etc/cpq/tls                        # certificado autoassinado (portal.crt e portal.key)
+tls_days: 825                                # validade; renovar antes de expirar (ver runbook)
+server_names:                                # nomes DNS que o certificado cobre
+  - propostas.exemplo.pt
+server_ips: []                               # endereços IP a incluir, se se aceder por IP

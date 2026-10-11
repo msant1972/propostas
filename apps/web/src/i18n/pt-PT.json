@@ -9,16 +9,17 @@
     "proposals": "Propostas",
     "content": "Conteúdos",
     "approvals": "Aprovações",
-    "policies": "Políticas"
+    "policies": "Políticas",
+    "users": "Utilizadores",
+    "password": "Palavra-passe"
   },
   "login": {
     "title": "Iniciar sessão",
-    "devNotice": "Modo de desenvolvimento: escolha um perfil.",
-    "role": "Perfil",
-    "name": "Nome",
     "email": "Email",
+    "password": "Palavra-passe",
     "submit": "Entrar",
-    "entra": "Entrar com Microsoft",
+    "invalid": "Email ou palavra-passe incorretos.",
+    "locked": "Conta bloqueada por tentativas falhadas. Tente mais tarde ou peça ao administrador.",
     "error": "Não foi possível iniciar sessão."
   },
   "forbidden": {
@@ -316,5 +317,40 @@
     "validFrom": "Em vigor desde",
     "active": "Ativa",
     "help": "Variáveis: max_line_discount_percent, global_discount_percent, margin_percent, grand_total, tcv, has_modified_legal_section."
+  },
+  "password": {
+    "title": "Palavra-passe",
+    "forced": "Tem de definir uma nova palavra-passe antes de continuar.",
+    "current": "Palavra-passe atual",
+    "new": "Nova palavra-passe",
+    "again": "Repetir a nova palavra-passe",
+    "rules": "Mínimo de 10 caracteres, com pelo menos três tipos (minúsculas, maiúsculas, números, símbolos).",
+    "submit": "Mudar palavra-passe",
+    "changed": "Palavra-passe alterada.",
+    "mismatch": "As palavras-passe não coincidem."
+  },
+  "users": {
+    "title": "Utilizadores",
+    "new": "Novo utilizador",
+    "email": "Email",
+    "name": "Nome",
+    "roles": "Papéis",
+    "team": "Equipa",
+    "region": "Região",
+    "active": "Ativo",
+    "locked": "Bloqueado",
+    "lastLogin": "Último acesso",
+    "never": "nunca",
+    "noTeam": "Sem equipa",
+    "reset": "Repor palavra-passe",
+    "unlock": "Desbloquear",
+    "deactivate": "Desativar",
+    "activate": "Ativar",
+    "save": "Guardar",
+    "temp": "Palavra-passe temporária (só é mostrada agora; o utilizador terá de a mudar):",
+    "teams": "Equipas",
+    "newTeam": "Nova equipa",
+    "createTeam": "Criar equipa",
+    "confirmReset": "Repor a palavra-passe deste utilizador? As sessões abertas terminam."
   }
 }

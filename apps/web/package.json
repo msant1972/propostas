@@ -10,8 +10,6 @@
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
-    "@azure/msal-browser": "^5.25.0",
-    "@azure/msal-react": "^5.7.2",
     "@cpq/api-client": "workspace:*",
     "@cpq/rules-engine": "workspace:*",
     "@cpq/shared": "workspace:*",

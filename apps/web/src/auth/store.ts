@@ -1,10 +1,18 @@
 import { create } from 'zustand';
 
-export interface Session {
-  token: string;
-  displayName: string;
+export interface SessionUser {
+  id: string;
   email: string;
+  displayName: string;
   roles: string[];
+  teamId: string | null;
+  mustChangePassword: boolean;
+}
+
+export interface Session {
+  accessToken: string;
+  expiresAt: string;
+  user: SessionUser;
 }
 
 const KEY = 'cpq.session';
@@ -12,7 +20,8 @@ const KEY = 'cpq.session';
 function load(): Session | null {
   try {
     const raw = sessionStorage.getItem(KEY);
-    return raw ? (JSON.parse(raw) as Session) : null;
+    const s = raw ? (JSON.parse(raw) as Session) : null;
+    return s && new Date(s.expiresAt).getTime() > Date.now() ? s : null;
   } catch {
     return null;
   }
@@ -35,3 +44,5 @@ export const useAuth = create<AuthState>((set) => ({
     set({ session });
   },
 }));
+
+export const hasRole = (s: Session | null, ...roles: string[]) => !!s && roles.some((r) => s.user.roles.includes(r));

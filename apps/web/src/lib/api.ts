@@ -1,3 +1,4 @@
+import { useAuth } from '../auth/store';
 import { getAccessToken } from '../auth/token';
 import { env } from './env';
 
@@ -21,6 +22,7 @@ async function request<T>(method: string, path: string, body?: unknown): Promise
     },
     body: body !== undefined ? JSON.stringify(body) : undefined,
   });
+  if (res.status === 401 && token) useAuth.getState().setSession(null); // sessão expirada ou revogada: volta ao login
   if (!res.ok) {
     const problem = (await res.json().catch(() => undefined)) as { detail?: string } | undefined;
     throw new ApiError(res.status, problem?.detail ?? res.statusText, problem);

@@ -37,7 +37,7 @@ export function ProposalPage() {
   const { t } = useTranslation();
   const { id = '' } = useParams();
   const qc = useQueryClient();
-  const roles = useAuth((s) => s.session?.roles ?? []);
+  const roles = useAuth((s) => s.session?.user.roles ?? []);
   const canSeeMargin = roles.some((r) => ['Gestor_Comercial', 'Aprovador_Financeiro', 'Administrador'].includes(r));
 
   const proposal = useQuery({ queryKey: ['proposal', id], queryFn: () => apiGet<Proposal>(`/proposals/${id}`) });

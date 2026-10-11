@@ -17,7 +17,7 @@ const blank = { code: '', title: '', isLegal: false, tags: '', language: 'pt-PT'
 export function ContentPage() {
   const { t } = useTranslation();
   const qc = useQueryClient();
-  const roles = useAuth((s) => s.session?.roles ?? []);
+  const roles = useAuth((s) => s.session?.user.roles ?? []);
   const canManage = roles.some((r) => ['Gestor_Comercial', 'Juridico', 'Administrador'].includes(r));
   const [q, setQ] = useState('');
   const [tag, setTag] = useState('');

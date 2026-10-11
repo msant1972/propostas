@@ -33,7 +33,7 @@ run('tarefas periódicas e notificações', () => {
       await tx.$executeRawUnsafe('SET FOREIGN_KEY_CHECKS = 1');
     });
     await prisma.team.createMany({ data: [{ id: ids.team, name: 'Norte' }, { id: ids.team2, name: 'Sul' }] });
-    const u = (id: string, name: string, roles: string[], teamId: string | null) => ({ id, entraOid: uuidv7(), email: `${name.toLowerCase()}@x.pt`, displayName: name, rolesJson: roles, teamId });
+    const u = (id: string, name: string, roles: string[], teamId: string | null) => ({ id, email: `${name.toLowerCase()}@x.pt`, displayName: name, rolesJson: roles, teamId });
     await prisma.user.createMany({ data: [u(ids.owner, 'Dono', ['Comercial'], ids.team), u(ids.mgr, 'GestorNorte', ['Gestor_Comercial'], ids.team), u(ids.mgr2, 'GestorSul', ['Gestor_Comercial'], ids.team2), u(ids.fin, 'Financeiro', ['Aprovador_Financeiro'], null)] });
     await prisma.client.create({ data: { id: ids.client, code: 'C', name: 'Cliente', countryCode: 'PT' } });
     await prisma.priceList.create({ data: { id: ids.pl, name: 'L', currency: 'EUR', validFrom: new Date('2026-01-01') } });

@@ -1,45 +1,39 @@
 import { useTranslation } from 'react-i18next';
 import { Link, Outlet, useNavigate } from 'react-router-dom';
-import { useAuth } from '../auth/store';
-import { env } from '../lib/env';
+import { hasRole, useAuth } from '../auth/store';
 import { Button } from './ui';
 
 export function Layout() {
   const { t } = useTranslation();
   const { session, setSession } = useAuth();
   const navigate = useNavigate();
+  const admin = hasRole(session, 'Administrador');
 
-  async function logout() {
+  function logout() {
     setSession(null);
-    if (env.authMode === 'entra') {
-      const { entraLogout } = await import('../auth/msal');
-      await entraLogout();
-    } else navigate('/login');
+    navigate('/login');
   }
+
+  const link = (to: string, label: string) => (
+    <Link to={to} className="text-sm hover:underline">{label}</Link>
+  );
 
   return (
     <div className="min-h-screen">
       <header className="flex items-center justify-between border-b border-[var(--border)] px-6 py-3">
-        <nav className="flex items-center gap-6">
+        <nav className="flex flex-wrap items-center gap-6">
           <span className="font-semibold">{t('app.title')}</span>
-          <Link to="/propostas" className="text-sm hover:underline">
-            {t('nav.proposals')}
-          </Link>
-          <Link to="/clientes" className="text-sm hover:underline">
-            {t('nav.clients')}
-          </Link>
-          <Link to="/conteudos" className="text-sm hover:underline">
-            {t('nav.content')}
-          </Link>
-          <Link to="/catalogo" className="text-sm hover:underline">
-            {t('nav.catalog')}
-          </Link>
+          {link('/propostas', t('nav.proposals'))}
+          {link('/aprovacoes', t('nav.approvals'))}
+          {link('/clientes', t('nav.clients'))}
+          {link('/conteudos', t('nav.content'))}
+          {link('/catalogo', t('nav.catalog'))}
+          {admin && link('/politicas', t('nav.policies'))}
+          {admin && link('/utilizadores', t('nav.users'))}
         </nav>
         <div className="flex items-center gap-3 text-sm">
-          <span>{session?.displayName}</span>
-          <Button variant="outline" onClick={() => void logout()}>
-            {t('nav.logout')}
-          </Button>
+          <Link to="/mudar-palavra-passe" className="hover:underline" title={t('nav.password')}>{session?.user.displayName}</Link>
+          <Button variant="outline" onClick={logout}>{t('nav.logout')}</Button>
         </div>
       </header>
       <div className="mx-auto max-w-5xl px-6 py-8">

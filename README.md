@@ -31,3 +31,11 @@ pnpm env:stop      # pára MariaDB e Redis
 `pnpm env:setup` é idempotente. Cria o `.env` (ignorado pelo git) com `DATABASE_URL`, `TEST_DATABASE_URL`, `REDIS_URL` e `TEST_REDIS_URL`. Os dados ficam em `~/tools/data`. No modo de desenvolvimento (`AUTH_MODE=dev`) o ecrã de login deixa escolher o perfil; em produção a API só aceita tokens do Entra ID.
 
 Utilizadores de desenvolvimento (criados pelo seed): um por papel — Comercial, Gestor_Comercial, Aprovador_Financeiro, Juridico e Administrador.
+
+## Certificado TLS (portal do cliente)
+
+O servidor usa um certificado autoassinado. Em produção é gerado pelo Ansible; para gerar um à mão:
+
+```bash
+scripts/tls/selfsigned.sh propostas.exemplo.pt --ip 10.0.0.5     # imprime a impressão digital SHA-256
+```

@@ -52,7 +52,7 @@ run('compileProposal com MariaDB', () => {
       }
       await tx.$executeRawUnsafe('SET FOREIGN_KEY_CHECKS = 1');
     });
-    await prisma.user.create({ data: { id: ids.user, entraOid: uuidv7(), email: 'a@x.pt', displayName: 'Ana' } });
+    await prisma.user.create({ data: { id: ids.user, email: 'a@x.pt', displayName: 'Ana' } });
     await prisma.client.create({ data: { id: ids.client, code: 'CLI-9', name: 'Cliente Nove', countryCode: 'PT', vatNumber: '500000009' } });
     await prisma.product.create({ data: { id: ids.prod, sku: 'S1', name: 'Serviço', billingModel: 'ONE_TIME' } });
     await prisma.priceList.create({ data: { id: ids.pl, name: 'L', currency: 'EUR', validFrom: new Date('2026-01-01') } });

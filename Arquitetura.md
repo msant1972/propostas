@@ -61,7 +61,7 @@ Toda a plataforma corre num único servidor Ubuntu Server LTS: aplicação, Mari
 
 | Componente | Onde corre | Notas |
 | --- | --- | --- |
-| Entrada HTTPS | Nginx no servidor, com certificado da CA da empresa ou Let's Encrypt | Redireciona HTTP para HTTPS, HSTS, limites de pedidos por IP (`limit_req`); só as portas 443 e 22 (esta, a partir da rede de administração) ficam abertas |
+| Entrada HTTPS | Nginx no servidor, com **certificado TLS autoassinado** (ECDSA P-256, SAN com os nomes DNS e IP do servidor), gerado pelo Ansible | Redireciona HTTP para HTTPS, HSTS, TLS 1.2/1.3, limites de pedidos por IP (`limit_req`, mais apertado no portal); só as portas 22, 80 e 443 ficam abertas. O browser avisa que o certificado não é de confiança até ser instalado ou confirmado pela impressão digital (ver «Certificado do portal») |
 | API, Worker, Web | Contentores Docker Compose atrás do Nginx | Processos separados, com limites de memória e CPU por contentor e `restart: unless-stopped` |
 | MariaDB 12.3 LTS | Servidor Ubuntu, pacote oficial, disco dedicado cifrado (LUKS) | Só aceita ligações locais; memória do *buffer pool* reservada para não competir com a aplicação |
 | Redis | Servidor Ubuntu, contentor com persistência AOF | Guarda as filas do worker, por isso a persistência é obrigatória |
@@ -163,6 +163,14 @@ Cada retorno a `DRAFT` a partir de uma versão `LOCKED` cria uma nova versão de
 - **Notificações**: email (SMTP) e, opcionalmente, mensagem num canal do Teams por *webhook* de entrada. As mensagens trazem uma ligação direta para a página de decisão da aplicação (autenticação MSAL), onde o aprovador decide com o seu próprio token, nunca com uma conta de serviço. Os destinatários são os utilizadores cujo papel (último conhecido, guardado em `users.roles_json`) coincide com o nível pendente.
 
 ### Aceitação pelo cliente e acompanhamento
+
+#### Certificado do portal
+
+O portal é servido por HTTPS com um **certificado autoassinado**, gerado uma só vez pelo Ansible (`scripts/tls/selfsigned.sh` faz o mesmo à mão). É um certificado de servidor (`serverAuth`), ECDSA P-256, válido por 825 dias, com os nomes DNS e IP do servidor no *Subject Alternative Name*.
+
+- **O que garante**: a ligação é cifrada e o servidor prova que detém a chave do certificado; o `snapshot_hash` e o hash do documento continuam a ser a prova do conteúdo.
+- **O que não garante**: como não há uma autoridade de certificação conhecida, o browser do cliente mostra um aviso na primeira visita. Para o cliente poder confirmar que está no servidor certo, a aplicação lê o certificado (`TLS_CERT_FILE`) e inclui a **impressão digital SHA-256** na mensagem que envia com a ligação e na página do portal; o cliente compara-a com a que o browser mostra ao inspecionar o certificado. Quem preferir pode instalar o `portal.crt` como certificado de confiança.
+- **Renovação**: antes de expirar, apagam-se `portal.crt` e `portal.key` e volta-se a correr o playbook; a impressão digital muda e tem de ser comunicada de novo. Um alarme avisa 30 dias antes.
 
 - **Portal de aceitação**: ao enviar, a aplicação gera uma ligação com um token aleatório (256 bits). Só o *hash* do token fica na base de dados (`share_links`), com validade e possibilidade de revogação. O cliente abre a ligação, vê o PDF aprovado e aceita ou recusa, indicando nome e email e confirmando que leu o documento. Não requer conta nem instalação.
 - **Assinatura eletrónica simples**: a prova de aceitação é o conjunto *hash do documento + nome e email do signatário + data + endereço IP + agente de utilizador*, guardado em `customer_responses` e na auditoria. A aplicação gera um comprovativo em PDF, guardado em `03_Assinado`. É uma assinatura eletrónica simples, adequada à aceitação comercial de uma proposta.
@@ -717,7 +725,7 @@ As metas abaixo são propostas de partida, a validar com o negócio; cada uma é
 - **Identidade**: apenas Entra ID; papéis de aplicação (`Comercial`, `Gestor_Comercial`, `Aprovador_Financeiro`, `Juridico`, `Administrador`) atribuídos via grupos Entra. Em desenvolvimento, um modo local com tokens assinados por um segredo, recusado em produção.
 - **Autorização por registo**: além do papel, regras de visibilidade — o comercial vê as suas propostas, o gestor vê as da equipa, o aprovador vê as que lhe estão atribuídas. Implementado com CASL num *guard* NestJS, aplicado também aos filtros de consulta. Custos e margens só são visíveis a quem tem permissão.
 - **Segredos**: ficheiros de ambiente com permissões restritas, geridos pelo Ansible (`ansible-vault`); nada no repositório.
-- **Transporte**: TLS 1.2 no mínimo, 1.3 preferido; HSTS; limites de pedidos no Nginx e na API.
+- **Transporte**: TLS 1.2 no mínimo, 1.3 preferido; HSTS; certificado autoassinado (ver «Certificado do portal»); limites de pedidos no Nginx e na API.
 - **Repouso**: disco de dados cifrado (LUKS) e encriptação InnoDB de tabelas, *redo* e *binlogs* com o plugin `file_key_management`; o ficheiro de chaves é cifrado e a sua palavra-passe só `root` lê. As cópias de segurança herdam a cifra (mariabackup lê tabelas já cifradas; o destino também é cifrado).
 - **Portal do cliente**: token aleatório de 256 bits (só o hash fica guardado), validade, revogação, limite de tentativas por IP e resposta única por ligação.
 - **Aplicação**: validação de entrada com DTOs, sanitização do HTML do editor antes de entrar no DOCX, CSP rigorosa, proteção contra *mass assignment*, *rate limiting* por utilizador.
@@ -763,7 +771,8 @@ A ordem proposta entrega primeiro o núcleo que dá valor sozinho (cotar com pre
 | Perda do disco de documentos | Baixa | Alto | Cópia incremental frequente para o destino de backup e verificação periódica dos hashes |
 | Regras de preço do negócio mais complexas do que o modelo prevê | Média | Alto | Workshop com financeiro antes da fase 2; condições JSONLogic dão margem de extensão |
 | Edições fora da aplicação divergem da cotação | Média | Alto | Deteção por hash e bloqueio de envio |
-| Notificações não chegam a quem aprova (papéis só conhecidos após o primeiro login) | Média | Médio | Sincronização de utilizadores e papéis a partir do Entra ID, e administrador pode registar utilizadores |
+| Aviso de certificado no browser do cliente ao abrir o portal | Alta | Médio | Impressão digital na mensagem e no portal; instruções para confiar no certificado; se o aviso afastar clientes, troca-se por um certificado de uma CA sem alterar a aplicação |
+| Certificado autoassinado expira sem ser renovado | Média | Alto | Alarme 30 dias antes e passo no runbook |
 
 ### Questões em aberto
 

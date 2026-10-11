@@ -1,9 +1,65 @@
-- name: Nginx
+- name: Nginx e OpenSSL
   ansible.builtin.apt:
-    name: nginx
+    name: [nginx, openssl]
     state: present
 
-- name: Site da aplicação
+- name: Pasta do certificado
+  ansible.builtin.file:
+    path: "{{ tls_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0750"
+
+# Certificado autoassinado, gerado uma só vez (para o renovar, apague os ficheiros e volte a correr o playbook).
+- name: Gerar o certificado autoassinado
+  ansible.builtin.command:
+    argv:
+      - openssl
+      - req
+      - -x509
+      - -newkey
+      - ec
+      - -pkeyopt
+      - ec_paramgen_curve:prime256v1
+      - -nodes
+      - -sha256
+      - -days
+      - "{{ tls_days }}"
+      - -keyout
+      - "{{ tls_dir }}/portal.key"
+      - -out
+      - "{{ tls_dir }}/portal.crt"
+      - -subj
+      - "/CN={{ server_names[0] }}/O=Propostas"
+      - -addext
+      - "subjectAltName={{ (server_names | map('regex_replace', '^(.*)$', 'DNS:\\1') | list + server_ips | map('regex_replace', '^(.*)$', 'IP:\\1') | list) | join(',') }}"
+      - -addext
+      - basicConstraints=critical,CA:FALSE
+      - -addext
+      - keyUsage=critical,digitalSignature
+      - -addext
+      - extendedKeyUsage=serverAuth
+    creates: "{{ tls_dir }}/portal.crt"
+  notify: reload nginx
+
+- name: Permissões da chave privada
+  ansible.builtin.file:
+    path: "{{ tls_dir }}/portal.key"
+    owner: root
+    group: root
+    mode: "0600"
+
+- name: Impressão digital do certificado
+  ansible.builtin.command: openssl x509 -in {{ tls_dir }}/portal.crt -noout -fingerprint -sha256
+  register: tls_fingerprint
+  changed_when: false
+
+- name: Mostrar a impressão digital (comunicar aos clientes)
+  ansible.builtin.debug:
+    msg: "{{ tls_fingerprint.stdout }}"
+
+- name: Site da aplicação e do portal
   ansible.builtin.template:
     src: cpq.conf.j2
     dest: /etc/nginx/sites-available/cpq
@@ -16,3 +72,16 @@
     dest: /etc/nginx/sites-enabled/cpq
     state: link
   notify: reload nginx
+
+- name: Remover o site por omissão do Nginx
+  ansible.builtin.file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  notify: reload nginx
+
+- name: Firewall - só SSH e HTTPS
+  community.general.ufw:
+    rule: allow
+    port: "{{ item }}"
+    proto: tcp
+  loop: ["22", "80", "443"]

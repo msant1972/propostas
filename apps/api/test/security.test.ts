@@ -9,13 +9,14 @@ import { uuidv7 } from '@cpq/shared';
 import { IS_PUBLIC } from '../src/auth/public.decorator.js';
 import { buildOpenApi } from '../src/setup.js';
 import { withoutMargin } from '../src/workflow/workflow.service.js';
-import { boot, resetDb, TEST_DB, type Harness } from './helpers.js';
+import { boot, resetDb, TEST_DB, TEST_PASSWORD, type Harness } from './helpers.js';
 
 const run = describe.skipIf(!TEST_DB);
 
 /** Rotas públicas permitidas (método + caminho). Qualquer outra rota @Public() faz o teste falhar. */
 const PUBLIC_ROUTES = new Set([
   'GET /health',
+  'GET /health/ready',
   'POST /auth/login',
   'GET /portal/:token',
   'GET /portal/:token/document',
@@ -25,6 +26,7 @@ const PUBLIC_ROUTES = new Set([
 const NO_ABILITY_OK = new Map([
   ['GET /me', 'devolve só o próprio utilizador'],
   ['POST /auth/change-password', 'só altera a palavra-passe do próprio utilizador'],
+  ['POST /auth/logout', 'só termina as sessões do próprio utilizador'],
 ]);
 
 interface Route { method: string; path: string; isPublic: boolean; ability: unknown; apiKeyScope: unknown }
@@ -368,6 +370,25 @@ run('segurança: cobertura de rotas e testes de abuso', () => {
       }
       expect(bodies.size).toBe(1);
       await h.http().post(`/api/v1/portal/${'A'.repeat(43)}/response`).send({ decision: 'ACCEPTED', signerName: 'Eu', signerEmail: 'e@e.pt', confirmRead: true }).expect(404);
+    });
+  });
+
+  describe('sessões e concorrência', () => {
+    it('logout invalida o token usado; um novo login funciona', async () => {
+      const u = await h.makeUser({ role: 'Comercial', key: 'logout', name: 'logout', teamId: TEAM_A });
+      const t1 = await h.login(u.email);
+      await h.http().get('/api/v1/me').set({ Authorization: `Bearer ${t1}` }).expect(200);
+      await h.http().post('/api/v1/auth/logout').set({ Authorization: `Bearer ${t1}` }).expect(204);
+      await h.http().get('/api/v1/me').set({ Authorization: `Bearer ${t1}` }).expect(401);
+      await h.http().post('/api/v1/auth/logout').expect(401);
+      const t2 = await h.login(u.email);
+      await h.http().get('/api/v1/me').set({ Authorization: `Bearer ${t2}` }).expect(200);
+    });
+
+    it('logins simultâneos da mesma conta não dão erro 500 (conflitos de escrita repetidos)', async () => {
+      const u = await h.makeUser({ role: 'Comercial', key: 'concorrente', name: 'concorrente', teamId: TEAM_A });
+      const rs = await Promise.all(Array.from({ length: 12 }, () => h.http().post('/api/v1/auth/login').send({ email: u.email, password: TEST_PASSWORD })));
+      expect(rs.filter((r) => r.status >= 500)).toHaveLength(0);
     });
   });
 });

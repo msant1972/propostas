@@ -1,3 +1,4 @@
+import { retryOnConflict } from '../common/retry.js';
 import { HttpException, HttpStatus, Inject, Injectable, UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
 import { createHash } from 'node:crypto';
 import { DUMMY_HASH_PROMISE, hashPassword, validatePassword, verifyPassword } from '@cpq/shared';
@@ -53,17 +54,17 @@ export class AuthService {
     if (!okPassword) {
       const failed = u.failedLogins + 1;
       const lock = failed >= this.env.LOGIN_MAX_ATTEMPTS;
-      await this.prisma.$transaction(async (tx) => {
+      await retryOnConflict(() => this.prisma.$transaction(async (tx) => {
         await tx.user.update({ where: { id: u.id }, data: { failedLogins: lock ? 0 : failed, lockedUntil: lock ? new Date(Date.now() + this.env.LOGIN_LOCK_MINUTES * 60_000) : null } });
         await this.audit.record(tx, { actorUserId: u.id, entityType: 'user', entityId: u.id, action: lock ? 'auth.locked' : 'auth.login_failed', diff: { ip: ip ?? null, attempts: failed } });
-      });
+      }));
       throw new UnauthorizedException('Email ou palavra-passe incorretos');
     }
 
-    await this.prisma.$transaction(async (tx) => {
+    await retryOnConflict(() => this.prisma.$transaction(async (tx) => {
       await tx.user.update({ where: { id: u.id }, data: { failedLogins: 0, lockedUntil: null, lastLoginAt: new Date(), lastSeenAt: new Date() } });
       await this.audit.record(tx, { actorUserId: u.id, entityType: 'user', entityId: u.id, action: 'auth.login', diff: { ip: ip ?? null, userAgent: userAgent?.slice(0, 200) ?? null } });
-    });
+    }));
     return this.result(u);
   }
 
@@ -85,5 +86,14 @@ export class AuthService {
     });
     this.users.invalidate(userId);
     return this.result(updated);
+  }
+
+  /** Termina a sessão: a nova versão de sessão invalida todos os tokens anteriores do utilizador. */
+  async logout(userId: string): Promise<void> {
+    await this.prisma.$transaction(async (tx) => {
+      await tx.user.update({ where: { id: userId }, data: { tokenVersion: { increment: 1 } } });
+      await this.audit.record(tx, { actorUserId: userId, entityType: 'user', entityId: userId, action: 'auth.logout' });
+    });
+    this.users.invalidate(userId);
   }
 }

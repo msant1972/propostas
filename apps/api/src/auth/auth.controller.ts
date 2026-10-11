@@ -1,5 +1,5 @@
-import { Body, Controller, Get, Headers, Ip, Post } from '@nestjs/common';
-import { ApiBearerAuth, ApiCreatedResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Get, Headers, HttpCode, Ip, Post } from '@nestjs/common';
+import { ApiBearerAuth, ApiCreatedResponse, ApiNoContentResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import type { SessionUser } from '../users/users.service.js';
 import { AuthService } from './auth.service.js';
@@ -28,6 +28,15 @@ export class AuthController {
   @ApiCreatedResponse({ type: LoginResultDto })
   change(@CurrentUser() u: SessionUser, @Body() dto: ChangePasswordDto) {
     return this.auth.changePassword(u.id, dto.currentPassword, dto.newPassword);
+  }
+
+  @ApiBearerAuth()
+  @AllowPasswordChange()
+  @Post('auth/logout') @HttpCode(204)
+  @ApiOperation({ operationId: 'logout', summary: 'Termina a sessão: invalida os tokens emitidos até agora para este utilizador' })
+  @ApiNoContentResponse()
+  logout(@CurrentUser() u: SessionUser) {
+    return this.auth.logout(u.id);
   }
 
   @ApiBearerAuth()

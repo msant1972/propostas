@@ -1,3 +1,4 @@
+import { retryOnConflict } from '../common/retry.js';
 import { ConflictException, Inject, Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import { assertSafeCondition } from '../common/condition-guard.js';
 import { findPriceListOverlaps, validateCondition, type PriceList } from '@cpq/rules-engine';
@@ -52,7 +53,7 @@ export class AdminService {
     await this.mustExistProduct(productId);
     const codes = dto.attributes.map((a) => a.code);
     if (new Set(codes).size !== codes.length) throw new UnprocessableEntityException('Códigos de atributo repetidos');
-    await this.prisma.$transaction([
+    await retryOnConflict(() => this.prisma.$transaction([
       this.prisma.productAttribute.deleteMany({ where: { productId } }),
       this.prisma.productAttribute.createMany({
         data: dto.attributes.map((a) => ({
@@ -61,7 +62,7 @@ export class AdminService {
           allowedValuesJson: a.allowedValues as never, isRequired: a.isRequired ?? false, defaultValue: a.defaultValue,
         })),
       }),
-    ]);
+    ]));
     this.loader.invalidate();
   }
 

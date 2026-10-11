@@ -120,13 +120,15 @@ Recomendações (por ordem de custo/benefício):
 2. Executar duas ou mais instâncias da API (Node `cluster` ou PM2 com 2 a 4 processos atrás do Nginx); o débito escala quase linearmente até ao número de cores livres. Atenção: a cache do catálogo (`CatalogLoader`, 30 s) é por processo e a invalidação em escritas administrativas só atinge o processo que recebeu o pedido; com várias instâncias é preciso a cache partilhada em Redis (tarefa 2.15, já anotada no código).
 3. Não é o MariaDB: com 33 % de um core a cerca de 15 gravações/s, tem margem de 3 a 4 vezes.
 
-### 3.2 Erros 500 em logins concorrentes da mesma conta (não corrigido, fora do âmbito permitido)
+### 3.2 Erros 500 em logins concorrentes da mesma conta (corrigido)
 
 Evidência: 3 % a 50 % de HTTP 500 no cenário (a), com `Record has changed since last read in table 'users'` (código 1020) no log da API. A causa é o MariaDB 12.3 com `innodb_snapshot_isolation=ON` (omissão desde 11.6): a transação de `AuthService.login` (`apps/api/src/auth/auth.service.ts`, linhas 63 a 66) lê e atualiza a mesma linha de `users` que outra transação concorrente atualizou, e o MariaDB aborta uma em vez de a deixar sobrescrever. É a mesma conta em simultâneo (o que um balcão partilhado ou uma reabertura em vários separadores faz), por isso o impacto real é baixo, mas é um 500 evitável. Correção sugerida: repetir a transação ao receber P2034/1020 (como feito em 3.4) ou, melhor, atualizar `lastLoginAt`/`failedLogins` com um `UPDATE` direto sem leitura prévia dentro da transação.
 
-### 3.3 Portal: 75 % de erros 500 quando vários pedidos chegam à mesma ligação ao mesmo tempo (não corrigido, fora do âmbito permitido)
+### 3.3 Portal: 75 % de erros 500 quando vários pedidos chegam à mesma ligação ao mesmo tempo (corrigido)
 
 Evidência: 1 501 de 2 000 pedidos falharam com `Record has changed since last read in table 'share_links'` (1020; 155 ocorrências por 200 pedidos na medição reduzida). Causa: `PortalService.view` (`apps/api/src/portal/portal.service.ts`) faz `shareLink.update({ openCount: { increment: 1 }, lastOpenedAt: ... })` numa transação que antes leu a mesma linha; a mesma causa de 3.2. Com um cliente a abrir o link em condições normais (pedidos sequenciais) não se manifesta, e o limite de 30/min por IP também o atenua, mas um cliente que abre o link em dois separadores ou um pré-visualizador de email que busca o link em paralelo pode ver um erro "interno" na primeira abertura. Correção sugerida: o mesmo que em 3.2 (retry em P2034/1020, ou `UPDATE share_links SET open_count = open_count + 1 ...` direto, e ler o `firstOpenedAt` com `RETURNING`).
+
+**Correção (todas as rotas afetadas):** `apps/api/src/common/retry.ts` (`retryOnConflict`, reconhece P2034 e os erros 1020/1213 do MariaDB) aplicado ao login, às gravações de cotações e aos atributos de produto. No portal, o incremento de `open_count` passou a ser um UPDATE isolado (sem transação de leitura anterior) e a primeira abertura é marcada por `UPDATE … WHERE first_opened_at IS NULL`, de modo que só um pedido a audita. Reexecutado `pnpm perf`: **0 erros** em login (c=20), cotações (c=20) e portal na mesma ligação (c=20), contra 3–50 %, 0 % e 75 % antes. O que continua acima da meta é só a latência com 5/20 gravações simultâneas, que é fila de CPU de uma instância (ver 3.1).
 
 ### 3.4 Gravação concorrente de cotações de propostas diferentes dava 500 (corrigido)
 

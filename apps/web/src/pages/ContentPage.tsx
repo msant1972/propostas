@@ -1,3 +1,4 @@
+import DOMPurify from 'dompurify';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -93,7 +94,7 @@ export function ContentPage() {
                       {canManage && v.status === 'DRAFT' && <Button variant="outline" onClick={() => act.mutate({ id: b.id, path: `versions/${v.id}/approve` })}>{t('content.approve')}</Button>}
                       {canManage && v.status === 'APPROVED' && <Button variant="ghost" onClick={() => act.mutate({ id: b.id, path: `versions/${v.id}/retire` })}>{t('content.retire')}</Button>}
                     </div>
-                    <div className="prose-view" dangerouslySetInnerHTML={{ __html: v.bodyHtml }} />
+                    <div className="prose-view" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(v.bodyHtml) }} />
                   </div>
                 ))}
                 {canManage && (

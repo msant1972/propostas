@@ -1,3 +1,4 @@
+import { retryOnConflict } from '../common/retry.js';
 import { ConflictException, Inject, Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import {
   calculateQuote, ConfigurationError, evaluateRules, fxRate, selectPriceList, snapshotHash,
@@ -18,23 +19,6 @@ type ClientRow = { countryCode: string; tier: string | null; vatNumber: string |
 
 const today = () => new Date().toISOString().slice(0, 10);
 const num = (d: { toFixed(n: number): string }, n = 2) => d.toFixed(n);
-
-/**
- * Impasse (deadlock) ou conflito de escrita entre transações concorrentes: o MariaDB aborta uma delas
- * (P2034 no Prisma) e a operação é segura de repetir. Sem isto, gravar cotações de propostas diferentes
- * ao mesmo tempo falhava com 500 (medido em scripts/perf: DELETE+INSERT em quote_items disputam o mesmo intervalo do índice).
- */
-const isWriteConflict = (e: unknown) => (e as { code?: string } | null)?.code === 'P2034';
-async function retryOnConflict<T>(fn: () => Promise<T>, attempts = 6): Promise<T> {
-  for (let i = 1; ; i++) {
-    try {
-      return await fn();
-    } catch (e) {
-      if (!isWriteConflict(e) || i >= attempts) throw e;
-      await new Promise((r) => setTimeout(r, 10 * i + Math.random() * 20 * i));
-    }
-  }
-}
 
 @Injectable()
 export class QuotesService {

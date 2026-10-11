@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { hasRole, useAuth } from '../auth/store';
+import { env } from '../lib/env';
 import { Button } from './ui';
 
 export function Layout() {
@@ -10,6 +11,8 @@ export function Layout() {
   const admin = hasRole(session, 'Administrador');
 
   function logout() {
+    // o servidor invalida o token; se falhar, a sessão local termina na mesma
+    if (session) void fetch(`${env.apiBase}/api/v1/auth/logout`, { method: 'POST', headers: { Authorization: `Bearer ${session.accessToken}` } }).catch(() => undefined);
     setSession(null);
     navigate('/login');
   }

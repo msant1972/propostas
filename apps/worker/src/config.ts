@@ -17,7 +17,7 @@ const schema = z.object({
   RELAY_BATCH: z.coerce.number().int().default(100),
   OUTBOX_MAX_ATTEMPTS: z.coerce.number().int().default(8),
   OUTBOX_STALE_MINUTES: z.coerce.number().int().default(10),
-  SCHEDULER_ENABLED: z.coerce.boolean().default(true),
+  SCHEDULER_ENABLED: z.enum(['true', 'false', '1', '0']).default('true').transform((v) => v === 'true' || v === '1'), // z.coerce.boolean() tornaria "false" em true
 });
 
 export type WorkerConfig = z.infer<typeof schema>;

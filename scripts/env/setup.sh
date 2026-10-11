@@ -54,7 +54,6 @@ DATABASE_URL=mysql://cpq:cpq@127.0.0.1:$DB_PORT/cpq_dev
 TEST_DATABASE_URL=mysql://cpq:cpq@127.0.0.1:$DB_PORT/cpq_test
 REDIS_URL=redis://127.0.0.1:$REDIS_PORT
 TEST_REDIS_URL=redis://127.0.0.1:$REDIS_PORT/1
-AUTH_MODE=dev
 DOCUMENT_STORAGE_DIR=$DATA/storage
 ENV
   echo "Criado $ROOT/.env"

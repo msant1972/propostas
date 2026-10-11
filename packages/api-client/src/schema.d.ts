@@ -11,8 +11,25 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Estado do serviço */
+        /** Estado do serviço (o processo está vivo) */
         get: operations["HealthController_health"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/health/ready": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Estado de prontidão (verifica a base de dados) */
+        get: operations["HealthController_ready"];
         put?: never;
         post?: never;
         delete?: never;
@@ -129,6 +146,23 @@ export interface paths {
         put?: never;
         /** Muda a palavra-passe e devolve um token novo */
         post: operations["changePassword"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/auth/logout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Termina a sessão: invalida os tokens emitidos até agora para este utilizador */
+        post: operations["logout"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1992,6 +2026,23 @@ export interface operations {
             };
         };
     };
+    HealthController_ready: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     listUsers: {
         parameters: {
             query?: {
@@ -2192,6 +2243,23 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["LoginResultDto"];
                 };
+            };
+        };
+    };
+    logout: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -3728,9 +3796,7 @@ export interface operations {
     portalView: {
         parameters: {
             query?: never;
-            header: {
-                "user-agent": string;
-            };
+            header?: never;
             path: {
                 token: string;
             };

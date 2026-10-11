@@ -1,3 +1,4 @@
+import { retryOnConflict } from '../common/retry.js';
 import { createHash, randomBytes } from 'node:crypto';
 import { ConflictException, Inject, Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import { certificateFingerprint, type DocumentRepository } from '@cpq/documents';
@@ -112,13 +113,18 @@ export class PortalService {
     ]);
 
     // Acompanhamento de abertura (sem píxeis de rastreio): contagem e datas; a auditoria regista a primeira abertura.
-    await this.prisma.$transaction(async (tx) => {
-      await tx.shareLink.update({ where: { id: l.id }, data: { openCount: { increment: 1 }, lastOpenedAt: new Date(), ...(l.firstOpenedAt ? {} : { firstOpenedAt: new Date() }) } });
-      if (!l.firstOpenedAt) {
+    // O incremento é uma instrução isolada (sem transação de leitura anterior): aberturas simultâneas da mesma ligação
+    // não colidem com o isolamento por snapshot do MariaDB 12.
+    const now = new Date();
+    await retryOnConflict(() => this.prisma.shareLink.updateMany({ where: { id: l.id }, data: { openCount: { increment: 1 }, lastOpenedAt: now } }));
+    // só uma das aberturas simultâneas marca a primeira abertura (e só essa audita e notifica)
+    const first = await retryOnConflict(() => this.prisma.shareLink.updateMany({ where: { id: l.id, firstOpenedAt: null }, data: { firstOpenedAt: now } }));
+    if (first.count === 1) {
+      await this.prisma.$transaction(async (tx) => {
         await this.audit.record(tx, { actorUserId: null, entityType: 'proposal', entityId: p.id, action: 'portal.opened', diff: { linkId: l.id } });
         await this.outbox.enqueue(tx, { aggregateId: p.id, eventType: 'portal.opened', payload: { linkId: l.id } });
-      }
-    });
+      });
+    }
 
     const state = resp ? (resp.decision === 'ACCEPTED' ? 'ACCEPTED' : 'DECLINED') : p.status === 'SENT' ? 'OPEN' : 'CLOSED';
     return {

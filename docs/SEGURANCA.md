@@ -2,6 +2,8 @@
 
 Revisão de 2026-10-11 ao código de `apps/api`, `apps/worker`, `packages/documents` e `infra/ansible`. Foi uma revisão de código e de configuração, com testes automáticos; **não** foi um teste de intrusão. Ver também a secção "Segurança" de `Arquitetura.md`.
 
+> **Atualização:** P1 (overrides em `pnpm-workspace.yaml`, `pnpm audit` limpo), P2 (DOMPurify na `ContentPage`), P3 (`POST /auth/logout`, que invalida os tokens do utilizador), P4 (`.eml` retirados do repositório e `.gitignore` completo) e P11 (CSP, HSTS e restantes cabeçalhos no `location /` do Nginx) estão **corrigidos**. O armazenamento do token (sessionStorage) mantém-se, com sessões de 8 h revogáveis.
+
 ## 1. Modelo de ameaças (resumo)
 
 | Ativos | Atores | Superfícies |

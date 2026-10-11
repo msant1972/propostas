@@ -10,7 +10,22 @@
             "description": ""
           }
         },
-        "summary": "Estado do serviço",
+        "summary": "Estado do serviço (o processo está vivo)",
+        "tags": [
+          "Health"
+        ]
+      }
+    },
+    "/api/v1/health/ready": {
+      "get": {
+        "operationId": "HealthController_ready",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Estado de prontidão (verifica a base de dados)",
         "tags": [
           "Health"
         ]
@@ -361,6 +376,26 @@
           }
         ],
         "summary": "Muda a palavra-passe e devolve um token novo",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/logout": {
+      "post": {
+        "operationId": "logout",
+        "parameters": [],
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Termina a sessão: invalida os tokens emitidos até agora para este utilizador",
         "tags": [
           "auth"
         ]
@@ -3110,14 +3145,6 @@
             "name": "token",
             "required": true,
             "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "user-agent",
-            "required": true,
-            "in": "header",
             "schema": {
               "type": "string"
             }

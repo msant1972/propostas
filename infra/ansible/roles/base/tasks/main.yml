@@ -14,3 +14,15 @@
 - name: Fuso horário UTC
   community.general.timezone:
     name: UTC
+
+# Só acesso por chave (o ansible.cfg já assume SSH por chave); sem login direto do root por palavra-passe.
+- name: Endurecer o SSH
+  ansible.builtin.copy:
+    dest: /etc/ssh/sshd_config.d/90-cpq.conf
+    content: |
+      PasswordAuthentication no
+      KbdInteractiveAuthentication no
+      PermitRootLogin prohibit-password
+      MaxAuthTries 3
+    mode: "0644"
+  notify: restart ssh

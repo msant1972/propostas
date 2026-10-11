@@ -1,7 +1,7 @@
 /** Leitura de CSV (RFC 4180): aspas, vírgulas e mudanças de linha dentro de campos, BOM, CRLF e delimitador `,` ou `;`. */
 
 export function detectDelimiter(text: string): ',' | ';' | '\t' {
-  const first = text.replace(/^﻿/, '').split(/\r?\n/, 1)[0] ?? '';
+  const first = text.replace(/^\uFEFF/, '').split(/\r?\n/, 1)[0] ?? '';
   const count = (c: string) => {
     let n = 0;
     let quoted = false;
@@ -17,7 +17,7 @@ export function detectDelimiter(text: string): ',' | ';' | '\t' {
 
 /** Devolve as linhas como matrizes de texto; ignora linhas completamente vazias. */
 export function parseCsv(input: string, delimiter?: string): string[][] {
-  const text = input.replace(/^﻿/, '');
+  const text = input.replace(/^\uFEFF/, '');
   const d = delimiter ?? detectDelimiter(text);
   const rows: string[][] = [];
   let row: string[] = [];

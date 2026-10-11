@@ -1,31 +1,236 @@
 @import 'tailwindcss';
 
+/* ------------------------------------------------------------------
+   Tokens de design (estilo Apple: macOS/iOS). Claro por omissão,
+   escuro via prefers-color-scheme.
+   ------------------------------------------------------------------ */
 :root {
-  --background: #ffffff;
-  --foreground: #0f172a;
-  --muted: #f1f5f9;
-  --border: #e2e8f0;
-  --primary: #1d4ed8;
+  color-scheme: light dark;
+  --background: #f5f5f7;
+  --surface: #ffffff;
+  --surface-glass: rgba(255, 255, 255, 0.72);
+  --foreground: #1d1d1f;
+  --secondary: #6e6e73;
+  --muted: #f0f0f3;
+  --fill: rgba(120, 120, 128, 0.12);
+  --fill-hover: rgba(120, 120, 128, 0.18);
+  --border: rgba(60, 60, 67, 0.16);
+  --separator: rgba(60, 60, 67, 0.12);
+  --primary: #0071e3;
+  --primary-hover: #0077ed;
+  --primary-active: #006edb;
+  --primary-soft: rgba(0, 113, 227, 0.12);
   --primary-foreground: #ffffff;
+  --success: #248a3d;
+  --success-soft: rgba(52, 199, 89, 0.16);
+  --warning: #b25000;
+  --warning-soft: rgba(255, 159, 10, 0.18);
+  --danger: #d70015;
+  --danger-soft: rgba(255, 59, 48, 0.14);
+  --ring: rgba(0, 113, 227, 0.45);
+  --radius-sm: 8px;
+  --radius: 12px;
+  --radius-lg: 18px;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04), 0 0 0 0.5px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 1px 2px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.06), 0 0 0 0.5px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 2px 4px rgba(0, 0, 0, 0.04), 0 12px 32px rgba(0, 0, 0, 0.1), 0 0 0 0.5px rgba(0, 0, 0, 0.06);
+  --ease: cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0b1220;
-    --foreground: #e2e8f0;
-    --muted: #111a2e;
-    --border: #22304d;
-    --primary: #60a5fa;
-    --primary-foreground: #0b1220;
+    --background: #000000;
+    --surface: #1c1c1e;
+    --surface-glass: rgba(28, 28, 30, 0.72);
+    --foreground: #f5f5f7;
+    --secondary: #98989f;
+    --muted: #2c2c2e;
+    --fill: rgba(120, 120, 128, 0.24);
+    --fill-hover: rgba(120, 120, 128, 0.34);
+    --border: rgba(84, 84, 88, 0.55);
+    --separator: rgba(84, 84, 88, 0.45);
+    --primary: #0a84ff;
+    --primary-hover: #2994ff;
+    --primary-active: #0a7aef;
+    --primary-soft: rgba(10, 132, 255, 0.22);
+    --primary-foreground: #ffffff;
+    --success: #30d158;
+    --success-soft: rgba(48, 209, 88, 0.2);
+    --warning: #ffb340;
+    --warning-soft: rgba(255, 159, 10, 0.22);
+    --danger: #ff6961;
+    --danger-soft: rgba(255, 69, 58, 0.22);
+    --ring: rgba(10, 132, 255, 0.6);
+    --shadow-sm: 0 0 0 0.5px rgba(255, 255, 255, 0.06);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.5), 0 0 0 0.5px rgba(255, 255, 255, 0.08);
+    --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.6), 0 0 0 0.5px rgba(255, 255, 255, 0.1);
   }
 }
+
+html { -webkit-text-size-adjust: 100%; }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', system-ui, 'Segoe UI', Roboto, sans-serif;
+  font-size: 15px;
+  line-height: 1.47;
+  letter-spacing: -0.011em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
+h1, h2, h3 { letter-spacing: -0.022em; }
+h1 { letter-spacing: -0.03em; }
+
+::selection { background: var(--primary-soft); }
+
+a { transition: color 0.15s var(--ease), opacity 0.15s var(--ease); }
+
+/* Foco por teclado visível em tudo o que é interativo */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 3px solid var(--ring);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+@layer components {
+/* ---------- Superfícies ---------- */
+.card {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+.card-pad { padding: 1.25rem; }
+
+/* Lista agrupada (inset grouped list) */
+.group-list { background: var(--surface); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); overflow: hidden; }
+.group-list > li, .group-list > .row { padding: 0.8rem 1.1rem; }
+.group-list > li + li, .group-list > .row + .row { border-top: 0.5px solid var(--separator); }
+.row-link { transition: background-color 0.15s var(--ease); }
+.row-link:hover { background: var(--fill); }
+
+/* Tabelas dentro de cartões: linhas finas, sem peso */
+.table-card { background: var(--surface); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); overflow-x: auto; }
+.table-card table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.table-card th {
+  text-align: left; font-size: 12px; font-weight: 500; color: var(--secondary);
+  padding: 0.7rem 0.9rem; border-bottom: 0.5px solid var(--separator); white-space: nowrap;
+}
+.table-card td { padding: 0.65rem 0.9rem; border-bottom: 0.5px solid var(--separator); }
+.table-card tbody tr:last-child > td { border-bottom: 0; }
+.table-card tbody tr { transition: background-color 0.15s var(--ease); }
+.table-card tbody tr:hover { background: color-mix(in srgb, var(--fill) 55%, transparent); }
+.table-card th:first-child, .table-card td:first-child { padding-left: 1.1rem; }
+.table-card th:last-child, .table-card td:last-child { padding-right: 1.1rem; }
+
+/* Ligações de navegação em linhas/tabelas */
+.link { color: var(--primary); font-weight: 500; text-decoration: none; }
+.link:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+/* ---------- Campos ---------- */
+.field {
+  width: 100%; font: inherit; font-size: 15px; color: var(--foreground);
+  background: var(--fill); border: 1px solid transparent; border-radius: 10px;
+  padding: 0.5rem 0.75rem; min-height: 2.5rem;
+  transition: background-color 0.15s var(--ease), box-shadow 0.15s var(--ease), border-color 0.15s var(--ease);
+}
+.field::placeholder { color: var(--secondary); opacity: 0.8; }
+.field:hover:not(:disabled) { background: var(--fill-hover); }
+.field:focus { outline: none; background: var(--surface); border-color: var(--primary); box-shadow: 0 0 0 4px var(--ring); }
+.field:focus-visible { outline: none; }
+.field:disabled { opacity: 0.55; cursor: not-allowed; }
+select.field { appearance: none; padding-right: 2rem; cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none' stroke='%238e8e93' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m1 1.5 5 5 5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 0.8rem center; }
+
+input[type='checkbox'], input[type='radio'] { accent-color: var(--primary); width: 1.05rem; height: 1.05rem; flex-shrink: 0; cursor: pointer; }
+input[type='checkbox']:disabled { cursor: not-allowed; }
+
+/* ---------- Botões ---------- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;
+  font: inherit; font-size: 14.5px; font-weight: 500; letter-spacing: -0.01em;
+  min-height: 2.25rem; padding: 0.4rem 1.05rem; border-radius: 999px; border: 1px solid transparent;
+  cursor: pointer; white-space: nowrap; user-select: none;
+  transition: background-color 0.15s var(--ease), transform 0.12s var(--ease), box-shadow 0.15s var(--ease), opacity 0.15s var(--ease);
+}
+.btn:active:not(:disabled) { transform: scale(0.97); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-default { background: var(--primary); color: var(--primary-foreground); }
+.btn-default:hover:not(:disabled) { background: var(--primary-hover); }
+.btn-default:active:not(:disabled) { background: var(--primary-active); }
+.btn-outline { background: var(--primary-soft); color: var(--primary); }
+.btn-outline:hover:not(:disabled) { background: color-mix(in srgb, var(--primary) 20%, transparent); }
+.btn-ghost { background: transparent; color: var(--primary); padding-inline: 0.7rem; }
+.btn-ghost:hover:not(:disabled) { background: var(--fill); }
+.btn-danger { background: var(--danger-soft); color: var(--danger); }
+.btn-danger:hover:not(:disabled) { background: color-mix(in srgb, var(--danger) 24%, transparent); }
+
+/* ---------- Badges ---------- */
+.badge {
+  display: inline-flex; align-items: center; gap: 0.35rem; font-size: 12px; font-weight: 600;
+  letter-spacing: 0; line-height: 1; padding: 0.35rem 0.65rem; border-radius: 999px; white-space: nowrap;
+}
+.badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.badge-gray { background: var(--fill); color: var(--secondary); }
+.badge-blue { background: var(--primary-soft); color: var(--primary); }
+.badge-green { background: var(--success-soft); color: var(--success); }
+.badge-orange { background: var(--warning-soft); color: var(--warning); }
+.badge-red { background: var(--danger-soft); color: var(--danger); }
+
+/* ---------- Controlo segmentado ---------- */
+.segmented {
+  display: inline-flex; max-width: 100%; overflow-x: auto; scrollbar-width: none;
+  padding: 2px; gap: 2px; background: var(--fill); border-radius: 10px;
+}
+.segmented::-webkit-scrollbar { display: none; }
+.segmented > button {
+  font: inherit; font-size: 13.5px; font-weight: 500; color: var(--foreground); white-space: nowrap;
+  padding: 0.35rem 1rem; border-radius: 8px; border: 0; background: transparent; cursor: pointer;
+  transition: background-color 0.18s var(--ease), box-shadow 0.18s var(--ease), color 0.18s var(--ease);
+}
+.segmented > button:hover:not([aria-selected='true']) { background: color-mix(in srgb, var(--fill) 70%, transparent); }
+.segmented > button[aria-selected='true'] { background: var(--surface); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.14), 0 0 0 0.5px rgba(0, 0, 0, 0.04); font-weight: 600; }
+@media (prefers-color-scheme: dark) {
+  .segmented > button[aria-selected='true'] { background: #636366; }
+}
+
+/* ---------- Barra de navegação (vidro) ---------- */
+.navbar {
+  position: sticky; top: 0; z-index: 40;
+  background: var(--surface-glass);
+  -webkit-backdrop-filter: saturate(180%) blur(22px);
+  backdrop-filter: saturate(180%) blur(22px);
+  border-bottom: 0.5px solid var(--separator);
+}
+.nav-link {
+  font-size: 13.5px; font-weight: 500; color: var(--secondary); padding: 0.35rem 0.7rem; border-radius: 999px;
+  text-decoration: none; transition: background-color 0.15s var(--ease), color 0.15s var(--ease); white-space: nowrap;
+}
+.nav-link:hover { color: var(--foreground); background: var(--fill); }
+.nav-link[aria-current='page'] { color: var(--foreground); background: var(--fill); }
+
+.glass {
+  background: var(--surface-glass);
+  -webkit-backdrop-filter: saturate(180%) blur(28px);
+  backdrop-filter: saturate(180%) blur(28px);
+}
+
+}
+
+/* ---------- Animações ---------- */
+@keyframes fade-up { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@keyframes pop { 0% { opacity: 0; transform: scale(0.6); } 70% { transform: scale(1.06); } 100% { opacity: 1; transform: scale(1); } }
+.enter { animation: fade-up 0.28s var(--ease) both; }
+.pop { animation: pop 0.45s var(--ease) both; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
+  .btn:active:not(:disabled) { transform: none; }
+}
+
+/* ---------- Editor de texto / vista do conteúdo ---------- */
 .prose-editor h1, .prose-view h1 { font-size: 1.5rem; font-weight: 600; margin: .8rem 0 .4rem; }
 .prose-editor h2, .prose-view h2 { font-size: 1.25rem; font-weight: 600; margin: .8rem 0 .4rem; }
 .prose-editor h3, .prose-view h3 { font-size: 1.1rem; font-weight: 600; margin: .6rem 0 .3rem; }
@@ -35,3 +240,8 @@ body {
 .prose-editor table, .prose-view table { border-collapse: collapse; margin: .5rem 0; }
 .prose-editor td, .prose-editor th, .prose-view td, .prose-view th { border: 1px solid var(--border); padding: .25rem .5rem; min-width: 3rem; }
 .prose-editor th, .prose-view th { background: var(--muted); font-weight: 600; }
+
+/* Linhas de tabela que continuam na linha seguinte (atributos/avisos da cotação) */
+.table-card tr.merge-next > td { border-bottom: 0; }
+.flex > h1.mb-6 { margin-bottom: 0; }
+.group-list:empty { display: none; }

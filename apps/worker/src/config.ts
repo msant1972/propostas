@@ -11,7 +11,7 @@ const schema = z.object({
   TLS_CERT_FILE: z.string().optional(), // impressão digital do certificado autoassinado nas mensagens ao cliente
   RETENTION_IP_DAYS: z.coerce.number().int().min(1).default(365), // IP e agente de utilizador das respostas do portal
   RETENTION_LINK_DAYS: z.coerce.number().int().min(1).default(180), // ligações expiradas e sem resposta
-  TEAMS_WEBHOOK_URL: z.string().optional(),
+  TEAMS_WEBHOOK_URL: z.string().url().refine((u) => u.startsWith('https://'), 'TEAMS_WEBHOOK_URL tem de usar https').optional(), // só HTTPS (evita pedidos para destinos internos em claro)
   APP_BASE_URL: z.string().default('http://localhost:5173'),
   RELAY_INTERVAL_MS: z.coerce.number().int().default(1000),
   RELAY_BATCH: z.coerce.number().int().default(100),

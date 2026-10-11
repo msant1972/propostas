@@ -3,7 +3,7 @@ import { useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { components } from '@cpq/api-client';
 import { ROLES } from '@cpq/shared/roles';
-import { Button, Input, Label, Select } from '../components/ui';
+import { Badge, Button, Input, Label, Select } from '../components/ui';
 import { apiGet, apiPatch, apiPost } from '../lib/api';
 
 type User = components['schemas']['UserDto'];
@@ -64,22 +64,22 @@ export function UsersPage() {
   return (
     <section>
       <div className="mb-4 flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">{t('users.title')}</h1>
+        <h1 className="mb-6 text-[28px] font-bold leading-tight sm:text-[32px]">{t('users.title')}</h1>
         <Button onClick={() => setCreating(true)}>{t('users.new')}</Button>
       </div>
 
       {temp && (
-        <div role="status" className="mb-4 rounded-md border border-[var(--border)] bg-[var(--muted)] p-3 text-sm">
+        <div role="status" className="card card-pad mb-4 text-sm">
           <p>{t('users.temp')}</p>
           <p className="mt-1 font-mono text-base" data-testid="temp-password">{temp.password}</p>
-          <p className="opacity-70">{temp.email}</p>
+          <p className="text-[var(--secondary)]">{temp.email}</p>
           <Button className="mt-2" variant="outline" onClick={() => setTemp(null)}>{t('common.cancel')}</Button>
         </div>
       )}
 
       {creating && (
-        <form onSubmit={submit} className="mb-6 max-w-2xl space-y-4 rounded-md border border-[var(--border)] p-4">
-          <div className="grid grid-cols-2 gap-4">
+        <form onSubmit={submit} className="card card-pad enter mb-6 max-w-2xl space-y-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div><Label htmlFor="u-email">{t('users.email')}</Label><Input id="u-email" type="email" required value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /></div>
             <div><Label htmlFor="u-name">{t('users.name')}</Label><Input id="u-name" required value={form.displayName} onChange={(e) => setForm({ ...form, displayName: e.target.value })} /></div>
             <div>
@@ -91,26 +91,26 @@ export function UsersPage() {
             </div>
           </div>
           <div><Label htmlFor="u-roles">{t('users.roles')}</Label><RoleBoxes value={form.roles} onChange={(roles) => setForm({ ...form, roles })} /></div>
-          {error && <p role="alert" className="text-sm text-red-600">{error}</p>}
+          {error && <p role="alert" className="text-sm text-[var(--danger)]">{error}</p>}
           <div className="flex gap-2"><Button type="submit" disabled={create.isPending || form.roles.length === 0}>{t('common.create')}</Button><Button type="button" variant="outline" onClick={() => setCreating(false)}>{t('common.cancel')}</Button></div>
         </form>
       )}
-      {!creating && error && <p role="alert" className="mb-3 text-sm text-red-600">{error}</p>}
+      {!creating && error && <p role="alert" className="mb-3 text-sm text-[var(--danger)]">{error}</p>}
 
-      <Input aria-label={t('common.search')} placeholder={t('common.search')} className="mb-4 max-w-sm" value={q} onChange={(e) => setQ(e.target.value)} />
+      <Input aria-label={t('common.search')} placeholder={t('common.search')} className="mb-4 sm:max-w-xs" value={q} onChange={(e) => setQ(e.target.value)} />
       {users.isPending && <p>{t('common.loading')}</p>}
-      <div className="space-y-3">
+      <div className="group-list">
         {users.data?.items.map((u) => (
-          <div key={u.id} className="rounded-md border border-[var(--border)] p-3 text-sm" data-testid="user-row">
+          <div key={u.id} className="row text-sm" data-testid="user-row">
             <div className="flex flex-wrap items-center gap-3">
-              <span className="font-medium">{u.displayName}</span><span className="opacity-70">{u.email}</span>
-              {!u.isActive && <span className="rounded bg-[var(--muted)] px-2 py-0.5 text-xs">{t('users.deactivate')}</span>}
-              {u.locked && <span className="rounded bg-[var(--muted)] px-2 py-0.5 text-xs text-red-600">{t('users.locked')}</span>}
-              <span className="ml-auto opacity-60">{t('users.lastLogin')}: {u.lastLoginAt ? u.lastLoginAt.slice(0, 16).replace('T', ' ') : t('users.never')}</span>
+              <span className="font-medium">{u.displayName}</span><span className="text-[var(--secondary)]">{u.email}</span>
+              {!u.isActive && <Badge>{t('users.deactivate')}</Badge>}
+              {u.locked && <Badge tone="red">{t('users.locked')}</Badge>}
+              <span className="ml-auto text-[var(--secondary)]">{t('users.lastLogin')}: {u.lastLoginAt ? u.lastLoginAt.slice(0, 16).replace('T', ' ') : t('users.never')}</span>
             </div>
             <div className="mt-2"><RoleBoxes value={u.roles} onChange={(roles) => patch.mutate({ id: u.id, body: { roles } })} /></div>
             <div className="mt-2 flex flex-wrap items-center gap-2">
-              <Select aria-label={t('users.team')} className="w-48" value={u.teamId ?? ''} onChange={(e) => patch.mutate({ id: u.id, body: { teamId: e.target.value || null } })}>
+              <Select aria-label={t('users.team')} className="!w-48" value={u.teamId ?? ''} onChange={(e) => patch.mutate({ id: u.id, body: { teamId: e.target.value || null } })}>
                 <option value="">{t('users.noTeam')}</option>
                 {teams.data?.map((x) => <option key={x.id} value={x.id}>{x.name}</option>)}
               </Select>
@@ -122,8 +122,8 @@ export function UsersPage() {
         ))}
       </div>
 
-      <h2 className="mb-2 mt-8 text-lg font-semibold">{t('users.teams')}</h2>
-      <p className="mb-2 text-sm opacity-70">{teams.data?.map((x) => x.name).join(', ')}</p>
+      <h2 className="mb-3 mt-8 text-lg font-semibold">{t('users.teams')}</h2>
+      <p className="mb-2 text-sm text-[var(--secondary)]">{teams.data?.map((x) => x.name).join(', ')}</p>
       <div className="flex max-w-sm gap-2">
         <Input aria-label={t('users.newTeam')} placeholder={t('users.newTeam')} value={teamName} onChange={(e) => setTeamName(e.target.value)} />
         <Button variant="outline" disabled={!teamName.trim()} onClick={() => addTeam.mutate()}>{t('users.createTeam')}</Button>

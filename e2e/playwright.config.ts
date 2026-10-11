@@ -1,6 +1,9 @@
+import { resolve } from 'node:path';
 import { defineConfig } from '@playwright/test';
 
 const databaseUrl = process.env['DATABASE_URL'] ?? 'mysql://cpq:cpq@127.0.0.1:3306/cpq_dev';
+// a API e o worker partilham a mesma pasta de documentos (caminho absoluto: cada processo corre num diretório diferente)
+export const storageDir = process.env['DOCUMENT_STORAGE_DIR'] ?? resolve(import.meta.dirname, '../storage');
 
 export default defineConfig({
   testDir: './tests',
@@ -13,7 +16,7 @@ export default defineConfig({
       command: 'pnpm --filter @cpq/api dev',
       url: 'http://localhost:3000/api/v1/health',
       reuseExistingServer: true,
-      env: { DATABASE_URL: databaseUrl, PORT: '3000', LOGIN_RATE_PER_MINUTE: '1000' },
+      env: { DATABASE_URL: databaseUrl, PORT: '3000', LOGIN_RATE_PER_MINUTE: '1000', DOCUMENT_STORAGE_DIR: storageDir },
       timeout: 60_000,
     },
     {

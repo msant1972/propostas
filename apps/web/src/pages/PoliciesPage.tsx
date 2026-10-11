@@ -3,7 +3,7 @@ import { useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { components } from '@cpq/api-client';
 import { ROLES } from '@cpq/shared/roles';
-import { Button, Input, Label, Select } from '../components/ui';
+import { Badge, Button, Input, Label, Select } from '../components/ui';
 import { apiGet, apiPatch, apiPost } from '../lib/api';
 
 type Policy = components['schemas']['PolicyDto'];
@@ -41,12 +41,12 @@ export function PoliciesPage() {
   return (
     <section>
       <div className="mb-4 flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">{t('policies.title')}</h1>
+        <h1 className="mb-6 text-[28px] font-bold leading-tight sm:text-[32px]">{t('policies.title')}</h1>
         <Button onClick={() => setCreating(true)}>{t('policies.new')}</Button>
       </div>
 
       {creating && (
-        <form onSubmit={submit} className="mb-6 max-w-2xl space-y-4 rounded-md border border-[var(--border)] p-4">
+        <form onSubmit={submit} className="mb-6 max-w-2xl space-y-4 card p-4">
           <div className="grid grid-cols-2 gap-4">
             <div><Label htmlFor="p-name">{t('policies.name')}</Label><Input id="p-name" required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></div>
             <div><Label htmlFor="p-scope">{t('policies.scope')}</Label>
@@ -59,7 +59,7 @@ export function PoliciesPage() {
           <div>
             <Label htmlFor="p-cond">{t('policies.condition')}</Label>
             <textarea id="p-cond" rows={4} className="w-full rounded-md border border-[var(--border)] bg-transparent p-2 font-mono text-xs" value={form.condition} onChange={(e) => setForm({ ...form, condition: e.target.value })} />
-            <p className="text-xs opacity-60">{t('policies.help')}</p>
+            <p className="text-xs text-[var(--secondary)]">{t('policies.help')}</p>
           </div>
           <div>
             <p className="mb-1 text-sm font-medium">{t('policies.levels')}</p>
@@ -73,22 +73,22 @@ export function PoliciesPage() {
             ))}
             <Button type="button" variant="outline" onClick={() => setForm({ ...form, levels: [...form.levels, { level: form.levels.length + 1, role: 'Aprovador_Financeiro', slaHours: 48 }] })}>{t('policies.addLevel')}</Button>
           </div>
-          {error && <p role="alert" className="text-sm text-red-600">{error}</p>}
+          {error && <p role="alert" className="text-sm text-[var(--danger)]">{error}</p>}
           <div className="flex gap-2"><Button type="submit" disabled={create.isPending}>{t('common.create')}</Button><Button type="button" variant="outline" onClick={() => setCreating(false)}>{t('common.cancel')}</Button></div>
         </form>
       )}
 
-      <ul className="space-y-3">
+      <ul className="group-list">
         {list.data?.map((p) => (
-          <li key={p.id} className="rounded-md border border-[var(--border)] p-3 text-sm">
+          <li key={p.id} className="text-sm">
             <div className="flex flex-wrap items-center gap-3">
               <span className="font-medium">{p.name}</span>
-              <span className="rounded bg-[var(--muted)] px-2 py-0.5 text-xs">{t(`approvals.scope.${p.scope}`)}</span>
-              <span className="opacity-70">{t(`policies.${p.mode}`)} · {t('policies.priority')} {p.priority}</span>
+              <Badge tone="blue">{t(`approvals.scope.${p.scope}`)}</Badge>
+              <span className="text-[var(--secondary)]">{t(`policies.${p.mode}`)} · {t('policies.priority')} {p.priority}</span>
               <Button className="ml-auto" variant="ghost" onClick={() => toggle.mutate(p)}>{p.isActive ? t('policies.active') : t('users.activate')}</Button>
             </div>
-            <div className="mt-1 opacity-70">{p.levels.map((l) => `${l.level}. ${t(`roles.${l.role}`, { defaultValue: l.role })} (${l.slaHours} h)`).join(' → ')}</div>
-            <pre className="mt-1 overflow-x-auto rounded bg-[var(--muted)] p-2 text-xs">{p.condition ? JSON.stringify(p.condition) : '—'}</pre>
+            <div className="mt-1 text-[var(--secondary)]">{p.levels.map((l) => `${l.level}. ${t(`roles.${l.role}`, { defaultValue: l.role })} (${l.slaHours} h)`).join(' → ')}</div>
+            <pre className="mt-2 overflow-x-auto rounded-[10px] bg-[var(--fill)] p-2 text-xs">{p.condition ? JSON.stringify(p.condition) : '—'}</pre>
           </li>
         ))}
       </ul>

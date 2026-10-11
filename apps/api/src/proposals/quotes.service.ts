@@ -19,6 +19,23 @@ type ClientRow = { countryCode: string; tier: string | null; vatNumber: string |
 const today = () => new Date().toISOString().slice(0, 10);
 const num = (d: { toFixed(n: number): string }, n = 2) => d.toFixed(n);
 
+/**
+ * Impasse (deadlock) ou conflito de escrita entre transações concorrentes: o MariaDB aborta uma delas
+ * (P2034 no Prisma) e a operação é segura de repetir. Sem isto, gravar cotações de propostas diferentes
+ * ao mesmo tempo falhava com 500 (medido em scripts/perf: DELETE+INSERT em quote_items disputam o mesmo intervalo do índice).
+ */
+const isWriteConflict = (e: unknown) => (e as { code?: string } | null)?.code === 'P2034';
+async function retryOnConflict<T>(fn: () => Promise<T>, attempts = 6): Promise<T> {
+  for (let i = 1; ; i++) {
+    try {
+      return await fn();
+    } catch (e) {
+      if (!isWriteConflict(e) || i >= attempts) throw e;
+      await new Promise((r) => setTimeout(r, 10 * i + Math.random() * 20 * i));
+    }
+  }
+}
+
 @Injectable()
 export class QuotesService {
   constructor(
@@ -230,7 +247,7 @@ export class QuotesService {
     await this.draft(p.id, versionId);
     const { input, result, catalog } = await this.compute(p, dto);
     this.rejectInvalid(result);
-    await this.prisma.$transaction((tx) => this.persist(tx, versionId, input, result, catalog));
+    await retryOnConflict(() => this.prisma.$transaction((tx) => this.persist(tx, versionId, input, result, catalog)));
     return this.get(p.id, versionId);
   }
 
@@ -257,14 +274,14 @@ export class QuotesService {
     };
     const hash = snapshotHash(snapshot);
 
-    await this.prisma.$transaction(async (tx) => {
+    await retryOnConflict(() => this.prisma.$transaction(async (tx) => {
       await this.persist(tx, versionId, input, result, catalog, {
         status: 'LOCKED', lockedAt: new Date(), snapshotJson: snapshot as never, snapshotHash: hash,
       });
       await this.outbox.enqueue(tx, {
         aggregateId: p.id, eventType: 'quote.locked', payload: { versionId, snapshotHash: hash, actorUserId },
       });
-    });
+    }));
     return this.get(p.id, versionId);
   }
 

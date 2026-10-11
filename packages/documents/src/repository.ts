@@ -55,7 +55,7 @@ export class LocalDocumentRepository implements DocumentRepository {
   async put(i: { clientCode: string; proposalCode: string; folder: Folder; fileName: string; bytes: Buffer }): Promise<StoredFile> {
     const storageKey = ['Clientes', safeSegment(i.clientCode), safeSegment(i.proposalCode), i.folder, safeSegment(i.fileName)].join('/');
     const file = this.abs(storageKey);
-    await mkdir(dirname(file), { recursive: true });
+    await mkdir(dirname(file), { recursive: true, mode: 0o750 });
     // 'wx': nunca sobrescreve; cada geração produz um ficheiro novo e o anterior fica no histórico.
     const fh = await open(file, constants.O_WRONLY | constants.O_CREAT | constants.O_EXCL, 0o640);
     try {
@@ -76,7 +76,7 @@ export class LocalDocumentRepository implements DocumentRepository {
     if (parts.length !== 5 || parts[0] !== 'Clientes') throw new Error('Chave de armazenamento inválida');
     const target = [...parts.slice(0, 3), folder, parts[4]!].join('/');
     const dst = this.abs(target);
-    await mkdir(dirname(dst), { recursive: true });
+    await mkdir(dirname(dst), { recursive: true, mode: 0o750 });
     await copyFile(this.abs(storageKey), dst, constants.COPYFILE_EXCL);
     const bytes = await readFile(dst);
     return { storageKey: target, sha256: sha256(bytes), sizeBytes: bytes.length };

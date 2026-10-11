@@ -2,14 +2,25 @@
 limit_req_zone $binary_remote_addr zone=portal:10m rate=30r/m;   # portal: pedidos por IP
 limit_req_zone $binary_remote_addr zone=api:10m rate=600r/m;
 
+# O token do portal vai no caminho do URL: não pode ficar nos registos de acesso.
+map $request_uri $cpq_logged_uri {
+    ~^/api/v1/portal/   /api/v1/portal/[token-omitido];
+    ~^/portal/          /portal/[token-omitido];
+    default             $request_uri;
+}
+log_format cpq_redigido '$remote_addr - [$time_iso8601] "$request_method $cpq_logged_uri" $status $body_bytes_sent "$http_user_agent"';
+
 server {
     listen 80 default_server;
     server_name _;
+    server_tokens off;
     return 301 https://$host$request_uri;
 }
 
 server {
     listen 443 ssl default_server;
+    access_log /var/log/nginx/cpq.access.log cpq_redigido;
+    server_tokens off;
     http2 on;
     server_name {{ server_names | join(' ') }};
 
@@ -25,6 +36,8 @@ server {
     add_header X-Content-Type-Options nosniff always;
     add_header X-Frame-Options DENY always;
     add_header Referrer-Policy no-referrer always;
+    add_header Permissions-Policy "camera=(), microphone=(), geolocation=()" always;
+    add_header Cross-Origin-Opener-Policy same-origin always;
 
     client_max_body_size 25m;
 

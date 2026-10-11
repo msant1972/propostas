@@ -45,21 +45,21 @@ function SectionEditor({ s, proposalId, editable, tags, first, last, onMove }: {
   const dirty = title !== s.title || html !== s.html;
 
   return (
-    <li className="rounded-md border border-[var(--border)] p-3" data-testid="section">
+    <li className="card card-pad" data-testid="section">
       <div className="mb-2 flex items-center gap-2">
         <Input aria-label={t('doc.blankTitle')} disabled={!editable} value={title} onChange={(e) => setTitle(e.target.value)} className="font-medium" />
         {editable && (
           <>
             <Button variant="ghost" aria-label={t('doc.moveUp')} disabled={first} onClick={() => onMove(-1)}>↑</Button>
             <Button variant="ghost" aria-label={t('doc.moveDown')} disabled={last} onClick={() => onMove(1)}>↓</Button>
-            <Button variant="ghost" onClick={() => remove.mutate()}>{t('common.delete')}</Button>
+            <Button variant="danger" onClick={() => remove.mutate()}>{t('common.delete')}</Button>
           </>
         )}
       </div>
-      {s.blockCode && <p className="mb-2 text-xs opacity-60">{s.blockCode}{s.isModified && ` · ${t('doc.modified')}`}</p>}
-      {s.isLegal && s.isModified && <p role="status" className="mb-2 text-sm text-amber-600">{t('doc.legalModified')}</p>}
+      {s.blockCode && <p className="mb-2 text-xs text-[var(--secondary)]">{s.blockCode}{s.isModified && ` · ${t('doc.modified')}`}</p>}
+      {s.isLegal && s.isModified && <p role="status" className="mb-2 text-sm text-[var(--warning)]">{t('doc.legalModified')}</p>}
       <RichEditor label={s.title} html={html} tags={tags} disabled={!editable} onChange={setHtml} />
-      {msg && <p role="alert" className="mt-2 text-sm text-red-600">{msg}</p>}
+      {msg && <p role="alert" className="mt-2 text-sm text-[var(--danger)]">{msg}</p>}
       {editable && <Button className="mt-2" variant="outline" disabled={!dirty || save.isPending} onClick={() => save.mutate()}>{t('doc.saveSection')}</Button>}
     </li>
   );
@@ -132,19 +132,19 @@ export function DocumentPanel({ proposalId, status }: { proposalId: string; stat
     <div className="space-y-6">
       <section aria-labelledby="sec-h">
         <h2 id="sec-h" className="mb-3 text-lg font-semibold">{t('doc.sections')}</h2>
-        {!editable && <p className="mb-3 text-sm opacity-70">{t('doc.readonlyHint')}</p>}
-        {list.length === 0 && <p className="mb-3 text-sm opacity-70">{t('doc.noSections')}</p>}
-        <ul className="space-y-3">
+        {!editable && <p className="mb-3 text-sm text-[var(--secondary)]">{t('doc.readonlyHint')}</p>}
+        {list.length === 0 && <p className="mb-3 text-sm text-[var(--secondary)]">{t('doc.noSections')}</p>}
+        <ul className="space-y-4">
           {list.map((s, i) => <SectionEditor key={s.id} s={s} proposalId={proposalId} editable={editable} tags={tags.data} first={i === 0} last={i === list.length - 1} onMove={(d) => move(i, d)} />)}
         </ul>
         {editable && (
-          <div className="mt-4 flex flex-wrap items-center gap-3">
-            <Select aria-label={t('doc.addFromLibrary')} className="max-w-xs" value={pick} onChange={(e) => setPick(e.target.value)}>
+          <div className="card card-pad mt-4 flex flex-wrap items-center gap-3">
+            <Select aria-label={t('doc.addFromLibrary')} className="sm:max-w-xs" value={pick} onChange={(e) => setPick(e.target.value)}>
               <option value="">{t('doc.pick')}</option>
               {blocks.data?.items.flatMap((b: Block) => b.versions.filter((v) => v.status === 'APPROVED').map((v) => <option key={v.id} value={v.id}>{b.title} ({v.language})</option>))}
             </Select>
             <Button variant="outline" disabled={!pick} onClick={() => add.mutate({ blockVersionId: pick })}>{t('doc.addFromLibrary')}</Button>
-            <Input aria-label={t('doc.blankTitle')} placeholder={t('doc.blankTitle')} className="max-w-xs" value={blank} onChange={(e) => setBlank(e.target.value)} />
+            <Input aria-label={t('doc.blankTitle')} placeholder={t('doc.blankTitle')} className="sm:max-w-xs" value={blank} onChange={(e) => setBlank(e.target.value)} />
             <Button variant="outline" disabled={!blank} onClick={() => add.mutate({ title: blank })}>{t('doc.addBlank')}</Button>
           </div>
         )}
@@ -156,30 +156,30 @@ export function DocumentPanel({ proposalId, status }: { proposalId: string; stat
           <Button onClick={() => compile.mutate()} disabled={generating || compile.isPending || list.length === 0 || !['DRAFT', 'IN_REVIEW'].includes(status)}>
             {generating ? t('doc.generating') : t('doc.generate')}
           </Button>
-          {job.data?.status === 'FAILED' && <span role="alert" className="text-sm text-red-600">{t('doc.failed')}: {job.data.error}</span>}
+          {job.data?.status === 'FAILED' && <span role="alert" className="text-sm text-[var(--danger)]">{t('doc.failed')}: {job.data.error}</span>}
         </div>
-        {error && <p role="alert" className="mb-2 text-sm text-red-600">{error}</p>}
+        {error && <p role="alert" className="mb-2 text-sm text-[var(--danger)]">{error}</p>}
         {issues.length > 0 && <div className="mb-3 text-sm"><strong>{t('doc.issues')}</strong><ul className="list-disc pl-5">{issues.map((i) => <li key={i}>{i}</li>)}</ul></div>}
 
         {docs.data && docs.data.length > 0 && (
-          <table className="w-full text-left text-sm">
-            <thead><tr className="border-b border-[var(--border)]"><th className="py-2">{t('quote.version', { n: '' }).trim()}</th><th>{t('doc.origin.GENERATED')}</th><th>{t('proposals.created')}</th><th /></tr></thead>
+          <div className="table-card"><table>
+            <thead><tr><th>{t('quote.version', { n: '' }).trim()}</th><th>{t('doc.origin.GENERATED')}</th><th>{t('proposals.created')}</th><th /></tr></thead>
             <tbody>
               {docs.data.map((d) => (
-                <tr key={d.id} className="border-b border-[var(--border)]">
-                  <td className="py-2">{d.kind}</td><td>{t(`doc.origin.${d.origin}`)}</td><td>{d.createdAt.slice(0, 16).replace('T', ' ')}</td>
+                <tr key={d.id}>
+                  <td>{d.kind}</td><td>{t(`doc.origin.${d.origin}`)}</td><td>{d.createdAt.slice(0, 16).replace('T', ' ')}</td>
                   <td className="text-right"><Button variant="ghost" onClick={() => void download(proposalId, d)}>{t('doc.download')} ({d.fileName})</Button></td>
                 </tr>
               ))}
             </tbody>
-          </table>
+          </table></div>
         )}
 
         {['DRAFT', 'IN_REVIEW'].includes(status) && (
           <div className="mt-4 flex flex-wrap items-center gap-3 text-sm">
             <span>{t('doc.upload')}:</span>
             <Select aria-label={t('doc.uploadKind')} className="w-24" value={kind} onChange={(e) => setKind(e.target.value as 'DOCX' | 'PDF')}><option>DOCX</option><option>PDF</option></Select>
-            <input ref={fileRef} type="file" aria-label={t('doc.upload')} accept=".docx,.pdf" onChange={(e) => { const f = e.target.files?.[0]; if (f) upload.mutate(f); }} />
+            <input ref={fileRef} type="file" className="text-[13px] text-[var(--secondary)] file:mr-3 file:cursor-pointer file:rounded-full file:border-0 file:bg-[var(--primary-soft)] file:px-4 file:py-1.5 file:text-[13px] file:font-medium file:text-[var(--primary)]" aria-label={t('doc.upload')} accept=".docx,.pdf" onChange={(e) => { const f = e.target.files?.[0]; if (f) upload.mutate(f); }} />
           </div>
         )}
       </section>

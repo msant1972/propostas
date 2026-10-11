@@ -1,4 +1,5 @@
 import { ConflictException, Inject, Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import { assertSafeCondition } from '../common/condition-guard.js';
 import { findPriceListOverlaps, validateCondition, type PriceList } from '@cpq/rules-engine';
 import { uuidv7 } from '@cpq/shared';
 import { CatalogLoader } from '../cpq/catalog-loader.js';
@@ -211,6 +212,7 @@ export class AdminService {
   }
 
   private async assertRuleValid(dto: Partial<CreateRuleDto>, type: string): Promise<void> {
+    assertSafeCondition(dto.condition);
     const problem = validateCondition(dto.condition ?? null);
     if (problem) throw new UnprocessableEntityException(`Condição inválida: ${problem}`);
     if (['REQUIRES', 'EXCLUDES', 'RECOMMENDS'].includes(type) && !dto.targetProductId) {

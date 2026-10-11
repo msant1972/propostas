@@ -22,12 +22,16 @@
     "test:all": "scripts/env/test.sh",
     "ops:verify": "pnpm --filter @cpq/db run ops:verify --",
     "ops:restore-rehearsal": "scripts/ops/restore-rehearsal.sh",
-    "data:import": "pnpm --filter @cpq/db run import"
+    "data:import": "pnpm --filter @cpq/db run import",
+    "perf:bench": "pnpm --filter @cpq/rules-engine build && node packages/rules-engine/bench/quote.bench.ts",
+    "perf": "pnpm perf:bench && node scripts/perf/run.mjs",
+    "security:check": "scripts/security/check.sh"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@types/node": "^26.6.5",
     "eslint": "^10.12.0",
+    "globals": "^17.13.0",
     "prettier": "^3.9.9",
     "turbo": "^2.11.7",
     "typescript": "^5.9.3",

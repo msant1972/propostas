@@ -79,9 +79,22 @@
     state: absent
   notify: reload nginx
 
-- name: Firewall - só SSH e HTTPS
+- name: Firewall - SSH com limite de ligações
+  community.general.ufw:
+    rule: limit
+    port: "22"
+    proto: tcp
+
+- name: Firewall - HTTP e HTTPS
   community.general.ufw:
     rule: allow
     port: "{{ item }}"
     proto: tcp
-  loop: ["22", "80", "443"]
+  loop: ["80", "443"]
+
+# Sem isto as regras acima não bloqueiam nada: o ufw tem de estar ativo e a política por omissão negar a entrada.
+- name: Firewall - negar o resto da entrada e ativar
+  community.general.ufw:
+    state: enabled
+    policy: deny
+    direction: incoming

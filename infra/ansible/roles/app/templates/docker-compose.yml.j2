@@ -2,7 +2,7 @@
 services:
   redis:
     image: redis:8
-    command: ["redis-server", "--appendonly", "yes", "--appendfsync", "everysec"]
+    command: ["redis-server", "--appendonly", "yes", "--appendfsync", "everysec", "--bind", "127.0.0.1", "--protected-mode", "yes"]
     volumes: ["redis-data:/data"]
     network_mode: host
     restart: unless-stopped
@@ -16,7 +16,6 @@ services:
     environment:
       NODE_ENV: production
       PORT: "3000"
-      AUTH_MODE: entra
     env_file: ["{{ app_dir }}/api.env"]   # preenchido a partir do Secrets Manager no deploy
 
   worker:

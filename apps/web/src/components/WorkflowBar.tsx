@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { components } from '@cpq/api-client';
 import { ApiError, apiGet, apiPost } from '../lib/api';
-import { Button, Input, Label } from './ui';
+import { Button, Card, Input, Label, StatusBadge } from './ui';
 
 type Result = components['schemas']['TransitionResultDto'];
 
@@ -52,13 +52,13 @@ export function WorkflowBar({ proposalId, onChanged }: { proposalId: string; onC
   return (
     <div className="space-y-3" aria-label="workflow">
       <div className="flex flex-wrap items-center gap-2">
-        <span className="rounded-full bg-[var(--muted)] px-3 py-1 text-sm font-medium" data-testid="status">{t(`status.${state.data.status}`)}</span>
+        <StatusBadge status={state.data.status} className="mr-1 !px-3 !py-1.5 !text-[13px]" data-testid="status" />
         {events.map((e) => (
-          <Button key={e} variant={e === 'CANCEL' ? 'ghost' : 'outline'} disabled={run.isPending} onClick={() => start(e)}>{t(`wf.event.${e}`)}</Button>
+          <Button key={e} variant={e === 'CANCEL' ? 'danger' : 'outline'} disabled={run.isPending} onClick={() => start(e)}>{t(`wf.event.${e}`)}</Button>
         ))}
       </div>
       {pending && (
-        <div className="max-w-xl space-y-3 rounded-md border border-[var(--border)] p-3">
+        <Card className="enter max-w-xl space-y-3">
           <p className="font-medium">{t(`wf.event.${pending}`)}</p>
           {needsReason && (<div><Label htmlFor="wf-reason">{t('wf.reason')}</Label><Input id="wf-reason" value={reason} onChange={(e) => setReason(e.target.value)} /></div>)}
           {needsConfirm && (<label className="flex items-start gap-2 text-sm"><input type="checkbox" checked={confirm} onChange={(e) => setConfirm(e.target.checked)} />{t('wf.confirm')}</label>)}
@@ -66,10 +66,10 @@ export function WorkflowBar({ proposalId, onChanged }: { proposalId: string; onC
             <Button disabled={run.isPending || (needsReason && !reason.trim()) || (needsConfirm && !confirm)} onClick={() => run.mutate(pending)}>{t('wf.run')}</Button>
             <Button variant="outline" onClick={() => setPending(null)}>{t('wf.abort')}</Button>
           </div>
-        </div>
+        </Card>
       )}
-      {error && <p role="alert" className="text-sm text-red-600">{error}</p>}
-      {ok && !error && <p role="status" className="text-sm text-green-700">{t('wf.done')}</p>}
+      {error && <p role="alert" className="text-sm text-[var(--danger)]">{error}</p>}
+      {ok && !error && <p role="status" className="text-sm text-[var(--success)]">{t('wf.done')}</p>}
     </div>
   );
 }

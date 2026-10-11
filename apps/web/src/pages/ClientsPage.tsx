@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { components } from '@cpq/api-client';
-import { Button, Input, Label } from '../components/ui';
+import { Button, Empty, Input, Label } from '../components/ui';
 import { apiDelete, apiGet, apiPatch, apiPost } from '../lib/api';
 
 type Client = components['schemas']['ClientDto'];
@@ -62,14 +62,14 @@ export function ClientsPage() {
   return (
     <section>
       <div className="mb-4 flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">{t('clients.title')}</h1>
+        <h1 className="mb-6 text-[28px] font-bold leading-tight sm:text-[32px]">{t('clients.title')}</h1>
         <Button onClick={() => open('new')}>{t('clients.new')}</Button>
       </div>
 
-      <Input aria-label={t('common.search')} placeholder={t('common.search')} value={q} onChange={(e) => { setQ(e.target.value); setPage(1); }} className="mb-4 max-w-sm" />
+      <Input aria-label={t('common.search')} placeholder={t('common.search')} value={q} onChange={(e) => { setQ(e.target.value); setPage(1); }} className="mb-4 sm:max-w-xs" />
 
       {editing && (
-        <form onSubmit={submit} className="mb-6 grid max-w-2xl grid-cols-2 gap-4 rounded-md border border-[var(--border)] p-4">
+        <form onSubmit={submit} className="card card-pad enter mb-6 grid max-w-2xl grid-cols-1 gap-4 sm:grid-cols-2">
           <div><Label htmlFor="c-code">{t('clients.code')}</Label><Input id="c-code" required value={form.code} onChange={(e) => setForm({ ...form, code: e.target.value })} /></div>
           <div><Label htmlFor="c-name">{t('clients.name')}</Label><Input id="c-name" required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></div>
           <div><Label htmlFor="c-vat">{t('clients.vat')}</Label><Input id="c-vat" value={form.vatNumber} onChange={(e) => setForm({ ...form, vatNumber: e.target.value })} /></div>
@@ -78,35 +78,35 @@ export function ClientsPage() {
           <div><Label htmlFor="c-cn">{t('clients.contactName')}</Label><Input id="c-cn" value={form.contactName} onChange={(e) => setForm({ ...form, contactName: e.target.value })} /></div>
           <div><Label htmlFor="c-ce">{t('clients.contactEmail')}</Label><Input id="c-ce" type="email" value={form.contactEmail} onChange={(e) => setForm({ ...form, contactEmail: e.target.value })} /></div>
           <label className="flex items-center gap-2 self-end text-sm"><input type="checkbox" checked={form.vatValid} onChange={(e) => setForm({ ...form, vatValid: e.target.checked })} />{t('clients.vatValid')}</label>
-          {error && <p role="alert" className="col-span-2 text-sm text-red-600">{error}</p>}
-          <div className="col-span-2 flex gap-2">
+          {error && <p role="alert" className="text-sm text-[var(--danger)] sm:col-span-2">{error}</p>}
+          <div className="flex gap-2 sm:col-span-2">
             <Button type="submit" disabled={save.isPending}>{t('common.save')}</Button>
             <Button type="button" variant="outline" onClick={() => setEditing(null)}>{t('common.cancel')}</Button>
           </div>
         </form>
       )}
 
-      {list.isPending && <p>{t('common.loading')}</p>}
-      {list.isError && <p role="alert">{t('common.error')}</p>}
-      {list.data && list.data.items.length === 0 && <p>{t('common.empty')}</p>}
+      {list.isPending && <p className="text-[var(--secondary)]">{t('common.loading')}</p>}
+      {list.isError && <p role="alert" className="text-[var(--danger)]">{t('common.error')}</p>}
+      {list.data && list.data.items.length === 0 && <Empty>{t('common.empty')}</Empty>}
       {list.data && list.data.items.length > 0 && (
-        <table className="w-full text-left text-sm">
-          <thead><tr className="border-b border-[var(--border)]"><th className="py-2">{t('clients.code')}</th><th>{t('clients.name')}</th><th>{t('clients.vat')}</th><th>{t('clients.country')}</th><th>{t('clients.tier')}</th><th /></tr></thead>
+        <div className="table-card"><table>
+          <thead><tr><th>{t('clients.code')}</th><th>{t('clients.name')}</th><th>{t('clients.vat')}</th><th>{t('clients.country')}</th><th>{t('clients.tier')}</th><th /></tr></thead>
           <tbody>
             {list.data.items.map((c) => (
-              <tr key={c.id} className="border-b border-[var(--border)]">
-                <td className="py-2">{c.code}</td><td>{c.name}</td><td>{c.vatNumber ?? '—'}</td><td>{c.countryCode}</td><td>{c.tier ?? '—'}</td>
-                <td className="space-x-2 text-right">
+              <tr key={c.id}>
+                <td className="text-[var(--secondary)]">{c.code}</td><td className="font-medium">{c.name}</td><td>{c.vatNumber ?? '—'}</td><td>{c.countryCode}</td><td>{c.tier ?? '—'}</td>
+                <td className="whitespace-nowrap text-right">
                   <Button variant="ghost" onClick={() => open(c)}>{t('common.edit')}</Button>
-                  <Button variant="ghost" onClick={() => { if (confirm(t('clients.confirmDelete'))) remove.mutate(c.id); }}>{t('common.delete')}</Button>
+                  <Button variant="danger" className="ml-1" onClick={() => { if (confirm(t('clients.confirmDelete'))) remove.mutate(c.id); }}>{t('common.delete')}</Button>
                 </td>
               </tr>
             ))}
           </tbody>
-        </table>
+        </table></div>
       )}
       {list.data && (
-        <div className="mt-4 flex items-center gap-3 text-sm">
+        <div className="mt-5 flex items-center justify-center gap-3 text-sm text-[var(--secondary)]">
           <Button variant="outline" disabled={page <= 1} onClick={() => setPage(page - 1)}>{t('common.previous')}</Button>
           <span>{page} / {pages}</span>
           <Button variant="outline" disabled={page >= pages} onClick={() => setPage(page + 1)}>{t('common.next')}</Button>

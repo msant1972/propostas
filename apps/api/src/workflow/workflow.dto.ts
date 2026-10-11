@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsArray, IsBoolean, IsIn, IsInt, IsObject, IsOptional, IsString, IsUUID, Length, Matches, Max, Min, ValidateNested } from 'class-validator';
+import { ArrayMaxSize, IsArray, IsBoolean, IsIn, IsInt, IsObject, IsOptional, IsString, IsUUID, Length, Matches, Max, Min, ValidateNested } from 'class-validator';
 
 export const EVENTS = ['COMPILE', 'EDIT', 'SUBMIT', 'RETURN', 'SEND', 'CUSTOMER_ACCEPT', 'CUSTOMER_REJECT', 'REVISE', 'REOPEN', 'CANCEL'] as const;
 
@@ -80,7 +80,7 @@ export class CreatePolicyDto {
   @ApiProperty({ enum: ['COMMERCIAL', 'LEGAL'] }) @IsIn(['COMMERCIAL', 'LEGAL']) scope!: 'COMMERCIAL' | 'LEGAL';
   @ApiPropertyOptional({ type: 'object', additionalProperties: true, description: 'JSONLogic; vazio = sempre' }) @IsOptional() @IsObject() condition?: Record<string, unknown>;
   @ApiProperty({ enum: ['SEQUENTIAL', 'PARALLEL'] }) @IsIn(['SEQUENTIAL', 'PARALLEL']) mode!: 'SEQUENTIAL' | 'PARALLEL';
-  @ApiProperty({ type: [LevelDto] }) @IsArray() @ValidateNested({ each: true }) @Type(() => LevelDto) levels!: LevelDto[];
+  @ApiProperty({ type: [LevelDto] }) @IsArray() @ArrayMaxSize(10) @ValidateNested({ each: true }) @Type(() => LevelDto) levels!: LevelDto[];
   @ApiPropertyOptional({ default: 100 }) @IsOptional() @IsInt() @Min(0) @Max(32767) priority?: number;
   @ApiPropertyOptional() @IsOptional() @IsBoolean() isActive?: boolean;
   @ApiProperty() @Matches(/^\d{4}-\d{2}-\d{2}$/) validFrom!: string;

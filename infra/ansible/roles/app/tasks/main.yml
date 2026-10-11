@@ -10,6 +10,22 @@
     dest: "{{ app_dir }}/docker-compose.yml"
     mode: "0640"
 
+# Segredos (AUTH_JWT_SECRET, DATABASE_URL, SMTP_URL…): só o root os lê.
+- name: Ficheiros de ambiente existem?
+  ansible.builtin.stat:
+    path: "{{ app_dir }}/{{ item }}"
+  loop: [api.env, worker.env]
+  register: env_files
+
+- name: Permissões dos ficheiros de ambiente (0600, root)
+  ansible.builtin.file:
+    path: "{{ app_dir }}/{{ item.item }}"
+    owner: root
+    group: root
+    mode: "0600"
+  loop: "{{ env_files.results }}"
+  when: item.stat.exists
+
 - name: Subir os contentores
   community.docker.docker_compose_v2:
     project_src: "{{ app_dir }}"

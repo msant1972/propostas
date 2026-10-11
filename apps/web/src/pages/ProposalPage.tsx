@@ -10,7 +10,7 @@ import { DocumentPanel } from '../components/DocumentPanel';
 import { PortalPanel } from '../components/PortalPanel';
 import { Timeline } from '../components/Timeline';
 import { WorkflowBar } from '../components/WorkflowBar';
-import { Button } from '../components/ui';
+import { Button, PageHeader, SegmentedControl, StatusBadge } from '../components/ui';
 import { ApiError, apiGet, apiPost, apiPut } from '../lib/api';
 
 type Proposal = components['schemas']['ProposalDto'];
@@ -108,23 +108,18 @@ export function ProposalPage() {
 
   return (
     <section className="space-y-6">
-      <Link to="/propostas" className="text-sm underline">{t('common.back')}</Link>
       <div>
-        <h1 className="text-2xl font-semibold">{p.title}</h1>
-        <p className="text-sm opacity-70">{p.code} · {client.data?.name} · {t(`status.${p.status}`)}</p>
+        <Link to="/propostas" className="link mb-3 inline-block text-sm">‹ {t('common.back')}</Link>
+        <PageHeader title={p.title} subtitle={<>{p.code} · {client.data?.name} · <StatusBadge status={p.status} className="align-middle" /></>} />
       </div>
 
-      <div role="tablist" className="flex gap-1 border-b border-[var(--border)]">
-        {(['quote', 'document', 'portal', 'history'] as const).map((k) => (
-          <button key={k} role="tab" aria-selected={tab === k} onClick={() => setTab(k)}
-            className={`px-4 py-2 text-sm ${tab === k ? 'border-b-2 border-[var(--primary)] font-semibold' : 'opacity-70'}`}>
-            {t(k === 'quote' ? 'doc.tabQuote' : k === 'document' ? 'doc.tabDocument' : k === 'portal' ? 'portal.tab' : 'wf.tabHistory')}
-          </button>
-        ))}
-      </div>
+      <SegmentedControl value={tab} onChange={setTab}
+        items={(['quote', 'document', 'portal', 'history'] as const).map((k) => ({
+          value: k, label: t(k === 'quote' ? 'doc.tabQuote' : k === 'document' ? 'doc.tabDocument' : k === 'portal' ? 'portal.tab' : 'wf.tabHistory'),
+        }))} />
 
       <WorkflowBar proposalId={id} onChanged={refresh} />
-      {p.status === 'DRAFT' && p.statusReason && <p role="status" className="rounded-md border border-[var(--border)] bg-[var(--muted)] p-3 text-sm">{t('wf.statusReason', { reason: p.statusReason })}</p>}
+      {p.status === 'DRAFT' && p.statusReason && <p role="status" className="rounded-[var(--radius)] bg-[var(--warning-soft)] px-4 py-3 text-sm">{t('wf.statusReason', { reason: p.statusReason })}</p>}
 
       {tab === 'document' && <DocumentPanel proposalId={id} status={p.status} />}
       {tab === 'portal' && <PortalPanel proposalId={id} status={p.status} contactEmail={client.data?.contactEmail ?? null} />}
@@ -132,13 +127,13 @@ export function ProposalPage() {
 
       <div className={tab === 'quote' ? 'space-y-6' : 'hidden'}>
       <div className="flex flex-wrap items-center gap-3 text-sm">
-        <span className="font-medium">{t('quote.version', { n: q.versionNumber })} — {t(`quote.status.${q.status}`)}</span>
+        <span className="font-semibold">{t('quote.version', { n: q.versionNumber })} — {t(`quote.status.${q.status}`)}</span>
         {versions.data && versions.data.length > 1 && (
-          <span className="opacity-70">{t('quote.versions')}: {versions.data.map((v) => `v${v.versionNumber}`).join(', ')}</span>
+          <span className="text-[var(--secondary)]">{t('quote.versions')}: {versions.data.map((v) => `v${v.versionNumber}`).join(', ')}</span>
         )}
       </div>
 
-      {readOnly && <p className="rounded-md border border-[var(--border)] bg-[var(--muted)] p-3 text-sm">{t('quote.locked')}</p>}
+      {readOnly && <p className="rounded-[var(--radius)] bg-[var(--primary-soft)] px-4 py-3 text-sm">{t('quote.locked')}</p>}
 
       {catalog.data && client.data ? (
         <QuoteEditor catalog={catalog.data} currency={q.currency} client={client.data} issuerCountry={ISSUER_COUNTRY}
@@ -147,8 +142,8 @@ export function ProposalPage() {
         <p>{t('common.loading')}</p>
       )}
 
-      {message && <p role="status" className="text-sm text-green-700">{message}</p>}
-      {errors.length > 0 && <ul role="alert" className="list-disc pl-5 text-sm text-red-600">{errors.map((e, n) => <li key={n}>{e}</li>)}</ul>}
+      {message && <p role="status" className="text-sm text-[var(--success)]">{message}</p>}
+      {errors.length > 0 && <ul role="alert" className="list-disc rounded-[var(--radius)] bg-[var(--danger-soft)] py-3 pl-8 pr-4 text-sm text-[var(--danger)]">{errors.map((e, n) => <li key={n}>{e}</li>)}</ul>}
 
       <div className="flex flex-wrap gap-3">
         {!readOnly && (
@@ -162,9 +157,9 @@ export function ProposalPage() {
       </div>
 
       {q.snapshotHash && (
-        <p className="break-all font-mono text-xs opacity-70">{t('quote.hash')}: {q.snapshotHash}</p>
+        <p className="break-all font-mono text-xs text-[var(--secondary)]">{t('quote.hash')}: {q.snapshotHash}</p>
       )}
-      {verify && <p role="status" className={verify.valid ? 'text-sm text-green-700' : 'text-sm text-red-600'}>{verify.valid ? t('quote.verified') : t('quote.notVerified')}</p>}
+      {verify && <p role="status" className={verify.valid ? 'text-sm text-[var(--success)]' : 'text-sm text-[var(--danger)]'}>{verify.valid ? t('quote.verified') : t('quote.notVerified')}</p>}
       </div>
     </section>
   );

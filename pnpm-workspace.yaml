@@ -3,3 +3,8 @@ packages:
   - "packages/*"
   - "db"
   - "e2e"
+overrides:
+  mariadb: ">=3.4.7 <3.6.0"
+  mysql2: ">=3.23.1"
+  lodash: ">=4.18.1"
+  deepmerge-ts: ">=8.0.0"

@@ -193,7 +193,7 @@ export async function importCsv(prisma: PrismaClient, opts: ImportOptions): Prom
     }
   } else {
     if (!opts.priceList) return { ...report, errors: [{ line: 1, column: null, message: 'Indique a lista de preços (--price-list "Nome")' }] };
-    let list = await prisma.priceList.findFirst({ where: { name: opts.priceList }, include: { items: true } });
+    const list = await prisma.priceList.findFirst({ where: { name: opts.priceList }, include: { items: true } });
     if (!list && !opts.createList) return { ...report, errors: [{ line: 1, column: null, message: `A lista "${opts.priceList}" não existe (use --create-list --currency EUR --valid-from AAAA-MM-DD)` }] };
     const create = !list ? opts.createList! : null;
     if (create) {
@@ -234,7 +234,6 @@ export async function importCsv(prisma: PrismaClient, opts: ImportOptions): Prom
         plans.push({ line: it.line, action: changed ? 'update' : 'unchanged', apply: async (tx) => { if (changed) await tx.priceListItem.update({ where: { id: cur.id }, data: { unitPrice: it.price } }); } });
       }
     }
-    list = null;
   }
 
   report.skipped = invalidLines.size;

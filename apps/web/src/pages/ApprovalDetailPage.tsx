@@ -41,13 +41,13 @@ export function ApprovalDetailPage() {
 
   return (
     <section className="space-y-6">
-      <Link to="/aprovacoes" className="text-sm underline">{t('common.back')}</Link>
+      <Link to="/aprovacoes" className="link text-sm">‹ {t('common.back')}</Link>
       <div>
-        <h1 className="text-2xl font-semibold">{r.proposalCode} — {r.proposalTitle}</h1>
-        <p className="text-sm opacity-70">{r.clientName} · {t('approvals.owner')}: {r.ownerName} · {t(`approvals.scope.${r.scope}`)} · {t('approvals.policy')}: {r.policyName}</p>
+        <h1 className="mb-1 text-[28px] font-bold leading-tight sm:text-[32px]">{r.proposalCode} — {r.proposalTitle}</h1>
+        <p className="text-sm text-[var(--secondary)]">{r.clientName} · {t('approvals.owner')}: {r.ownerName} · {t(`approvals.scope.${r.scope}`)} · {t('approvals.policy')}: {r.policyName}</p>
       </div>
 
-      <dl className="grid max-w-xl grid-cols-[14rem_1fr] gap-y-1 text-sm">
+      <dl className="card card-pad grid max-w-xl grid-cols-[11rem_1fr] gap-y-2 text-sm [&>dt]:text-[var(--secondary)] [&>dd]:font-medium">
         <dt>{t('approvals.total')}</dt><dd>{r.grandTotal} {r.currency}</dd>
         <dt>{t('approvals.tcv')}</dt><dd>{r.tcv} {r.currency}</dd>
         <dt>{t('approvals.discount')}</dt><dd>{r.maxLineDiscountPercent} %</dd>
@@ -60,14 +60,14 @@ export function ApprovalDetailPage() {
         <span>{t('approvals.documents')}:</span>
         {r.pdfDocumentId && <Button variant="outline" onClick={() => void download(r.proposalId, r.pdfDocumentId!, `${r.proposalCode}.pdf`)}>{t('approvals.pdf')}</Button>}
         {r.docxDocumentId && <Button variant="outline" onClick={() => void download(r.proposalId, r.docxDocumentId!, `${r.proposalCode}.docx`)}>{t('approvals.docx')}</Button>}
-        <Link className="underline" to={`/propostas/${r.proposalId}`}>{t('approvals.proposal')}</Link>
+        <Link className="link" to={`/propostas/${r.proposalId}`}>{t('approvals.proposal')}</Link>
       </div>
-      <p className="break-all font-mono text-xs opacity-60">{t('approvals.hash')}: {r.snapshotHash}</p>
+      <p className="break-all font-mono text-xs text-[var(--secondary)]">{t('approvals.hash')}: {r.snapshotHash}</p>
 
       <div>
-        <h2 className="mb-2 text-lg font-semibold">{t('approvals.decisions')}</h2>
-        {r.decisions.length === 0 && <p className="text-sm opacity-70">—</p>}
-        <ul className="space-y-1 text-sm">
+        <h2 className="mb-3 text-lg font-semibold">{t('approvals.decisions')}</h2>
+        {r.decisions.length === 0 && <p className="text-sm text-[var(--secondary)]">—</p>}
+        <ul className="group-list text-sm">
           {r.decisions.map((d, i) => (
             <li key={i}>
               {t('approvals.level', { n: d.level, total: r.levelCount })}: <strong>{d.decision}</strong> — {d.approverName}
@@ -78,19 +78,19 @@ export function ApprovalDetailPage() {
       </div>
 
       {open && r.canDecide && (
-        <div className="max-w-xl space-y-3 rounded-md border border-[var(--border)] p-4">
+        <div className="card card-pad max-w-xl space-y-3">
           <div><Label htmlFor="cm">{t('approvals.comment')}</Label><Input id="cm" value={comment} onChange={(e) => setComment(e.target.value)} /></div>
           <div className="flex gap-2">
             <Button onClick={() => decide.mutate('APPROVED')} disabled={decide.isPending}>{t('approvals.approve')}</Button>
             <Button variant="outline" onClick={() => decide.mutate('RETURNED')} disabled={decide.isPending || !comment.trim()}>{t('approvals.return')}</Button>
-            <Button variant="outline" onClick={() => decide.mutate('REJECTED')} disabled={decide.isPending || !comment.trim()}>{t('approvals.reject')}</Button>
+            <Button variant="danger" onClick={() => decide.mutate('REJECTED')} disabled={decide.isPending || !comment.trim()}>{t('approvals.reject')}</Button>
           </div>
         </div>
       )}
-      {open && !r.canDecide && <p className="text-sm opacity-70">{t('approvals.cannotDecide')}</p>}
-      {!open && <p className="text-sm opacity-70">{t('approvals.closed')}</p>}
-      {done && <p role="status" className="text-sm text-green-700">{t('approvals.decided')}</p>}
-      {error && <p role="alert" className="text-sm text-red-600">{error}</p>}
+      {open && !r.canDecide && <p className="text-sm text-[var(--secondary)]">{t('approvals.cannotDecide')}</p>}
+      {!open && <p className="text-sm text-[var(--secondary)]">{t('approvals.closed')}</p>}
+      {done && <p role="status" className="text-sm text-[var(--success)]">{t('approvals.decided')}</p>}
+      {error && <p role="alert" className="text-sm text-[var(--danger)]">{error}</p>}
     </section>
   );
 }

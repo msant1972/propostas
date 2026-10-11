@@ -8,3 +8,9 @@ playwright-report
 test-results
 .DS_Store
 storage/
+mail-outbox/
+*.pem
+*.key
+.env.*
+!.env.example
+scripts/perf/out/

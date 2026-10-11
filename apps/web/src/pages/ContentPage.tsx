@@ -3,7 +3,7 @@ import { useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { components } from '@cpq/api-client';
 import { RichEditor } from '../components/RichEditor';
-import { Button, Input, Label } from '../components/ui';
+import { Badge, Button, Input, Label } from '../components/ui';
 import { useAuth } from '../auth/store';
 import { apiGet, apiPost } from '../lib/api';
 
@@ -47,7 +47,7 @@ export function ContentPage() {
   return (
     <section>
       <div className="mb-4 flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">{t('content.title')}</h1>
+        <h1 className="mb-6 text-[28px] font-bold leading-tight sm:text-[32px]">{t('content.title')}</h1>
         {canManage && <Button onClick={() => setCreating(true)}>{t('content.new')}</Button>}
       </div>
 
@@ -57,7 +57,7 @@ export function ContentPage() {
       </div>
 
       {creating && (
-        <form onSubmit={submit} className="mb-6 space-y-4 rounded-md border border-[var(--border)] p-4">
+        <form onSubmit={submit} className="mb-6 space-y-4 card p-4">
           <div className="grid grid-cols-2 gap-4">
             <div><Label htmlFor="b-code">{t('content.code')}</Label><Input id="b-code" required value={form.code} onChange={(e) => setForm({ ...form, code: e.target.value })} /></div>
             <div><Label htmlFor="b-title">{t('content.name')}</Label><Input id="b-title" required value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} /></div>
@@ -67,29 +67,29 @@ export function ContentPage() {
             <label className="flex items-center gap-2 self-end text-sm"><input type="checkbox" checked={form.isLegal} onChange={(e) => setForm({ ...form, isLegal: e.target.checked })} />{t('content.legal')}</label>
           </div>
           <div><Label htmlFor="b-body">{t('content.body')}</Label><RichEditor label={t('content.body')} html={form.bodyHtml} tags={tags.data} onChange={(h) => setForm({ ...form, bodyHtml: h })} /></div>
-          {error && <p role="alert" className="text-sm text-red-600">{error}</p>}
+          {error && <p role="alert" className="text-sm text-[var(--danger)]">{error}</p>}
           <div className="flex gap-2"><Button type="submit" disabled={create.isPending}>{t('common.create')}</Button><Button type="button" variant="outline" onClick={() => setCreating(false)}>{t('common.cancel')}</Button></div>
         </form>
       )}
-      {!creating && error && <p role="alert" className="mb-3 text-sm text-red-600">{error}</p>}
+      {!creating && error && <p role="alert" className="mb-3 text-sm text-[var(--danger)]">{error}</p>}
 
       {list.isPending && <p>{t('common.loading')}</p>}
       {list.data && list.data.items.length === 0 && <p>{t('content.none')}</p>}
-      <ul className="space-y-3">
+      <ul className="group-list">
         {list.data?.items.map((b) => (
-          <li key={b.id} className="rounded-md border border-[var(--border)] p-4">
-            <button className="flex w-full items-center justify-between text-left" onClick={() => setOpen(open === b.id ? null : b.id)} aria-expanded={open === b.id}>
-              <span><span className="font-medium">{b.title}</span> <span className="text-sm opacity-60">{b.code}</span>{b.isLegal && <span className="ml-2 rounded bg-[var(--muted)] px-2 py-0.5 text-xs">{t('content.legal')}</span>}</span>
-              <span className="text-xs opacity-60">{b.tags.join(', ')}</span>
+          <li key={b.id}>
+            <button className="flex w-full items-center justify-between gap-3 text-left" onClick={() => setOpen(open === b.id ? null : b.id)} aria-expanded={open === b.id}>
+              <span><span className="font-medium">{b.title}</span> <span className="text-sm text-[var(--secondary)]">{b.code}</span>{b.isLegal && <Badge tone="orange" className="ml-2">{t('content.legal')}</Badge>}</span>
+              <span className="text-xs text-[var(--secondary)]">{b.tags.join(', ')}</span>
             </button>
             {open === b.id && (
               <div className="mt-3 space-y-3">
                 {b.versions.map((v) => (
-                  <div key={v.id} className="rounded border border-[var(--border)] p-3 text-sm">
+                  <div key={v.id} className="rounded-[var(--radius)] bg-[var(--muted)] p-4 text-sm">
                     <div className="mb-2 flex flex-wrap items-center gap-3">
                       <strong>{t('content.version', { n: v.versionNumber })} · {v.language}</strong>
                       <span>{t(`content.status.${v.status}`)}</span>
-                      <span className={v.reviewOverdue ? 'text-red-600' : 'opacity-60'}>{t('content.review')} {v.reviewDueDate}{v.reviewOverdue ? ` — ${t('content.overdue')}` : ''}</span>
+                      <span className={v.reviewOverdue ? 'text-[var(--danger)]' : 'text-[var(--secondary)]'}>{t('content.review')} {v.reviewDueDate}{v.reviewOverdue ? ` — ${t('content.overdue')}` : ''}</span>
                       {canManage && v.status === 'DRAFT' && <Button variant="outline" onClick={() => act.mutate({ id: b.id, path: `versions/${v.id}/approve` })}>{t('content.approve')}</Button>}
                       {canManage && v.status === 'APPROVED' && <Button variant="ghost" onClick={() => act.mutate({ id: b.id, path: `versions/${v.id}/retire` })}>{t('content.retire')}</Button>}
                     </div>

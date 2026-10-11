@@ -47,7 +47,7 @@ export class WorkflowController {
   @Get('approvals/:id') @CheckAbility('read', 'Proposal')
   @ApiOperation({ operationId: 'getApproval' }) @ApiOkResponse({ type: ApprovalDetailDto })
   detail(@Param('id', ParseUUIDPipe) id: string, @CurrentActor() actor: Actor, @CurrentAbility() ab: AppAbility) {
-    return this.approvals.detail(id, actor, ab.can('read', 'Cost'));
+    return this.approvals.detail(id, actor, ab.can('read', 'Cost'), false, ab);
   }
 
   @Post('approvals/:id/decision') @CheckAbility('read', 'Proposal')

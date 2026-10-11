@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { Button } from '../components/ui';
+import { Badge, Button, Empty, PageHeader } from '../components/ui';
 import type { ProductPage } from '@cpq/api-client';
 import { apiGet } from '../lib/api';
 
@@ -20,16 +20,16 @@ export function CatalogPage() {
 
   return (
     <section>
-      <h1 className="mb-4 text-2xl font-semibold">{t('catalog.title')}</h1>
+      <PageHeader title={t('catalog.title')} />
       {isPending && <p>{t('catalog.loading')}</p>}
-      {isError && <p role="alert">{t('catalog.error')}</p>}
-      {data && data.items.length === 0 && <p>{t('catalog.empty')}</p>}
+      {isError && <p role="alert" className="text-[var(--danger)]">{t('catalog.error')}</p>}
+      {data && data.items.length === 0 && <Empty>{t('catalog.empty')}</Empty>}
       {data && data.items.length > 0 && (
         <>
-          <table className="w-full text-left text-sm">
+          <div className="table-card"><table>
             <thead>
-              <tr className="border-b border-[var(--border)]">
-                <th className="py-2">{t('catalog.sku')}</th>
+              <tr>
+                <th>{t('catalog.sku')}</th>
                 <th>{t('catalog.name')}</th>
                 <th>{t('catalog.unit')}</th>
                 <th>{t('catalog.billing')}</th>
@@ -38,21 +38,21 @@ export function CatalogPage() {
             </thead>
             <tbody>
               {data.items.map((p) => (
-                <tr key={p.id} className="border-b border-[var(--border)]">
-                  <td className="py-2">{p.sku}</td>
+                <tr key={p.id}>
+                  <td className="whitespace-nowrap font-mono text-[13px] text-[var(--secondary)]">{p.sku}</td>
                   <td>
-                    <Link className="underline" to={`/catalogo/${p.id}`}>
+                    <Link className="link" to={`/catalogo/${p.id}`}>
                       {p.name}
                     </Link>
                   </td>
                   <td>{p.unitOfMeasure}</td>
                   <td>{t(`billing.${p.billingModel}`)}</td>
-                  <td>{p.isActive ? t('catalog.yes') : t('catalog.no')}</td>
+                  <td><Badge tone={p.isActive ? 'green' : 'gray'}>{p.isActive ? t('catalog.yes') : t('catalog.no')}</Badge></td>
                 </tr>
               ))}
             </tbody>
-          </table>
-          <div className="mt-4 flex items-center gap-3 text-sm">
+          </table></div>
+          <div className="mt-5 flex items-center justify-center gap-3 text-sm text-[var(--secondary)]">
             <Button variant="outline" disabled={page <= 1} onClick={() => setPage(page - 1)}>
               {t('catalog.previous')}
             </Button>

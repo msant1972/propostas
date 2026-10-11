@@ -1,9 +1,11 @@
+import { subject } from '@casl/ability';
 import { ConflictException, ForbiddenException, Inject, Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import { validatePolicy, type ApprovalPolicy } from '@cpq/rules-engine';
 import type { DocumentRepository } from '@cpq/documents';
 import type { Prisma as P } from '@cpq/db';
 import { uuidv7 } from '@cpq/shared';
-import type { Actor } from '../authz/ability.js';
+import { assertSafeCondition } from '../common/condition-guard.js';
+import type { Actor, AppAbility } from '../authz/ability.js';
 import { OutboxService } from '../outbox/outbox.service.js';
 import { PRISMA, type Prisma } from '../prisma/prisma.module.js';
 import { DOCUMENT_REPO } from '../proposals/documents.service.js';
@@ -63,12 +65,13 @@ export class ApprovalsService {
    */
   private async eligibility(r: Request, actor: Actor, proposal: { ownerUserId: string; ownerTeamId: string | null }): Promise<{ level: number; onBehalfOf: string | null } | null> {
     if (actor.userId === proposal.ownerUserId) return null;
+    if (actor.userId === r.requestedBy) return null; // quem submeteu o pedido também não o decide (quatro olhos)
     const delegators = await this.delegatorsOf(actor.userId);
     for (const lvl of this.pendingLevels(r)) {
-      const sameTeam = !actor.teamId || !proposal.ownerTeamId || actor.teamId === proposal.ownerTeamId || actor.roles.includes('Administrador');
+      const sameTeam = actor.roles.includes('Administrador') || (!!actor.teamId && actor.teamId === proposal.ownerTeamId); // sem equipa não há aprovação comercial
       if (actor.roles.includes(lvl.role as never) && (r.scope !== 'COMMERCIAL' || lvl.role !== 'Gestor_Comercial' || sameTeam)) return { level: lvl.level, onBehalfOf: null };
       for (const from of delegators) {
-        if (from !== proposal.ownerUserId && (await this.rolesOf(from)).includes(lvl.role)) return { level: lvl.level, onBehalfOf: from };
+        if (from !== proposal.ownerUserId && from !== r.requestedBy && (await this.rolesOf(from)).includes(lvl.role)) return { level: lvl.level, onBehalfOf: from };
       }
     }
     return null;
@@ -104,12 +107,14 @@ export class ApprovalsService {
     return out;
   }
 
-  async detail(id: string, actor: Actor, canSeeCost: boolean, justDecided = false): Promise<ApprovalDetailDto> {
+  async detail(id: string, actor: Actor, canSeeCost: boolean, justDecided = false, ability?: AppAbility): Promise<ApprovalDetailDto> {
     const r = (await this.prisma.approvalRequest.findUnique({ where: { id }, include: { decisions: true } })) as Request | null;
     if (!r) throw new NotFoundException('Pedido não encontrado');
     const { _p: p, ...s } = await this.summarize(r, actor);
-    const isOwnerOrManager = p.ownerUserId === actor.userId || actor.roles.some((x) => ['Gestor_Comercial', 'Aprovador_Financeiro', 'Juridico', 'Administrador'].includes(x));
-    if (!justDecided && !s.canDecide && !isOwnerOrManager) throw new NotFoundException('Pedido não encontrado');
+    // Acesso a nível de objeto: dono, quem pode decidir, quem já decidiu/delegou, quem vê a proposta (equipa/região) ou administrador.
+    const involved = r.decisions.some((d) => d.approverUserId === actor.userId || (d as { onBehalfOfUserId?: string | null }).onBehalfOfUserId === actor.userId);
+    const canSee = p.ownerUserId === actor.userId || actor.roles.includes('Administrador') || involved || (!!ability && ability.can('read', subject('Proposal', p as never)));
+    if (!justDecided && !s.canDecide && !canSee) throw new NotFoundException('Pedido não encontrado');
 
     const v = await this.prisma.quoteVersion.findUniqueOrThrow({ where: { id: r.quoteVersionId }, include: { items: true } });
     const owner = await this.prisma.user.findUniqueOrThrow({ where: { id: p.ownerUserId } });
@@ -212,6 +217,7 @@ export class ApprovalsService {
   }
 
   async createPolicy(actor: Actor, dto: CreatePolicyDto): Promise<PolicyDto> {
+    assertSafeCondition(dto.condition);
     const problem = validatePolicy({ condition: dto.condition ?? null, mode: dto.mode, levels: dto.levels });
     if (problem) throw new UnprocessableEntityException(problem);
     const r = await this.prisma.$transaction(async (tx) => {
@@ -230,6 +236,7 @@ export class ApprovalsService {
     const merged = toPolicy(cur as never);
     const levels = dto.levels ?? merged.levels;
     const condition = dto.condition !== undefined ? dto.condition : merged.condition;
+    assertSafeCondition(condition);
     const problem = validatePolicy({ condition, mode: dto.mode ?? merged.mode, levels });
     if (problem) throw new UnprocessableEntityException(problem);
     const r = await this.prisma.$transaction(async (tx) => {

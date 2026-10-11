@@ -27,6 +27,15 @@ export function toPolicy(r: { id: string; name: string; scope: 'COMMERCIAL' | 'L
   };
 }
 
+/** Quem não vê custos não pode ver margens (as variáveis de aprovação guardadas na auditoria incluem `margin_percent`). */
+export function withoutMargin(detail: Record<string, unknown>): Record<string, unknown> {
+  const vars = detail['vars'];
+  if (!vars || typeof vars !== 'object') return detail;
+  const { margin_percent: _m, ...rest } = vars as Record<string, unknown>;
+  void _m;
+  return { ...detail, vars: rest };
+}
+
 /**
  * Máquina de estados da proposta com os seus efeitos (bloquear cotação, pedir aprovações, verificar hashes,
  * copiar para 02_Enviado…). As transições vêm da tabela partilhada em `@cpq/shared/workflow`.
@@ -223,9 +232,10 @@ export class WorkflowService {
     const rows = await this.prisma.auditLog.findMany({ where: { entityType: 'proposal', entityId: proposalId }, orderBy: { seq: 'asc' } });
     const ids = [...new Set(rows.map((r) => r.actorUserId).filter((x): x is string => !!x))];
     const users = new Map((await this.prisma.user.findMany({ where: { id: { in: ids } } })).map((u) => [u.id, u.displayName]));
+    const canSeeCost = ability.can('read', 'Cost');
     return rows.map((r) => ({
       occurredAt: r.occurredAt.toISOString(), action: r.action, actorName: r.actorUserId ? users.get(r.actorUserId) ?? null : null,
-      detail: (r.diffJson as Record<string, unknown>) ?? {},
+      detail: canSeeCost ? ((r.diffJson as Record<string, unknown>) ?? {}) : withoutMargin((r.diffJson as Record<string, unknown>) ?? {}),
     }));
   }
 

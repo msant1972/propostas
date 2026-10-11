@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { Link, Outlet, useNavigate } from 'react-router-dom';
+import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { hasRole, useAuth } from '../auth/store';
 import { Button } from './ui';
 
@@ -15,29 +15,31 @@ export function Layout() {
   }
 
   const link = (to: string, label: string) => (
-    <Link to={to} className="text-sm hover:underline">{label}</Link>
+    <NavLink to={to} className="nav-link">{label}</NavLink>
   );
 
   return (
     <div className="min-h-screen">
-      <header className="flex items-center justify-between border-b border-[var(--border)] px-6 py-3">
-        <nav className="flex flex-wrap items-center gap-6">
-          <span className="font-semibold">{t('app.title')}</span>
-          {link('/propostas', t('nav.proposals'))}
-          {link('/aprovacoes', t('nav.approvals'))}
-          {link('/clientes', t('nav.clients'))}
-          {link('/conteudos', t('nav.content'))}
-          {link('/catalogo', t('nav.catalog'))}
-          {admin && link('/politicas', t('nav.policies'))}
-          {admin && link('/utilizadores', t('nav.users'))}
-          {admin && link('/integracoes', t('nav.integrations'))}
-        </nav>
-        <div className="flex items-center gap-3 text-sm">
-          <Link to="/mudar-palavra-passe" className="hover:underline" title={t('nav.password')}>{session?.user.displayName}</Link>
-          <Button variant="outline" onClick={logout}>{t('nav.logout')}</Button>
+      <header className="navbar">
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-x-4 gap-y-1 px-4 py-2 sm:px-6 md:flex-nowrap">
+          <span className="mr-2 text-[15px] font-semibold tracking-tight">{t('app.title')}</span>
+          <nav className="order-last -mx-1 flex w-full items-center gap-0.5 overflow-x-auto pb-1 md:order-none md:mx-0 md:w-auto md:flex-1 md:pb-0" style={{ scrollbarWidth: 'none' }}>
+            {link('/propostas', t('nav.proposals'))}
+            {link('/aprovacoes', t('nav.approvals'))}
+            {link('/clientes', t('nav.clients'))}
+            {link('/conteudos', t('nav.content'))}
+            {link('/catalogo', t('nav.catalog'))}
+            {admin && link('/politicas', t('nav.policies'))}
+            {admin && link('/utilizadores', t('nav.users'))}
+            {admin && link('/integracoes', t('nav.integrations'))}
+          </nav>
+          <div className="ml-auto flex items-center gap-2 text-sm">
+            <Link to="/mudar-palavra-passe" className="hidden max-w-[10rem] truncate lg:block rounded-full px-2 py-1 text-[13px] text-[var(--secondary)] hover:bg-[var(--fill)] hover:text-[var(--foreground)]" title={t('nav.password')}>{session?.user.displayName}</Link>
+            <Button variant="outline" onClick={logout}>{t('nav.logout')}</Button>
+          </div>
         </div>
       </header>
-      <div className="mx-auto max-w-5xl px-6 py-8">
+      <div className="enter mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
         <Outlet />
       </div>
     </div>

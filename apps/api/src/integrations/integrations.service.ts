@@ -86,7 +86,8 @@ export class IntegrationsService {
         await this.prisma.client.create({ data: { id: uuidv7(), code, crmExternalId: c.externalId, ...data } });
         out.created++;
       } catch (e) {
-        fail('ERROR', e instanceof Error ? e.message.slice(0, 200) : 'erro');
+        fail('ERROR', 'Não foi possível gravar este cliente'); // sem detalhes internos (mensagens do Prisma) para fora
+        void e;
       }
     }
     await this.prisma.$transaction((tx) => this.audit.record(tx, { actorUserId: null, entityType: 'api_key', entityId: keyId, action: 'crm.clients_synced', diff: { received: items.length, created: out.created, updated: out.updated, deleted: out.deleted, errors: out.errors.length } }));

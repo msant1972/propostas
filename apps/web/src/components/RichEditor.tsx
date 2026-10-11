@@ -16,7 +16,7 @@ interface Props {
 function Btn({ on, active, children, title, disabled }: { on: () => void; active?: boolean; children: React.ReactNode; title: string; disabled?: boolean }) {
   return (
     <button type="button" title={title} aria-label={title} disabled={disabled} onClick={on}
-      className={cn('rounded px-2 py-1 text-sm hover:bg-[var(--muted)] disabled:opacity-40', active && 'bg-[var(--muted)] font-semibold')}>
+      className={cn('min-w-8 rounded-[8px] px-2 py-1 text-sm transition-colors hover:bg-[var(--fill)] disabled:opacity-40', active && 'bg-[var(--primary-soft)] font-semibold text-[var(--primary)]')}>
       {children}
     </button>
   );
@@ -30,7 +30,7 @@ export function RichEditor({ html, onChange, disabled, tags, label }: Props) {
     content: html,
     editable: !disabled,
     onUpdate: ({ editor }) => onChange(editor.getHTML()),
-    editorProps: { attributes: { 'aria-label': label, class: 'prose-editor min-h-[8rem] px-3 py-2 outline-none' } },
+    editorProps: { attributes: { 'aria-label': label, class: 'prose-editor min-h-[8rem] px-4 py-3 outline-none' } },
   });
 
   useEffect(() => {
@@ -40,9 +40,9 @@ export function RichEditor({ html, onChange, disabled, tags, label }: Props) {
 
   if (!editor) return null;
   return (
-    <div className="rounded-md border border-[var(--border)]">
+    <div className="overflow-hidden rounded-[var(--radius)] bg-[var(--surface)] shadow-[var(--shadow-sm)] ring-1 ring-[var(--border)] transition-shadow focus-within:ring-2 focus-within:ring-[var(--primary)]">
       {!disabled && (
-        <div className="flex flex-wrap items-center gap-1 border-b border-[var(--border)] p-1">
+        <div className="flex flex-wrap items-center gap-1 border-b border-[var(--separator)] bg-[var(--muted)] p-1.5">
           <Btn title={t('editor.bold')} on={() => editor.chain().focus().toggleBold().run()} active={editor.isActive('bold')}>B</Btn>
           <Btn title={t('editor.italic')} on={() => editor.chain().focus().toggleItalic().run()} active={editor.isActive('italic')}><em>I</em></Btn>
           <Btn title={t('editor.underline')} on={() => editor.chain().focus().toggleUnderline().run()} active={editor.isActive('underline')}><u>U</u></Btn>
@@ -52,7 +52,7 @@ export function RichEditor({ html, onChange, disabled, tags, label }: Props) {
           <Btn title={t('editor.numbers')} on={() => editor.chain().focus().toggleOrderedList().run()} active={editor.isActive('orderedList')}>1.</Btn>
           <Btn title={t('editor.table')} on={() => editor.chain().focus().insertTable({ rows: 2, cols: 2, withHeaderRow: true }).run()}>▦</Btn>
           {tags && (
-            <select aria-label={t('editor.insertTag')} className="ml-auto rounded border border-[var(--border)] bg-transparent px-1 py-1 text-xs" value=""
+            <select aria-label={t('editor.insertTag')} className="ml-auto rounded-[8px] border-0 bg-[var(--fill)] px-2 py-1 text-xs" value=""
               onChange={(e) => { if (e.target.value) editor.chain().focus().insertContent(e.target.value).run(); }}>
               <option value="">{t('editor.insertTag')}</option>
               {tags.map((x) => <option key={x.tag} value={x.tag} title={x.description}>{x.tag}</option>)}

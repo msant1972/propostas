@@ -201,6 +201,7 @@ O modelo tem mais de 30 tabelas, todas com FKs reais. Convenções: chaves `UUID
 | Conteúdo | `proposal_sections` | Ordem das secções, versão de bloco usada, alterações | N:1 `proposals`, `content_block_versions` |
 | Conteúdo | `section_documents` | HTML de cada secção | 1:1 `proposal_sections` |
 | Documentos | `documents` | DOCX/PDF gerados, `driveItem.id`, `eTag`, hash, origem | N:1 `proposals`, `quote_versions` |
+| Integrações | `api_keys` | Chaves de API (só o hash), âmbitos, último uso e revogação | — |
 | Documentos | `share_links` | Ligações do portal de aceitação (só o hash do token), validade e aberturas | N:1 `proposals`, `documents` |
 | Documentos | `customer_responses` | Aceitação ou recusa do cliente, com a prova | N:1 `share_links` |
 | Governança | `approval_policies` | Condições, níveis, modo, SLA | — |
@@ -221,6 +222,9 @@ CREATE TABLE clients (
     country_code  CHAR(2)      NOT NULL,
     tier          VARCHAR(30),
     crm_external_id VARCHAR(100) UNIQUE,
+    contact_name  VARCHAR(255),                     -- contacto para enviar a proposta (dado pessoal: o mínimo)
+    contact_email VARCHAR(255),
+    crm_synced_at DATETIME(6),
     created_at    DATETIME(6)  NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
     deleted_at    DATETIME(6)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -730,12 +734,25 @@ As metas abaixo são propostas de partida, a validar com o negócio; cada uma é
 - **Aplicação**: validação de entrada com DTOs, sanitização do HTML do editor antes de entrar no DOCX, CSP rigorosa, proteção contra *mass assignment*, *rate limiting* por utilizador.
 - **Cadeia de fornecimento**: análise de dependências e SAST no CI.
 
+### Integração com o CRM
+
+O CRM interno liga-se por **API com chave** (`X-Api-Key`), sem sessão de utilizador. As chaves são criadas pelo administrador (a chave completa só se mostra uma vez; fica o hash), têm âmbitos (`clients:write`, `proposals:read`), registam o último uso e revogam-se de imediato.
+
+- **O CRM envia clientes**: `POST /api/v1/integrations/crm/clients` com até 500 clientes por pedido. Cria ou atualiza por `externalId` (guardado em `crm_external_id`), liga a clientes já existentes pelo código, elimina logicamente os marcados `deleted` e devolve os erros linha a linha. Só se alteram os campos enviados: omitir um campo não o apaga.
+- **O CRM lê propostas**: `GET /api/v1/integrations/crm/proposals?since=` devolve as propostas alteradas desde um instante, com estado, valores e `clientExternalId`, paginadas pelo `nextSince`.
+- A fonte de verdade dos dados do cliente passa a ser o CRM, quando integrado; o formulário da aplicação continua a servir para clientes ainda sem registo no CRM.
+
 ### Auditoria e conformidade
 
 - Todos os eventos relevantes (preço, desconto, transição de estado, aprovação, alteração de bloco jurídico, envio, resposta do cliente) entram em `audit_log` com cadeia de hashes, imutável também por *triggers* na base de dados.
 - Exportação diária do `audit_log` para ficheiros só de leitura (`AUDIT_EXPORT_DIR`), replicados para o destino de backup, para que nem um administrador de base de dados reescreva a história sem deixar rasto.
 - Job noturno verifica a integridade da cadeia e alerta em caso de quebra.
-- **RGPD**: dados de contacto minimizados, prazos de retenção por tipo de dado, base legal documentada para o acompanhamento de abertura, e exportação/anonimização por titular a partir do módulo de clientes (respeitando obrigações legais de conservação de propostas aceites).
+- **RGPD**:
+  - *Minimização*: guardam-se do cliente só o nome e o email de contacto necessários para enviar a proposta, e da resposta no portal o nome, o email, o IP e o agente de utilizador (a prova da aceitação).
+  - *Base legal*: execução de diligências pré-contratuais (envio e resposta à proposta) e interesse legítimo (segurança e prova da aceitação).
+  - *Retenção*: o IP e o agente de utilizador das respostas apagam-se ao fim de 365 dias; ligações expiradas e sem resposta apagam-se ao fim de 180 dias (configuráveis). A decisão, o nome, o email e os hashes mantêm-se, porque a lei manda conservar a prova de um contrato.
+  - *Direitos do titular*: o administrador exporta (JSON) e anonimiza os dados de um titular por email. A anonimização é irreversível e substitui nome, email, IP e comentário por valores neutros, mantendo a decisão e os hashes.
+  - *Auditoria sem dados pessoais*: a cadeia de auditoria é imutável, por isso não guarda nomes nem emails de clientes (só identificadores e hashes); as tentativas de login falhadas guardam apenas uma impressão do email e o IP.
 
 ### Observabilidade e entrega
 
@@ -775,7 +792,7 @@ A ordem proposta entrega primeiro o núcleo que dá valor sozinho (cotar com pre
 
 ### Questões em aberto
 
-- [ ] Que API ou eventos o CRM interno vai expor, e qual dos dois sistemas é dono dos dados de cliente?
+- [ ] O CRM interno vai usar as duas interfaces descritas (envio de clientes e leitura de propostas)? E confirma-se que o CRM é o dono dos dados de cliente?
 - [ ] Há necessidade de multi-empresa (várias entidades legais a emitir propostas)?
 - [ ] Que limites de desconto e margem disparam cada nível de aprovação?
 - [ ] Em que línguas são emitidas as propostas?

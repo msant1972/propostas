@@ -78,7 +78,7 @@ export function DocumentPanel({ proposalId, status }: { proposalId: string; stat
   const [kind, setKind] = useState<'DOCX' | 'PDF'>('DOCX');
 
   const sections = useQuery({ queryKey: ['sections', proposalId], queryFn: () => apiGet<Section[]>(`/proposals/${proposalId}/sections`) });
-  const docs = useQuery({ queryKey: ['documents', proposalId], queryFn: () => apiGet<Doc[]>(`/proposals/${proposalId}/documents`) });
+  const docs = useQuery({ queryKey: ['documents', proposalId], queryFn: () => apiGet<Doc[]>(`/proposals/${proposalId}/documents`), refetchInterval: 4000 });
   const blocks = useQuery({ queryKey: ['blocks', 'picker'], queryFn: () => apiGet<BlockPage>('/content/blocks?pageSize=100'), enabled: editable });
   const tags = useQuery({ queryKey: ['merge-tags'], queryFn: () => apiGet<Tag[]>('/content/merge-tags') });
   const job = useQuery({

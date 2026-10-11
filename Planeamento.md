@@ -215,6 +215,8 @@ Objetivo: nenhum documento sai se o hash não for o aprovado.
 
 ## 9. Fase 5 — Aceitação e integrações
 
+**Feita**: portal do cliente com ligações seguras e comprovativo, acompanhamento de abertura, integração com o CRM por chave de API e RGPD (retenção, exportação e anonimização). O percurso completo (aprovação em dois níveis, envio, aceitação do cliente e comprovativo) tem teste *end-to-end* no browser.
+
 | ID | Camada | Tarefa | Esf. |
 | --- | --- | --- | --- |
 | 5.1 | API | Portal de aceitação: ligação com token aleatório (só o hash fica guardado), validade, revogação, limite de tentativas por IP; impressão digital do certificado autoassinado na mensagem e no portal | L |

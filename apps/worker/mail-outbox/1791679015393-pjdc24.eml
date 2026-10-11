@@ -1,0 +1,11 @@
+From: propostas@localhost
+To: "Utilizador Aprovador_Financeiro" <aprovador_financeiro@exemplo.pt>, "Filipa Financeira" <financeiro@exemplo.pt>
+Subject: Aprovação pedida: P-2026-0036 — Cliente Exemplo, Lda.
+Content-Type: text/plain; charset=utf-8
+
+Carla Comercial submeteu a proposta "Aprovação e2e 1791679010315" (P-2026-0036) para aprovação comercial.
+Cliente: Cliente Exemplo, Lda.
+Valor: 885.60 EUR
+Nível pendente: Aprovador_Financeiro
+
+http://localhost:5173/aprovacoes/01a12864-2065-7378-85c2-6c870440add1

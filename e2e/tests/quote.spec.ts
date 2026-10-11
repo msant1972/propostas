@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { login, logout, sessionToken } from './helpers';
+import { login } from './helpers';
 
 test('comercial cria uma proposta, cota, vê os totais e bloqueia a versão', async ({ page }) => {
   await login(page, 'Comercial');

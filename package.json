@@ -20,7 +20,8 @@
     "env:setup": "scripts/env/setup.sh",
     "env:stop": "scripts/env/stop.sh",
     "test:all": "scripts/env/test.sh",
-    "ops:verify": "pnpm --filter @cpq/db run ops:verify --"
+    "ops:verify": "pnpm --filter @cpq/db run ops:verify --",
+    "ops:restore-rehearsal": "scripts/ops/restore-rehearsal.sh"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

@@ -69,7 +69,7 @@ Toda a plataforma corre num único servidor Ubuntu Server LTS: aplicação, Mari
 | Backups | mariabackup diário completo + binlogs copiados a cada 5 minutos; cópia incremental dos documentos (restic ou rsync) | Para um disco ou servidor separado (NFS ou SSH); retenção de 35 dias; restauro testado trimestralmente |
 | Recuperação | `systemd` reinicia os serviços; em perda do servidor, reconstrução por Ansible e restauro das cópias | RTO de 4 h |
 | Segredos | Ficheiros `/etc/cpq/*.env` com dono `root` e permissão `0640`, criados pelo Ansible (cofre `ansible-vault`) | Nunca no repositório; a chave de encriptação da MariaDB fica num ficheiro cifrado cuja palavra-passe só `root` lê |
-| Cópia da auditoria | Exportação diária do `audit_log` para `AUDIT_EXPORT_DIR`, ficheiros só de leitura, replicados para o destino de backup | A cadeia de hashes deteta alterações; a cópia fora do servidor impede reescrever a história |
+| Cópia da auditoria | Exportação do `audit_log` de 6 em 6 horas (ficheiros diários, idempotentes) para `AUDIT_EXPORT_DIR`, com verificação da cadeia de hashes ao mesmo ritmo; ficheiros só de leitura, replicados para o destino de backup | A cadeia de hashes deteta alterações; a cópia fora do servidor impede reescrever a história |
 | Logs e métricas | OpenTelemetry Collector → ficheiros locais e Prometheus/Grafana (opcional) | Alarmes por email para disco, memória, filas, erros 5xx e falhas de backup |
 | Infraestrutura | Ansible | Servidor reconstruível a partir de código em caso de perda total |
 
@@ -745,7 +745,7 @@ O CRM interno liga-se por **API com chave** (`X-Api-Key`), sem sessão de utiliz
 ### Auditoria e conformidade
 
 - Todos os eventos relevantes (preço, desconto, transição de estado, aprovação, alteração de bloco jurídico, envio, resposta do cliente) entram em `audit_log` com cadeia de hashes, imutável também por *triggers* na base de dados.
-- Exportação diária do `audit_log` para ficheiros só de leitura (`AUDIT_EXPORT_DIR`), replicados para o destino de backup, para que nem um administrador de base de dados reescreva a história sem deixar rasto.
+- Exportação do `audit_log` de 6 em 6 horas para ficheiros diários só de leitura (`AUDIT_EXPORT_DIR`), com verificação da cadeia ao mesmo ritmo e alerta se quebrar, replicados para o destino de backup, para que nem um administrador de base de dados reescreva a história sem deixar rasto.
 - Job noturno verifica a integridade da cadeia e alerta em caso de quebra.
 - **RGPD**:
   - *Minimização*: guardam-se do cliente só o nome e o email de contacto necessários para enviar a proposta, e da resposta no portal o nome, o email, o IP e o agente de utilizador (a prova da aceitação).

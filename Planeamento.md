@@ -77,8 +77,8 @@ Objetivo: um utilizador autentica-se e vê o catálogo em QA, com traces ponta a
 | 1.4 | Ansible: Ubuntu, Docker Compose, Nginx, MariaDB oficial com encriptação (`file_key_management` em tmpfs), Redis com AOF | L |
 | 1.5 | Backups: mariabackup diário, binlogs e documentos copiados para o destino separado a cada 5 min; **primeiro restauro testado** noutra instância | M |
 | 1.6 | CI/CD: build, testes, SAST, análise de dependências, imagens assinadas; deploy para dev e QA; migrações automáticas | L |
-| 1.7 | Segredos: leitura do Secrets Manager pelo papel IAM; configuração por ambiente | S |
-| 1.8 | OpenTelemetry (web, API, worker) → Collector → CloudWatch; ID de correlação; painéis e alarmes base | M |
+| 1.7 | Segredos: ficheiros de ambiente da API e do worker (modo 0600, só `root`), preenchidos no deploy; configuração por ambiente | S |
+| 1.8 | OpenTelemetry (web, API, worker) → Collector local; ID de correlação; painéis e alarmes base | M |
 
 ### API
 
@@ -231,17 +231,17 @@ Objetivo: nenhum documento sai se o hash não for o aprovado.
 
 ## 10. Fase 6 — Endurecimento e go-live
 
-**Estado (11 de outubro de 2026):** feitos o ensaio de restauro e a verificação de integridade (`pnpm ops:restore-rehearsal`, `pnpm ops:verify`) e a documentação de operação, implantação e piloto. Desempenho, importação de dados e segurança estão **em curso**. O ensaio de recuperação completo num servidor Ubuntu e o piloto ainda não começaram.
+**Estado (11 de outubro de 2026):** feitos o ensaio de restauro e a verificação de integridade (`pnpm ops:restore-rehearsal`, `pnpm ops:verify`), a documentação de operação, implantação e piloto, os testes de carga, a revisão de segurança e a ferramenta de importação. Por fazer, e dependente de um servidor ou de pessoas: Dockerfiles e deploy com Ansible (sem Docker nem Ansible no ambiente de desenvolvimento), ensaio de recuperação completo em Ubuntu, importação dos dados reais e piloto.
 
 | ID | Tarefa | Esf. | Estado |
 | --- | --- | --- | --- |
-| 6.1 | Testes de carga: geração concorrente de documentos, cotações de 200 linhas | M | Em curso |
+| 6.1 | Testes de carga: geração concorrente de documentos, cotações de 200 linhas | M | Feito: [docs/DESEMPENHO.md](docs/DESEMPENHO.md) (`pnpm perf`); gravação em SQL direto e retry de conflitos aplicados; fica acima da meta só com 20 gravações simultâneas numa instância |
 | 6.2 | Ensaio de recuperação completo: perda do servidor e restauro por código, incluindo falha de zona (RTO ≤ 4 h, RPO ≤ 15 min) | M | Parcial: o script de ensaio e a verificação de integridade estão feitos e validados no ambiente local; falta o ensaio completo em Ubuntu com o destino de backups real |
-| 6.3 | Revisão de segurança: cabeçalhos e CSP, segredos, portal do cliente, dependências; teste de intrusão | L | Em curso |
-| 6.4 | Migração de dados reais (clientes, catálogo, listas de preços, blocos de conteúdo) com reconciliação | L | Em curso |
+| 6.3 | Revisão de segurança: cabeçalhos e CSP, segredos, portal do cliente, dependências; teste de intrusão | L | Feito, sem teste de intrusão externo: [docs/SEGURANCA.md](docs/SEGURANCA.md) (`pnpm security:check`); corrigidos os achados de gravidade alta e média; restam pontos de baixa gravidade |
+| 6.4 | Migração de dados reais (clientes, catálogo, listas de preços, blocos de conteúdo) com reconciliação | L | Ferramenta feita (`pnpm data:import`, [docs/IMPORTACAO.md](docs/IMPORTACAO.md)); falta executá-la com os dados reais |
 | 6.5 | Formação por perfil (Comercial, Gestor, Aprovador, Jurídico, Administrador) e manual de operação (runbooks, alertas, restauro) | M | Manual de operação e guiões de formação escritos (por validar no piloto) |
 | 6.6 | Piloto com um grupo reduzido de comerciais; correção de defeitos; decisão de go-live | L | Plano e checklist escritos; piloto por agendar |
-| 6.7 | Revisão de custos (NAT, CloudWatch, licenças) e plano de migração da BD para RDS se a carga o exigir | S | Por fazer (texto herdado da versão AWS; a instalação é um servidor Ubuntu único) |
+| 6.7 | Revisão de custos (servidor, licenças, destino das cópias) e plano de escala se a carga o exigir: mais instâncias da API atrás do Nginx, cache do catálogo partilhada em Redis, MariaDB em servidor próprio | S | Dimensionamento em [docs/DESEMPENHO.md](docs/DESEMPENHO.md); custos por rever com o piloto |
 
 Documentação desta fase: [docs/OPERACAO.md](docs/OPERACAO.md) (manual de operação e runbooks), [docs/IMPLANTACAO.md](docs/IMPLANTACAO.md) (plano de colocação em produção) e [docs/PILOTO.md](docs/PILOTO.md) (checklist do piloto e formação). A secção 16 do manual lista as lacunas de infraestrutura a fechar antes do go-live.
 
@@ -281,4 +281,4 @@ Regra: alterações ao motor de preços ou às transições de estado não entra
 
 ## 14. Próximo passo
 
-Começar pela **Fase 1**, na ordem: 1.1 → 1.2 → 1.9/1.10 em paralelo com 1.3/1.4 (infraestrutura). A tarefa 1.2 decide o tipo de chave primária e, por isso, vem antes de qualquer outra migração.
+As Fases 1 a 5 estão construídas e testadas localmente (testes automáticos e Playwright), e a Fase 6 tem feito tudo o que não precisa de servidor. Falta, por ordem: (1) Dockerfiles da API, do worker e da web; (2) preparar o servidor Ubuntu com o Ansible e fazer o ensaio de recuperação completo (6.2); (3) importar os dados reais (6.4); (4) correr o piloto (6.6) e decidir o go-live. O CI nunca correu no GitHub: validá-lo no primeiro push com o fluxo configurado.

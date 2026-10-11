@@ -4,6 +4,7 @@ import {
   calculateQuote, ConfigurationError, evaluateRules, fxRate, selectPriceList, snapshotHash,
   type Catalog, type ClientContext, type QuoteInput, type QuoteResult,
 } from '@cpq/rules-engine';
+import { Prisma as Sql } from '@cpq/db';
 import { uuidv7 } from '@cpq/shared';
 import { ENV } from '../config/config.module.js';
 import type { Env } from '../config/env.js';
@@ -177,21 +178,28 @@ export class QuotesService {
   }
 
   private async persist(
-    tx: Pick<Prisma, 'quoteItem' | 'quoteVersion'>, versionId: string, input: QuoteInput, result: QuoteResult, catalog: Catalog,
+    tx: Pick<Prisma, 'quoteItem' | 'quoteVersion' | '$executeRaw'>, versionId: string, input: QuoteInput, result: QuoteResult, catalog: Catalog,
     extra: Record<string, unknown> = {},
   ): Promise<void> {
     const names = new Map(catalog.products.map((p) => [p.id, p.name]));
     await tx.quoteItem.deleteMany({ where: { quoteVersionId: versionId } });
-    await tx.quoteItem.createMany({
-      data: result.lines.map((l) => ({
-        id: uuidv7(), quoteVersionId: versionId, lineNumber: l.lineNumber, productId: l.productId,
-        productNameSnapshot: names.get(l.productId) ?? '', attributesJson: (input.lines[l.lineNumber - 1]?.attributes ?? undefined) as never,
-        quantity: l.quantity, termMonths: input.lines[l.lineNumber - 1]?.termMonths ?? null,
-        listUnitPrice: l.listUnitPrice, unitCost: l.unitCost, costFxRate: l.costFxRate,
-        discountPercent: l.discountPercent, netUnitPrice: l.netUnitPrice, globalDiscountAmount: l.globalDiscountAmount,
-        taxRatePercent: l.taxRatePercent, taxRegime: l.taxRegime, taxAmount: l.taxAmount, lineTotal: l.lineTotal,
-      })),
-    });
+    // SQL direto: um único INSERT de várias linhas (o createMany do Prisma gastava ~50 % do CPU nesta rota).
+    // Os valores decimais vão como texto: o MariaDB converte sem perder precisão.
+    if (result.lines.length > 0) {
+      const rows = result.lines.map((l) => {
+        const src = input.lines[l.lineNumber - 1];
+        return Sql.sql`(${uuidv7()}, ${versionId}, ${l.lineNumber}, ${l.productId}, ${names.get(l.productId) ?? ''},
+          ${src?.attributes ? JSON.stringify(src.attributes) : null}, ${String(l.quantity)}, ${src?.termMonths ?? null},
+          ${String(l.listUnitPrice)}, ${String(l.unitCost)}, ${String(l.costFxRate)}, ${String(l.discountPercent)},
+          ${String(l.netUnitPrice)}, ${String(l.globalDiscountAmount)}, ${String(l.taxRatePercent)}, ${l.taxRegime},
+          ${String(l.taxAmount)}, ${String(l.lineTotal)})`;
+      });
+      await tx.$executeRaw`INSERT INTO quote_items
+        (id, quote_version_id, line_number, product_id, product_name_snapshot, attributes_json, quantity, term_months,
+         list_unit_price, unit_cost, cost_fx_rate, discount_percent, net_unit_price, global_discount_amount,
+         tax_rate_percent, tax_regime, tax_amount, line_total)
+        VALUES ${Sql.join(rows)}`;
+    }
     const t = result.totals;
     await tx.quoteVersion.update({
       where: { id: versionId },

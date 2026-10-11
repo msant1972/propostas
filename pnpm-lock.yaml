@@ -482,6 +482,9 @@ importers:
 
   e2e:
     devDependencies:
+      '@cpq/shared':
+        specifier: workspace:*
+        version: link:../packages/shared
       '@playwright/test':
         specifier: ^1.64.0
         version: 1.64.0

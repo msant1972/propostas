@@ -13,7 +13,7 @@ export default defineConfig({
       command: 'pnpm --filter @cpq/api dev',
       url: 'http://localhost:3000/api/v1/health',
       reuseExistingServer: true,
-      env: { DATABASE_URL: databaseUrl, AUTH_MODE: 'dev', PORT: '3000' },
+      env: { DATABASE_URL: databaseUrl, PORT: '3000', LOGIN_RATE_PER_MINUTE: '1000' },
       timeout: 60_000,
     },
     {

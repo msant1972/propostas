@@ -1,10 +1,5 @@
 import { expect, test } from '@playwright/test';
-
-async function login(page: import('@playwright/test').Page, role: string) {
-  await page.goto('/login');
-  await page.getByLabel('Perfil').selectOption(role);
-  await page.getByRole('button', { name: 'Entrar' }).click();
-}
+import { login, logout, sessionToken } from './helpers';
 
 test('biblioteca de conteúdos → secções → geração de DOCX e PDF → descarga', async ({ page }) => {
   const code = `E2E-${Date.now()}`;
@@ -14,17 +9,17 @@ test('biblioteca de conteúdos → secções → geração de DOCX e PDF → des
   await page.getByRole('link', { name: 'Conteúdos' }).click();
   await page.getByRole('button', { name: 'Novo bloco' }).click();
   await page.getByLabel('Código', { exact: true }).fill(code);
-  await page.getByLabel('Título', { exact: true }).fill('Bloco e2e');
+  await page.getByLabel('Título', { exact: true }).fill(`Bloco ${code}`);
   await page.getByRole('textbox', { name: 'Texto' }).click();
   await page.keyboard.type('Proposta para {{cliente.nome}} válida até {{proposta.validade}}.');
   await page.getByRole('button', { name: 'Criar' }).click();
-  await expect(page.getByText('Bloco e2e')).toBeVisible();
-  await page.getByRole('button', { name: new RegExp('Bloco e2e') }).click();
+  await expect(page.getByText(`Bloco ${code}`)).toBeVisible();
+  await page.getByRole('button', { name: new RegExp(`Bloco ${code}`) }).click();
   await page.getByRole('button', { name: 'Aprovar' }).click();
   await expect(page.getByText('Aprovada').first()).toBeVisible();
 
   // 2. o comercial cria a proposta, cota, junta o bloco e a tabela de preços
-  await page.getByRole('button', { name: 'Terminar sessão' }).click();
+  await logout(page);
   await login(page, 'Comercial');
   await page.getByRole('link', { name: 'Propostas' }).click();
   await page.getByRole('button', { name: 'Nova proposta' }).click();
@@ -38,7 +33,7 @@ test('biblioteca de conteúdos → secções → geração de DOCX e PDF → des
   await expect(page.getByRole('status')).toContainText('Rascunho guardado');
 
   await page.getByRole('tab', { name: 'Documento' }).click();
-  await page.getByLabel('Adicionar da biblioteca').first().selectOption({ label: 'Bloco e2e (pt-PT)' });
+  await page.getByLabel('Adicionar da biblioteca').first().selectOption({ label: `Bloco ${code} (pt-PT)` });
   await page.getByRole('button', { name: 'Adicionar da biblioteca' }).click();
   await expect(page.getByTestId('section')).toHaveCount(1);
 
@@ -58,7 +53,7 @@ test('biblioteca de conteúdos → secções → geração de DOCX e PDF → des
 
 test('gera os documentos quando tudo está resolvido', async ({ page, request }) => {
   await login(page, 'Comercial');
-  const token = await page.evaluate(() => JSON.parse(sessionStorage.getItem('cpq.session')!).token as string);
+  const token = await sessionToken(page);
   const H = { Authorization: `Bearer ${token}` };
 
   // proposta com validade, cotação e uma secção sem variáveis em falta

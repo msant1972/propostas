@@ -28,9 +28,8 @@ pnpm e2e           # Playwright (precisa de: npx playwright install chromium)
 pnpm env:stop      # pára MariaDB e Redis
 ```
 
-`pnpm env:setup` é idempotente. Cria o `.env` (ignorado pelo git) com `DATABASE_URL`, `TEST_DATABASE_URL`, `REDIS_URL` e `TEST_REDIS_URL`. Os dados ficam em `~/tools/data`. No modo de desenvolvimento (`AUTH_MODE=dev`) o ecrã de login deixa escolher o perfil; em produção a API só aceita tokens do Entra ID.
+`pnpm env:setup` é idempotente. Cria o `.env` (ignorado pelo git) com `DATABASE_URL`, `TEST_DATABASE_URL`, `REDIS_URL` e `TEST_REDIS_URL`. Os dados ficam em `~/tools/data`. A autenticação é local. O seed cria um utilizador por papel (palavra-passe de demonstração `Demo-Pass-2026!`): `comercial@exemplo.pt`, `gestor@exemplo.pt`, `financeiro@exemplo.pt`, `juridico@exemplo.pt` e `admin@exemplo.pt`. Em produção defina `AUTH_JWT_SECRET` (mínimo 32 caracteres) e crie os utilizadores no ecrã de administração.
 
-Utilizadores de desenvolvimento (criados pelo seed): um por papel — Comercial, Gestor_Comercial, Aprovador_Financeiro, Juridico e Administrador.
 
 ## Certificado TLS (portal do cliente)
 

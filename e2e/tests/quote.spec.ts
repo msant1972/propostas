@@ -1,9 +1,8 @@
 import { expect, test } from '@playwright/test';
+import { login, logout, sessionToken } from './helpers';
 
 test('comercial cria uma proposta, cota, vê os totais e bloqueia a versão', async ({ page }) => {
-  await page.goto('/login');
-  await page.getByLabel('Perfil').selectOption('Comercial');
-  await page.getByRole('button', { name: 'Entrar' }).click();
+  await login(page, 'Comercial');
 
   await page.getByRole('link', { name: 'Propostas' }).click();
   await page.getByRole('button', { name: 'Nova proposta' }).click();
@@ -39,8 +38,7 @@ test('comercial cria uma proposta, cota, vê os totais e bloqueia a versão', as
 });
 
 test('a regra de licenças obriga a juntar o Suporte Premium', async ({ page }) => {
-  await page.goto('/login');
-  await page.getByRole('button', { name: 'Entrar' }).click();
+  await login(page, 'Comercial');
   await page.getByRole('link', { name: 'Propostas' }).click();
   await page.getByRole('button', { name: 'Nova proposta' }).click();
   await page.getByLabel('Título').fill(`Regras e2e ${Date.now()}`);

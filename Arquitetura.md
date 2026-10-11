@@ -13,7 +13,7 @@ Decisões principais:
 3. **Snapshots imutáveis**: cada versão de cotação é congelada com hash; a aprovação fica ligada a esse hash e ao hash do documento gerado. Qualquer alteração posterior invalida a aprovação.
 4. **Modelo de dados completo**: clientes, utilizadores, listas de preços, custos, impostos, políticas de aprovação, versões de conteúdo, documentos e auditoria encadeada.
 5. **Repositório de documentos numa pasta local do servidor**, com a estrutura `Clientes/{cliente}/{proposta}/{01_Trabalho,02_Enviado,03_Assinado}`; o acesso passa sempre pela aplicação.
-6. **Segurança de menor privilégio**: identidade pelo Entra ID, papéis complementados com regras por registo (dono, equipa, região), custos e margens visíveis só a quem tem permissão, segredos fora do repositório.
+6. **Segurança de menor privilégio**: autenticação local (email e palavra-passe, com bloqueio por tentativas e sessões revogáveis), papéis complementados com regras por registo (dono, equipa, região), custos e margens visíveis só a quem tem permissão, segredos fora do repositório.
 7. **Um único servidor Ubuntu** com a aplicação, a MariaDB 12.3 e o Redis, com cópias de segurança contínuas para um disco ou servidor separado e um procedimento de restauro testado.
 8. **Aceitação pelo cliente por portal com ligação segura** (assinatura eletrónica simples, com comprovativo), sem fornecedores externos de assinatura.
 
@@ -28,7 +28,7 @@ O sistema tem duas vertentes — **Motor CPQ** e **Proposal Content Engine** —
 | 03 | Estilo de API | REST + OpenAPI (3.0 exportado pelo NestJS), cliente TS gerado | GraphQL | Caching HTTP, autorização por endpoint e auditoria mais simples; o frontend recebe tipos gerados |
 | 04 | ORM | Prisma como cliente tipado; migrações SQL manuais com executor próprio | TypeORM | Tipagem mais forte; triggers, colunas geradas e `UUID` nativo não se exprimem em Prisma |
 | 05 | Base de dados | MariaDB 12.3 LTS instalada no servidor Ubuntu, em disco próprio, com mariabackup e binlogs copiados para um destino separado | Base de dados gerida externa | Um só servidor reduz custo e peças a gerir. A contrapartida é a equipa assumir backups, upgrades e monitorização da BD |
-| 06 | Identidade | Microsoft Entra ID apenas (MSAL no frontend, validação JWT no backend) | IdentityServer | Os utilizadores já estão no Microsoft 365; um segundo IdP só acrescenta custo |
+| 06 | Identidade | Autenticação local: utilizadores, papéis e palavras-passe (scrypt) geridos pela própria aplicação; token JWT próprio (HS256) com versão de sessão | Provedor de identidade externo (Entra ID, IdentityServer) | Sem dependências externas; o administrador gere utilizadores e papéis na aplicação; a versão de sessão permite revogar tokens de imediato |
 | 07 | Editor de texto | TipTap, com bloqueio otimista por secção | Edição simultânea em tempo real (Yjs) | Redação por uma pessoa de cada vez é o caso comum; o conflito é detetado e comunicado, sem infraestrutura de tempo real |
 | 08 | Motor de documentos | Docxtemplater (núcleo) + modelo base `.docx` + conversão própria de HTML para OOXML; PDF gerado pela aplicação (pdfkit) | OpenXML SDK; módulo HTML pago | Coerente com ADR-01; sem licenças adicionais. O PDF não tem a fidelidade de uma conversão pelo Word |
 | 09 | Processamento assíncrono | BullMQ sobre Redis + tabela *outbox* | Chamadas síncronas | Retries, idempotência, isolamento do pedido HTTP |
@@ -48,7 +48,7 @@ A estrutura assenta na separação entre o caminho síncrono (utilizador → API
 
 | Camada | Tecnologia | Responsabilidade |
 | --- | --- | --- |
-| Frontend | React 18+, TypeScript, Vite, TailwindCSS, TanStack Query, Zustand, TipTap, MSAL | UI, validação local de regras e preços, edição de secções |
+| Frontend | React 18+, TypeScript, Vite, TailwindCSS, TanStack Query, Zustand, TipTap | UI, validação local de regras e preços, edição de secções |
 | API | NestJS, Prisma, CASL, OpenAPI | Regras de negócio, autorização, transações, outbox |
 | Worker | NestJS + BullMQ | Documentos, notificações, auditoria encadeada, SLA e expiração, exportações |
 | Dados | MariaDB 12.3 LTS (InnoDB) e Redis, no mesmo servidor | Fonte de verdade estruturada; cache e filas |
@@ -73,7 +73,7 @@ Toda a plataforma corre num único servidor Ubuntu Server LTS: aplicação, Mari
 | Logs e métricas | OpenTelemetry Collector → ficheiros locais e Prometheus/Grafana (opcional) | Alarmes por email para disco, memória, filas, erros 5xx e falhas de backup |
 | Infraestrutura | Ansible | Servidor reconstruível a partir de código em caso de perda total |
 
-O Microsoft Entra ID continua a ser o serviço de identidade: a aplicação valida os tokens JWT por HTTPS. As notificações saem por email (SMTP) e, opcionalmente, para um canal do Teams através de um *webhook* de entrada; nenhuma das duas precisa de registo de aplicações adicionais.
+A identidade é local (sem serviços externos). As notificações saem por email (SMTP) e, opcionalmente, para um canal do Teams através de um *webhook* de entrada, que não precisa de registo de aplicações.
 
 ## Módulos funcionais
 
@@ -183,7 +183,7 @@ O modelo tem mais de 30 tabelas, todas com FKs reais. Convenções: chaves `UUID
 
 | Domínio | Tabela | Propósito | Relações principais |
 | --- | --- | --- | --- |
-| Identidade | `users` | Espelho dos utilizadores Entra ID (`entra_oid`), equipa, região | — |
+| Identidade | `users` | Utilizadores locais: email único, palavra-passe (hash), papéis, equipa, região, bloqueio e versão de sessão | — |
 | Identidade | `teams` | Equipas comerciais para regras de visibilidade | 1:N `users` |
 | Clientes | `clients` | Cliente com NIF/VAT, país, tier, ID externo do CRM | 1:N `proposals` |
 | Catálogo | `products` | Produto/serviço, unidade, custo, modelo de cobrança | 1:N `product_attributes` |
@@ -233,8 +233,7 @@ CREATE TABLE teams (
 
 CREATE TABLE users (
     id            UUID PRIMARY KEY,
-    entra_oid     UUID         NOT NULL UNIQUE,
-    email         VARCHAR(255) NOT NULL,
+    email         VARCHAR(255) NOT NULL UNIQUE,
     display_name  VARCHAR(255) NOT NULL,
     team_id       UUID,
     region        VARCHAR(50),
@@ -722,7 +721,7 @@ As metas abaixo são propostas de partida, a validar com o negócio; cada uma é
 
 ### Segurança
 
-- **Identidade**: apenas Entra ID; papéis de aplicação (`Comercial`, `Gestor_Comercial`, `Aprovador_Financeiro`, `Juridico`, `Administrador`) atribuídos via grupos Entra. Em desenvolvimento, um modo local com tokens assinados por um segredo, recusado em produção.
+- **Identidade**: autenticação local por email e palavra-passe. Palavras-passe com *hash* scrypt e sal, política mínima (10 caracteres, três tipos, sem o email), comparação em tempo constante e o mesmo tempo de resposta para utilizadores inexistentes. Cinco falhas bloqueiam a conta 15 minutos; limite de pedidos de login por IP. Token de sessão JWT (HS256, segredo do servidor, validade de 8 h) com versão de sessão: mudar a palavra-passe, os papéis ou desativar o utilizador termina de imediato as sessões abertas. Papéis (`Comercial`, `Gestor_Comercial`, `Aprovador_Financeiro`, `Juridico`, `Administrador`) atribuídos pelo administrador, que também cria utilizadores com palavra-passe temporária de mudança obrigatória. O sistema nunca fica sem administradores ativos.
 - **Autorização por registo**: além do papel, regras de visibilidade — o comercial vê as suas propostas, o gestor vê as da equipa, o aprovador vê as que lhe estão atribuídas. Implementado com CASL num *guard* NestJS, aplicado também aos filtros de consulta. Custos e margens só são visíveis a quem tem permissão.
 - **Segredos**: ficheiros de ambiente com permissões restritas, geridos pelo Ansible (`ansible-vault`); nada no repositório.
 - **Transporte**: TLS 1.2 no mínimo, 1.3 preferido; HSTS; certificado autoassinado (ver «Certificado do portal»); limites de pedidos no Nginx e na API.
@@ -742,14 +741,14 @@ As metas abaixo são propostas de partida, a validar com o negócio; cada uma é
 
 - OpenTelemetry em frontend, API e worker, com envio para o OpenTelemetry Collector local; um ID de correlação acompanha cada pedido até ao job que dele resulta.
 - Painéis e alertas: latência p95, erros 5xx, profundidade das filas, jobs `FAILED`, espaço em disco, falhas de backup, quebra da cadeia de auditoria.
-- Ambientes: desenvolvimento, teste/QA e produção, cada um com a sua base de dados, pasta de documentos e registo de aplicação Entra.
+- Ambientes: desenvolvimento, teste/QA e produção, cada um com a sua base de dados, pasta de documentos e segredo de sessão.
 - CI/CD com testes unitários (motor de preços com casos de referência), de integração com MariaDB e Redis, de contrato à API e *end-to-end* (Playwright); migrações aplicadas automaticamente com *rollback* testado.
 
 ## Roadmap e riscos
 
 A ordem proposta entrega primeiro o núcleo que dá valor sozinho (cotar com preços corretos) e deixa as partes mais dependentes de terceiros para quando a base estiver estável. Cada fase termina com um critério de saída verificável.
 
-1. **Fundações** — monorepo (frontend, API, worker, `@cpq/rules-engine`), Entra ID, MariaDB com migrações, servidor Ubuntu configurado por Ansible, CI/CD, observabilidade, ambientes.
+1. **Fundações** — monorepo (frontend, API, worker, `@cpq/rules-engine`), autenticação local, MariaDB com migrações, servidor Ubuntu configurado por Ansible, CI/CD, observabilidade, ambientes.
    - Saída: utilizador autentica-se e vê o catálogo, com traces ponta-a-ponta e um restauro de backup testado.
 2. **CPQ** — catálogo, listas de preços, regras, motor de preços, versões e snapshots.
    - Saída: 50 cotações de referência calculadas pelo motor coincidem ao cêntimo com o cálculo da área financeira.

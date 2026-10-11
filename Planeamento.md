@@ -18,7 +18,7 @@ Esforço: **S** ≈ até 2 dias, **M** ≈ 3–5 dias, **L** ≈ 1–2 semanas, 
 
 ```
 /apps
-  /web          React 18, Vite, TS, shadcn/ui, Tailwind, TanStack Query, Zustand, TipTap + Yjs, MSAL
+  /web          React 18, Vite, TS, shadcn/ui, Tailwind, TanStack Query, Zustand, TipTap
   /api          NestJS, Prisma, CASL, OpenAPI 3.1
   /worker       NestJS + BullMQ (relay do outbox, documentos, auditoria, notificações, SLA e expiração)
 /packages
@@ -38,7 +38,7 @@ Módulos NestJS (fronteira própria, sem aceder a tabelas alheias): `auth`, `use
 
 | Fase | Nome | Entrega | Depende de |
 | --- | --- | --- | --- |
-| 0 | Decisões e pré-requisitos | Respostas às decisões bloqueantes; acesso ao Entra ID e ao servidor | — |
+| 0 | Decisões e pré-requisitos | Respostas às decisões bloqueantes; acesso ao servidor | — |
 | 1 | Fundações | Repositório, CI/CD, infra por código, autenticação, observabilidade | 0 |
 | 2 | CPQ | Catálogo, preços, regras, cotações versionadas e bloqueadas | 1 |
 | 3 | Proposal Engine | Conteúdos, editor, compilação DOCX/PDF, worker, repositório local | 2 |
@@ -46,7 +46,7 @@ Módulos NestJS (fronteira própria, sem aceder a tabelas alheias): `auth`, `use
 | 5 | Aceitação e integrações | Portal de aceitação, acompanhamento, CRM interno, RGPD | 4 |
 | 6 | Endurecimento e go-live | Testes de carga, restauro, segurança, migração de dados, formação | 5 |
 
-Fase 0 e as aprovações de acesso (Entra ID, servidor) correm **em paralelo** com o início da Fase 1.
+Fase 0 e as aprovações de acesso (servidor) correm **em paralelo** com o início da Fase 1.
 
 ## 4. Fase 0 — Decisões e pré-requisitos
 
@@ -58,7 +58,7 @@ Fase 0 e as aprovações de acesso (Entra ID, servidor) correm **em paralelo** c
 | 0.4 | Línguas das propostas e modelo `.docx` base por língua | Comercial / marketing | Fase 3 |
 | 0.6 | API/eventos do CRM interno e dono dos dados de cliente | Equipa do CRM | Fase 5 |
 | 0.7 | Multi-empresa (várias entidades legais)? | Direção | Modelo de dados (decidir antes da Fase 2) |
-| 0.8 | Registo da aplicação no Entra ID (grupos e papéis) e servidor SMTP para as notificações | TI | Fase 1 |
+| 0.8 | Servidor SMTP para as notificações e lista inicial de utilizadores e papéis | TI | Fase 1 |
 | 0.9 | Servidor Ubuntu, domínio, certificado TLS, discos de dados e destino das cópias de segurança | TI | Fase 1 |
 
 **Saída:** 0.2, 0.3, 0.7, 0.8 e 0.9 respondidas; as restantes com data de resposta acordada.
@@ -85,7 +85,7 @@ Objetivo: um utilizador autentica-se e vê o catálogo em QA, com traces ponta a
 | ID | Tarefa | Esf. |
 | --- | --- | --- |
 | 1.9 | Esqueleto NestJS: validação por DTO, tratamento de erros uniforme, versionamento, OpenAPI 3.1, geração do `api-client` | M |
-| 1.10 | `auth`: validação JWT do Entra ID, mapeamento de grupos para papéis (`Comercial`, `Gestor_Comercial`, `Aprovador_Financeiro`, `Juridico`, `Administrador`), criação/atualização de `users` no primeiro login | M |
+| 1.10 | `auth`: login local (email e palavra-passe com scrypt), token próprio com versão de sessão, bloqueio por tentativas, mudança de palavra-passe, gestão de utilizadores, papéis e equipas pelo administrador | L |
 | 1.11 | CASL: guard de autorização e filtros de consulta por dono/equipa/região | M |
 | 1.12 | `outbox`: gravação do evento na mesma transação (serviço transacional reutilizável) | S |
 | 1.13 | `catalog` (leitura): produtos e listagem, com seed de teste | S |
@@ -103,11 +103,11 @@ Objetivo: um utilizador autentica-se e vê o catálogo em QA, com traces ponta a
 | ID | Tarefa | Esf. |
 | --- | --- | --- |
 | 1.17 | App Vite + Tailwind + shadcn/ui; layout, navegação, tema, i18n (pt-PT; estrutura pronta para outras línguas) | M |
-| 1.18 | MSAL (Authorization Code + PKCE), rota protegida, renovação de token, ecrã de acesso negado | M |
+| 1.18 | Ecrã de login, mudança de palavra-passe (obrigatória no primeiro acesso), rota protegida, ecrã de acesso negado | M |
 | 1.19 | TanStack Query com `api-client`; tratamento global de erros; página de catálogo (lista) | S |
 | 1.20 | Playwright: login e listagem do catálogo em QA | S |
 
-**Saída:** login real em QA com Entra ID; catálogo visível; trace único do browser até à BD; restauro de backup executado e documentado; pipeline verde.
+**Saída:** login local em QA; catálogo visível; trace único do browser até à BD; restauro de backup executado e documentado; pipeline verde.
 
 ## 6. Fase 2 — CPQ
 

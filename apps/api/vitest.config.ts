@@ -3,5 +3,5 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   plugins: [swc.vite({ module: { type: 'es6' } })],
-  test: { fileParallelism: false, globals: false, environment: 'node', include: ['src/**/*.test.ts', 'test/**/*.test.ts'] },
+  test: { setupFiles: ['./test/setup.ts'], fileParallelism: false, globals: false, environment: 'node', include: ['src/**/*.test.ts', 'test/**/*.test.ts'] },
 });

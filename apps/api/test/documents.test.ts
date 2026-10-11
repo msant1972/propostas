@@ -119,7 +119,7 @@ run('conteúdos, secções e documentos', () => {
     });
 
     it('outro comercial não vê nem altera as secções', async () => {
-      const outro = await h.token('Comercial', '00000000-0000-4000-8000-0000000000c9');
+      const outro = await h.token('Comercial', 'outro');
       await h.http().get(`/api/v1/proposals/${proposalId}/sections`).set(A(outro)).expect(404);
     });
   });

@@ -4,15 +4,21 @@ import { validateEnv } from './env.js';
 describe('validateEnv', () => {
   const base = { DATABASE_URL: 'mysql://x' };
 
-  it('aplica valores por omissão', () => {
-    expect(validateEnv(base).AUTH_MODE).toBe('dev');
+  it('aplica valores por omissão e um segredo de desenvolvimento fora de produção', () => {
+    const e = validateEnv(base);
+    expect(e.AUTH_TOKEN_TTL_HOURS).toBe(8);
+    expect(e.AUTH_JWT_SECRET.length).toBeGreaterThanOrEqual(32);
   });
 
-  it('recusa AUTH_MODE=dev em produção', () => {
-    expect(() => validateEnv({ ...base, NODE_ENV: 'production', AUTH_MODE: 'dev' })).toThrow(/produção/);
+  it('em produção exige um segredo próprio e forte', () => {
+    expect(() => validateEnv({ ...base, NODE_ENV: 'production' })).toThrow(/AUTH_JWT_SECRET/);
+    expect(() => validateEnv({ ...base, NODE_ENV: 'production', AUTH_JWT_SECRET: 'curto' })).toThrow(/mínimo 32/);
+    const dev = validateEnv(base).AUTH_JWT_SECRET;
+    expect(() => validateEnv({ ...base, NODE_ENV: 'production', AUTH_JWT_SECRET: dev })).toThrow(/desenvolvimento/);
+    expect(validateEnv({ ...base, NODE_ENV: 'production', AUTH_JWT_SECRET: 'x'.repeat(40) }).NODE_ENV).toBe('production');
   });
 
-  it('exige tenant e audience no modo entra', () => {
-    expect(() => validateEnv({ ...base, AUTH_MODE: 'entra' })).toThrow(/ENTRA_TENANT_ID/);
+  it('recusa um segredo curto também fora de produção', () => {
+    expect(() => validateEnv({ ...base, AUTH_JWT_SECRET: 'curto' })).toThrow(/32/);
   });
 });

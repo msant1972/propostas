@@ -6,7 +6,6 @@ import { AppModule } from '../src/app.module.js';
 import { buildOpenApi, configureApp } from '../src/setup.js';
 
 process.env['DATABASE_URL'] ??= 'mysql://cpq:cpq@127.0.0.1:3306/cpq_dev';
-process.env['AUTH_MODE'] ??= 'dev';
 
 const app = await NestFactory.create(AppModule, { logger: false });
 configureApp(app);

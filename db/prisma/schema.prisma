@@ -40,16 +40,22 @@ model Team {
 }
 
 model User {
-  id          String   @id @db.Char(36)
-  entraOid    String   @unique @map("entra_oid") @db.Char(36)
-  email       String   @db.VarChar(255)
-  displayName String   @map("display_name") @db.VarChar(255)
-  teamId      String?  @map("team_id") @db.Char(36)
-  region      String?  @db.VarChar(50)
-  isActive    Boolean  @default(true) @map("is_active")
-  rolesJson   Json?    @map("roles_json")
-  lastSeenAt  DateTime? @map("last_seen_at") @db.DateTime(6)
-  team        Team?    @relation(fields: [teamId], references: [id])
+  id                 String    @id @db.Char(36)
+  email              String    @unique @db.VarChar(255)
+  displayName        String    @map("display_name") @db.VarChar(255)
+  teamId             String?   @map("team_id") @db.Char(36)
+  region             String?   @db.VarChar(50)
+  isActive           Boolean   @default(true) @map("is_active")
+  rolesJson          Json?     @map("roles_json")
+  lastSeenAt         DateTime? @map("last_seen_at") @db.DateTime(6)
+  passwordHash       String?   @map("password_hash") @db.VarChar(255)
+  mustChangePassword Boolean   @default(false) @map("must_change_password")
+  passwordChangedAt  DateTime? @map("password_changed_at") @db.DateTime(6)
+  failedLogins       Int       @default(0) @map("failed_logins")
+  lockedUntil        DateTime? @map("locked_until") @db.DateTime(6)
+  tokenVersion       Int       @default(1) @map("token_version")
+  lastLoginAt        DateTime? @map("last_login_at") @db.DateTime(6)
+  team               Team?     @relation(fields: [teamId], references: [id])
 
   @@map("users")
 }

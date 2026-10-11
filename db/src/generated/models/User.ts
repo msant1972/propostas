@@ -20,35 +20,58 @@ export type UserModel = runtime.Types.Result.DefaultSelection<Prisma.$UserPayloa
 
 export type AggregateUser = {
   _count: UserCountAggregateOutputType | null
+  _avg: UserAvgAggregateOutputType | null
+  _sum: UserSumAggregateOutputType | null
   _min: UserMinAggregateOutputType | null
   _max: UserMaxAggregateOutputType | null
 }
 
+export type UserAvgAggregateOutputType = {
+  failedLogins: number | null
+  tokenVersion: number | null
+}
+
+export type UserSumAggregateOutputType = {
+  failedLogins: number | null
+  tokenVersion: number | null
+}
+
 export type UserMinAggregateOutputType = {
   id: string | null
-  entraOid: string | null
   email: string | null
   displayName: string | null
   teamId: string | null
   region: string | null
   isActive: boolean | null
   lastSeenAt: Date | null
+  passwordHash: string | null
+  mustChangePassword: boolean | null
+  passwordChangedAt: Date | null
+  failedLogins: number | null
+  lockedUntil: Date | null
+  tokenVersion: number | null
+  lastLoginAt: Date | null
 }
 
 export type UserMaxAggregateOutputType = {
   id: string | null
-  entraOid: string | null
   email: string | null
   displayName: string | null
   teamId: string | null
   region: string | null
   isActive: boolean | null
   lastSeenAt: Date | null
+  passwordHash: string | null
+  mustChangePassword: boolean | null
+  passwordChangedAt: Date | null
+  failedLogins: number | null
+  lockedUntil: Date | null
+  tokenVersion: number | null
+  lastLoginAt: Date | null
 }
 
 export type UserCountAggregateOutputType = {
   id: number
-  entraOid: number
   email: number
   displayName: number
   teamId: number
@@ -56,35 +79,63 @@ export type UserCountAggregateOutputType = {
   isActive: number
   rolesJson: number
   lastSeenAt: number
+  passwordHash: number
+  mustChangePassword: number
+  passwordChangedAt: number
+  failedLogins: number
+  lockedUntil: number
+  tokenVersion: number
+  lastLoginAt: number
   _all: number
 }
 
 
+export type UserAvgAggregateInputType = {
+  failedLogins?: true
+  tokenVersion?: true
+}
+
+export type UserSumAggregateInputType = {
+  failedLogins?: true
+  tokenVersion?: true
+}
+
 export type UserMinAggregateInputType = {
   id?: true
-  entraOid?: true
   email?: true
   displayName?: true
   teamId?: true
   region?: true
   isActive?: true
   lastSeenAt?: true
+  passwordHash?: true
+  mustChangePassword?: true
+  passwordChangedAt?: true
+  failedLogins?: true
+  lockedUntil?: true
+  tokenVersion?: true
+  lastLoginAt?: true
 }
 
 export type UserMaxAggregateInputType = {
   id?: true
-  entraOid?: true
   email?: true
   displayName?: true
   teamId?: true
   region?: true
   isActive?: true
   lastSeenAt?: true
+  passwordHash?: true
+  mustChangePassword?: true
+  passwordChangedAt?: true
+  failedLogins?: true
+  lockedUntil?: true
+  tokenVersion?: true
+  lastLoginAt?: true
 }
 
 export type UserCountAggregateInputType = {
   id?: true
-  entraOid?: true
   email?: true
   displayName?: true
   teamId?: true
@@ -92,6 +143,13 @@ export type UserCountAggregateInputType = {
   isActive?: true
   rolesJson?: true
   lastSeenAt?: true
+  passwordHash?: true
+  mustChangePassword?: true
+  passwordChangedAt?: true
+  failedLogins?: true
+  lockedUntil?: true
+  tokenVersion?: true
+  lastLoginAt?: true
   _all?: true
 }
 
@@ -133,6 +191,18 @@ export type UserAggregateArgs<ExtArgs extends runtime.Types.Extensions.InternalA
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: UserAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: UserSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: UserMinAggregateInputType
@@ -163,13 +233,14 @@ export type UserGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
   take?: number
   skip?: number
   _count?: UserCountAggregateInputType | true
+  _avg?: UserAvgAggregateInputType
+  _sum?: UserSumAggregateInputType
   _min?: UserMinAggregateInputType
   _max?: UserMaxAggregateInputType
 }
 
 export type UserGroupByOutputType = {
   id: string
-  entraOid: string
   email: string
   displayName: string
   teamId: string | null
@@ -177,7 +248,16 @@ export type UserGroupByOutputType = {
   isActive: boolean
   rolesJson: runtime.JsonValue | null
   lastSeenAt: Date | null
+  passwordHash: string | null
+  mustChangePassword: boolean
+  passwordChangedAt: Date | null
+  failedLogins: number
+  lockedUntil: Date | null
+  tokenVersion: number
+  lastLoginAt: Date | null
   _count: UserCountAggregateOutputType | null
+  _avg: UserAvgAggregateOutputType | null
+  _sum: UserSumAggregateOutputType | null
   _min: UserMinAggregateOutputType | null
   _max: UserMaxAggregateOutputType | null
 }
@@ -202,7 +282,6 @@ export type UserWhereInput = {
   OR?: Prisma.UserWhereInput[]
   NOT?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
   id?: Prisma.StringFilter<"User"> | string
-  entraOid?: Prisma.StringFilter<"User"> | string
   email?: Prisma.StringFilter<"User"> | string
   displayName?: Prisma.StringFilter<"User"> | string
   teamId?: Prisma.StringNullableFilter<"User"> | string | null
@@ -210,12 +289,18 @@ export type UserWhereInput = {
   isActive?: Prisma.BoolFilter<"User"> | boolean
   rolesJson?: Prisma.JsonNullableFilter<"User">
   lastSeenAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  passwordHash?: Prisma.StringNullableFilter<"User"> | string | null
+  mustChangePassword?: Prisma.BoolFilter<"User"> | boolean
+  passwordChangedAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  failedLogins?: Prisma.IntFilter<"User"> | number
+  lockedUntil?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  tokenVersion?: Prisma.IntFilter<"User"> | number
+  lastLoginAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   team?: Prisma.XOR<Prisma.TeamNullableScalarRelationFilter, Prisma.TeamWhereInput> | null
 }
 
 export type UserOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  entraOid?: Prisma.SortOrder
   email?: Prisma.SortOrder
   displayName?: Prisma.SortOrder
   teamId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -223,29 +308,41 @@ export type UserOrderByWithRelationInput = {
   isActive?: Prisma.SortOrder
   rolesJson?: Prisma.SortOrderInput | Prisma.SortOrder
   lastSeenAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  passwordHash?: Prisma.SortOrderInput | Prisma.SortOrder
+  mustChangePassword?: Prisma.SortOrder
+  passwordChangedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  failedLogins?: Prisma.SortOrder
+  lockedUntil?: Prisma.SortOrderInput | Prisma.SortOrder
+  tokenVersion?: Prisma.SortOrder
+  lastLoginAt?: Prisma.SortOrderInput | Prisma.SortOrder
   team?: Prisma.TeamOrderByWithRelationInput
   _relevance?: Prisma.UserOrderByRelevanceInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
   id?: string
-  entraOid?: string
+  email?: string
   AND?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
   OR?: Prisma.UserWhereInput[]
   NOT?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
-  email?: Prisma.StringFilter<"User"> | string
   displayName?: Prisma.StringFilter<"User"> | string
   teamId?: Prisma.StringNullableFilter<"User"> | string | null
   region?: Prisma.StringNullableFilter<"User"> | string | null
   isActive?: Prisma.BoolFilter<"User"> | boolean
   rolesJson?: Prisma.JsonNullableFilter<"User">
   lastSeenAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  passwordHash?: Prisma.StringNullableFilter<"User"> | string | null
+  mustChangePassword?: Prisma.BoolFilter<"User"> | boolean
+  passwordChangedAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  failedLogins?: Prisma.IntFilter<"User"> | number
+  lockedUntil?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  tokenVersion?: Prisma.IntFilter<"User"> | number
+  lastLoginAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
   team?: Prisma.XOR<Prisma.TeamNullableScalarRelationFilter, Prisma.TeamWhereInput> | null
-}, "id" | "entraOid">
+}, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  entraOid?: Prisma.SortOrder
   email?: Prisma.SortOrder
   displayName?: Prisma.SortOrder
   teamId?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -253,9 +350,18 @@ export type UserOrderByWithAggregationInput = {
   isActive?: Prisma.SortOrder
   rolesJson?: Prisma.SortOrderInput | Prisma.SortOrder
   lastSeenAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  passwordHash?: Prisma.SortOrderInput | Prisma.SortOrder
+  mustChangePassword?: Prisma.SortOrder
+  passwordChangedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  failedLogins?: Prisma.SortOrder
+  lockedUntil?: Prisma.SortOrderInput | Prisma.SortOrder
+  tokenVersion?: Prisma.SortOrder
+  lastLoginAt?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
+  _avg?: Prisma.UserAvgOrderByAggregateInput
   _max?: Prisma.UserMaxOrderByAggregateInput
   _min?: Prisma.UserMinOrderByAggregateInput
+  _sum?: Prisma.UserSumOrderByAggregateInput
 }
 
 export type UserScalarWhereWithAggregatesInput = {
@@ -263,7 +369,6 @@ export type UserScalarWhereWithAggregatesInput = {
   OR?: Prisma.UserScalarWhereWithAggregatesInput[]
   NOT?: Prisma.UserScalarWhereWithAggregatesInput | Prisma.UserScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"User"> | string
-  entraOid?: Prisma.StringWithAggregatesFilter<"User"> | string
   email?: Prisma.StringWithAggregatesFilter<"User"> | string
   displayName?: Prisma.StringWithAggregatesFilter<"User"> | string
   teamId?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
@@ -271,23 +376,35 @@ export type UserScalarWhereWithAggregatesInput = {
   isActive?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
   rolesJson?: Prisma.JsonNullableWithAggregatesFilter<"User">
   lastSeenAt?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
+  passwordHash?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  mustChangePassword?: Prisma.BoolWithAggregatesFilter<"User"> | boolean
+  passwordChangedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
+  failedLogins?: Prisma.IntWithAggregatesFilter<"User"> | number
+  lockedUntil?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
+  tokenVersion?: Prisma.IntWithAggregatesFilter<"User"> | number
+  lastLoginAt?: Prisma.DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
 }
 
 export type UserCreateInput = {
   id: string
-  entraOid: string
   email: string
   displayName: string
   region?: string | null
   isActive?: boolean
   rolesJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   lastSeenAt?: Date | string | null
+  passwordHash?: string | null
+  mustChangePassword?: boolean
+  passwordChangedAt?: Date | string | null
+  failedLogins?: number
+  lockedUntil?: Date | string | null
+  tokenVersion?: number
+  lastLoginAt?: Date | string | null
   team?: Prisma.TeamCreateNestedOneWithoutUsersInput
 }
 
 export type UserUncheckedCreateInput = {
   id: string
-  entraOid: string
   email: string
   displayName: string
   teamId?: string | null
@@ -295,23 +412,35 @@ export type UserUncheckedCreateInput = {
   isActive?: boolean
   rolesJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   lastSeenAt?: Date | string | null
+  passwordHash?: string | null
+  mustChangePassword?: boolean
+  passwordChangedAt?: Date | string | null
+  failedLogins?: number
+  lockedUntil?: Date | string | null
+  tokenVersion?: number
+  lastLoginAt?: Date | string | null
 }
 
 export type UserUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  entraOid?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   displayName?: Prisma.StringFieldUpdateOperationsInput | string
   region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   rolesJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  mustChangePassword?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passwordChangedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  failedLogins?: Prisma.IntFieldUpdateOperationsInput | number
+  lockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   team?: Prisma.TeamUpdateOneWithoutUsersNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  entraOid?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   displayName?: Prisma.StringFieldUpdateOperationsInput | string
   teamId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -319,11 +448,17 @@ export type UserUncheckedUpdateInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   rolesJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  mustChangePassword?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passwordChangedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  failedLogins?: Prisma.IntFieldUpdateOperationsInput | number
+  lockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type UserCreateManyInput = {
   id: string
-  entraOid: string
   email: string
   displayName: string
   teamId?: string | null
@@ -331,22 +466,34 @@ export type UserCreateManyInput = {
   isActive?: boolean
   rolesJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   lastSeenAt?: Date | string | null
+  passwordHash?: string | null
+  mustChangePassword?: boolean
+  passwordChangedAt?: Date | string | null
+  failedLogins?: number
+  lockedUntil?: Date | string | null
+  tokenVersion?: number
+  lastLoginAt?: Date | string | null
 }
 
 export type UserUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  entraOid?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   displayName?: Prisma.StringFieldUpdateOperationsInput | string
   region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   rolesJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  mustChangePassword?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passwordChangedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  failedLogins?: Prisma.IntFieldUpdateOperationsInput | number
+  lockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type UserUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  entraOid?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   displayName?: Prisma.StringFieldUpdateOperationsInput | string
   teamId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -354,6 +501,13 @@ export type UserUncheckedUpdateManyInput = {
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   rolesJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  mustChangePassword?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passwordChangedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  failedLogins?: Prisma.IntFieldUpdateOperationsInput | number
+  lockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type UserListRelationFilter = {
@@ -374,7 +528,6 @@ export type UserOrderByRelevanceInput = {
 
 export type UserCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  entraOid?: Prisma.SortOrder
   email?: Prisma.SortOrder
   displayName?: Prisma.SortOrder
   teamId?: Prisma.SortOrder
@@ -382,28 +535,57 @@ export type UserCountOrderByAggregateInput = {
   isActive?: Prisma.SortOrder
   rolesJson?: Prisma.SortOrder
   lastSeenAt?: Prisma.SortOrder
+  passwordHash?: Prisma.SortOrder
+  mustChangePassword?: Prisma.SortOrder
+  passwordChangedAt?: Prisma.SortOrder
+  failedLogins?: Prisma.SortOrder
+  lockedUntil?: Prisma.SortOrder
+  tokenVersion?: Prisma.SortOrder
+  lastLoginAt?: Prisma.SortOrder
+}
+
+export type UserAvgOrderByAggregateInput = {
+  failedLogins?: Prisma.SortOrder
+  tokenVersion?: Prisma.SortOrder
 }
 
 export type UserMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  entraOid?: Prisma.SortOrder
   email?: Prisma.SortOrder
   displayName?: Prisma.SortOrder
   teamId?: Prisma.SortOrder
   region?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   lastSeenAt?: Prisma.SortOrder
+  passwordHash?: Prisma.SortOrder
+  mustChangePassword?: Prisma.SortOrder
+  passwordChangedAt?: Prisma.SortOrder
+  failedLogins?: Prisma.SortOrder
+  lockedUntil?: Prisma.SortOrder
+  tokenVersion?: Prisma.SortOrder
+  lastLoginAt?: Prisma.SortOrder
 }
 
 export type UserMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  entraOid?: Prisma.SortOrder
   email?: Prisma.SortOrder
   displayName?: Prisma.SortOrder
   teamId?: Prisma.SortOrder
   region?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   lastSeenAt?: Prisma.SortOrder
+  passwordHash?: Prisma.SortOrder
+  mustChangePassword?: Prisma.SortOrder
+  passwordChangedAt?: Prisma.SortOrder
+  failedLogins?: Prisma.SortOrder
+  lockedUntil?: Prisma.SortOrder
+  tokenVersion?: Prisma.SortOrder
+  lastLoginAt?: Prisma.SortOrder
+}
+
+export type UserSumOrderByAggregateInput = {
+  failedLogins?: Prisma.SortOrder
+  tokenVersion?: Prisma.SortOrder
 }
 
 export type UserCreateNestedManyWithoutTeamInput = {
@@ -456,26 +638,46 @@ export type NullableDateTimeFieldUpdateOperationsInput = {
   set?: Date | string | null
 }
 
+export type IntFieldUpdateOperationsInput = {
+  set?: number
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
+}
+
 export type UserCreateWithoutTeamInput = {
   id: string
-  entraOid: string
   email: string
   displayName: string
   region?: string | null
   isActive?: boolean
   rolesJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   lastSeenAt?: Date | string | null
+  passwordHash?: string | null
+  mustChangePassword?: boolean
+  passwordChangedAt?: Date | string | null
+  failedLogins?: number
+  lockedUntil?: Date | string | null
+  tokenVersion?: number
+  lastLoginAt?: Date | string | null
 }
 
 export type UserUncheckedCreateWithoutTeamInput = {
   id: string
-  entraOid: string
   email: string
   displayName: string
   region?: string | null
   isActive?: boolean
   rolesJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   lastSeenAt?: Date | string | null
+  passwordHash?: string | null
+  mustChangePassword?: boolean
+  passwordChangedAt?: Date | string | null
+  failedLogins?: number
+  lockedUntil?: Date | string | null
+  tokenVersion?: number
+  lastLoginAt?: Date | string | null
 }
 
 export type UserCreateOrConnectWithoutTeamInput = {
@@ -509,7 +711,6 @@ export type UserScalarWhereInput = {
   OR?: Prisma.UserScalarWhereInput[]
   NOT?: Prisma.UserScalarWhereInput | Prisma.UserScalarWhereInput[]
   id?: Prisma.StringFilter<"User"> | string
-  entraOid?: Prisma.StringFilter<"User"> | string
   email?: Prisma.StringFilter<"User"> | string
   displayName?: Prisma.StringFilter<"User"> | string
   teamId?: Prisma.StringNullableFilter<"User"> | string | null
@@ -517,57 +718,87 @@ export type UserScalarWhereInput = {
   isActive?: Prisma.BoolFilter<"User"> | boolean
   rolesJson?: Prisma.JsonNullableFilter<"User">
   lastSeenAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  passwordHash?: Prisma.StringNullableFilter<"User"> | string | null
+  mustChangePassword?: Prisma.BoolFilter<"User"> | boolean
+  passwordChangedAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  failedLogins?: Prisma.IntFilter<"User"> | number
+  lockedUntil?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
+  tokenVersion?: Prisma.IntFilter<"User"> | number
+  lastLoginAt?: Prisma.DateTimeNullableFilter<"User"> | Date | string | null
 }
 
 export type UserCreateManyTeamInput = {
   id: string
-  entraOid: string
   email: string
   displayName: string
   region?: string | null
   isActive?: boolean
   rolesJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   lastSeenAt?: Date | string | null
+  passwordHash?: string | null
+  mustChangePassword?: boolean
+  passwordChangedAt?: Date | string | null
+  failedLogins?: number
+  lockedUntil?: Date | string | null
+  tokenVersion?: number
+  lastLoginAt?: Date | string | null
 }
 
 export type UserUpdateWithoutTeamInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  entraOid?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   displayName?: Prisma.StringFieldUpdateOperationsInput | string
   region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   rolesJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  mustChangePassword?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passwordChangedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  failedLogins?: Prisma.IntFieldUpdateOperationsInput | number
+  lockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type UserUncheckedUpdateWithoutTeamInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  entraOid?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   displayName?: Prisma.StringFieldUpdateOperationsInput | string
   region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   rolesJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  mustChangePassword?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passwordChangedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  failedLogins?: Prisma.IntFieldUpdateOperationsInput | number
+  lockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type UserUncheckedUpdateManyWithoutTeamInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  entraOid?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   displayName?: Prisma.StringFieldUpdateOperationsInput | string
   region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   rolesJson?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   lastSeenAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  passwordHash?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  mustChangePassword?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  passwordChangedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  failedLogins?: Prisma.IntFieldUpdateOperationsInput | number
+  lockedUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  tokenVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  lastLoginAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  entraOid?: boolean
   email?: boolean
   displayName?: boolean
   teamId?: boolean
@@ -575,6 +806,13 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   isActive?: boolean
   rolesJson?: boolean
   lastSeenAt?: boolean
+  passwordHash?: boolean
+  mustChangePassword?: boolean
+  passwordChangedAt?: boolean
+  failedLogins?: boolean
+  lockedUntil?: boolean
+  tokenVersion?: boolean
+  lastLoginAt?: boolean
   team?: boolean | Prisma.User$teamArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -582,7 +820,6 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
 
 export type UserSelectScalar = {
   id?: boolean
-  entraOid?: boolean
   email?: boolean
   displayName?: boolean
   teamId?: boolean
@@ -590,9 +827,16 @@ export type UserSelectScalar = {
   isActive?: boolean
   rolesJson?: boolean
   lastSeenAt?: boolean
+  passwordHash?: boolean
+  mustChangePassword?: boolean
+  passwordChangedAt?: boolean
+  failedLogins?: boolean
+  lockedUntil?: boolean
+  tokenVersion?: boolean
+  lastLoginAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "entraOid" | "email" | "displayName" | "teamId" | "region" | "isActive" | "rolesJson" | "lastSeenAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "displayName" | "teamId" | "region" | "isActive" | "rolesJson" | "lastSeenAt" | "passwordHash" | "mustChangePassword" | "passwordChangedAt" | "failedLogins" | "lockedUntil" | "tokenVersion" | "lastLoginAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   team?: boolean | Prisma.User$teamArgs<ExtArgs>
 }
@@ -604,7 +848,6 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    entraOid: string
     email: string
     displayName: string
     teamId: string | null
@@ -612,6 +855,13 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     isActive: boolean
     rolesJson: runtime.JsonValue | null
     lastSeenAt: Date | null
+    passwordHash: string | null
+    mustChangePassword: boolean
+    passwordChangedAt: Date | null
+    failedLogins: number
+    lockedUntil: Date | null
+    tokenVersion: number
+    lastLoginAt: Date | null
   }, ExtArgs["result"]["user"]>
   composites: {}
 }
@@ -983,7 +1233,6 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
  */
 export interface UserFieldRefs {
   readonly id: Prisma.FieldRef<"User", 'String'>
-  readonly entraOid: Prisma.FieldRef<"User", 'String'>
   readonly email: Prisma.FieldRef<"User", 'String'>
   readonly displayName: Prisma.FieldRef<"User", 'String'>
   readonly teamId: Prisma.FieldRef<"User", 'String'>
@@ -991,6 +1240,13 @@ export interface UserFieldRefs {
   readonly isActive: Prisma.FieldRef<"User", 'Boolean'>
   readonly rolesJson: Prisma.FieldRef<"User", 'Json'>
   readonly lastSeenAt: Prisma.FieldRef<"User", 'DateTime'>
+  readonly passwordHash: Prisma.FieldRef<"User", 'String'>
+  readonly mustChangePassword: Prisma.FieldRef<"User", 'Boolean'>
+  readonly passwordChangedAt: Prisma.FieldRef<"User", 'DateTime'>
+  readonly failedLogins: Prisma.FieldRef<"User", 'Int'>
+  readonly lockedUntil: Prisma.FieldRef<"User", 'DateTime'>
+  readonly tokenVersion: Prisma.FieldRef<"User", 'Int'>
+  readonly lastLoginAt: Prisma.FieldRef<"User", 'DateTime'>
 }
     
 

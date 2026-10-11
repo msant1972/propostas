@@ -15,13 +15,6 @@ run('integração com MariaDB', () => {
   });
   afterAll(() => h?.close());
 
-  it('cria o utilizador no primeiro pedido autenticado', async () => {
-    const t = await h.token('Administrador');
-    expect(await h.prisma.user.count()).toBe(0);
-    await h.http().get('/api/v1/catalog/products').set('Authorization', `Bearer ${t}`).expect(200);
-    expect(await h.prisma.user.count()).toBe(1);
-  });
-
   it('autorização: comercial lê o catálogo mas não o altera; administrador cria produtos', async () => {
     const com = await h.token('Comercial');
     const adm = await h.token('Administrador');
@@ -49,10 +42,10 @@ run('integração com MariaDB', () => {
         throw new Error('falha de negócio');
       }),
     ).rejects.toThrow('falha de negócio');
-    expect(await h.prisma.outboxEvent.count()).toBe(0);
+    expect(await h.prisma.outboxEvent.count({ where: { eventType: 'system.ping' } })).toBe(0);
 
     await h.prisma.$transaction((tx) => outbox.enqueue(tx, { aggregateId: uuidv7(), eventType: 'system.ping', payload: { a: 1 } }));
-    expect(await h.prisma.outboxEvent.count()).toBe(1);
+    expect(await h.prisma.outboxEvent.count({ where: { eventType: 'system.ping' } })).toBe(1);
   });
 
   describe('fluxo CPQ completo', () => {
@@ -63,7 +56,7 @@ run('integração com MariaDB', () => {
       adm = await h.token('Administrador');
       com = await h.token('Comercial');
       gestor = await h.token('Gestor_Comercial');
-      outro = await h.token('Comercial', '00000000-0000-4000-8000-0000000000c1');
+      outro = await h.token('Comercial', 'outro');
       const A = { Authorization: `Bearer ${adm}` };
 
       const sup = await h.http().post('/api/v1/catalog/products').set(A).send({ sku: 'PRM', name: 'Suporte Premium', billingModel: 'RECURRING', billingPeriod: 'MONTH', unitCost: '4' }).expect(201);

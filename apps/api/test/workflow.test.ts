@@ -3,7 +3,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { LocalDocumentRepository, compileProposal } from '@cpq/documents';
-import { uuidv7, DEV_USER_OIDS, type Role } from '@cpq/shared';
+import { uuidv7 } from '@cpq/shared';
 import { boot, resetDb, TEST_DB, type Harness } from './helpers.js';
 
 const run = describe.skipIf(!TEST_DB);
@@ -15,14 +15,6 @@ run('workflow, aprovações e integridade', () => {
   const ids: Record<string, string> = {};
   const A = (r: string) => ({ Authorization: `Bearer ${tk[r]}` });
   const TEAM = uuidv7();
-  const SUBST_OID = '00000000-0000-4000-8000-0000000000d1';
-
-  async function user(role: Role, oid: string, name: string, teamId: string | null) {
-    await h.prisma.user.upsert({
-      where: { entraOid: oid }, update: {},
-      create: { id: uuidv7(), entraOid: oid, email: `${name}@x.pt`, displayName: name, teamId, rolesJson: [role] },
-    });
-  }
 
   /** Cria proposta com cotação (desconto `disc`%), uma secção, gera documentos e devolve o id. */
   async function proposal(disc: string, opts: { legalEdit?: boolean } = {}): Promise<{ id: string; version: string }> {
@@ -53,18 +45,17 @@ run('workflow, aprovações e integridade', () => {
     await resetDb(h.prisma);
     repo = new LocalDocumentRepository(process.env['DOCUMENT_STORAGE_DIR']!);
     await h.prisma.team.create({ data: { id: TEAM, name: 'Norte' } });
-    await user('Comercial', DEV_USER_OIDS.Comercial, 'dono', TEAM);
-    await user('Gestor_Comercial', DEV_USER_OIDS.Gestor_Comercial, 'gestor', TEAM);
-    await user('Aprovador_Financeiro', DEV_USER_OIDS.Aprovador_Financeiro, 'financeiro', null);
-    await user('Juridico', DEV_USER_OIDS.Juridico, 'juridico', null);
-    await user('Administrador', DEV_USER_OIDS.Administrador, 'admin', null);
-    await user('Comercial', SUBST_OID, 'substituto', TEAM);
-    tk['com'] = await h.token('Comercial');
-    tk['ges'] = await h.token('Gestor_Comercial');
-    tk['fin'] = await h.token('Aprovador_Financeiro');
-    tk['jur'] = await h.token('Juridico');
-    tk['adm'] = await h.token('Administrador');
-    tk['sub'] = await h.token('Comercial', SUBST_OID);
+    const u = {
+      com: await h.makeUser({ role: 'Comercial', key: 'dono', name: 'dono', teamId: TEAM }),
+      ges: await h.makeUser({ role: 'Gestor_Comercial', key: 'gestor', name: 'gestor', teamId: TEAM }),
+      fin: await h.makeUser({ role: 'Aprovador_Financeiro', key: 'fin', name: 'financeiro' }),
+      jur: await h.makeUser({ role: 'Juridico', key: 'jur', name: 'juridico' }),
+      adm: await h.makeUser({ role: 'Administrador', key: 'adm', name: 'admin' }),
+      sub: await h.makeUser({ role: 'Comercial', key: 'substituto', name: 'substituto', teamId: TEAM }),
+    };
+    ids['gestorId'] = u.ges.id;
+    ids['substId'] = u.sub.id;
+    for (const k of Object.keys(u) as Array<keyof typeof u>) tk[k] = await h.login(u[k].email);
 
     const p = await h.http().post('/api/v1/catalog/products').set(A('adm')).send({ sku: 'IMP', name: 'Implementação', billingModel: 'ONE_TIME', unitCost: '40' }).expect(201);
     ids['prod'] = p.body.id;
@@ -138,7 +129,7 @@ run('workflow, aprovações e integridade', () => {
 
     it('o gestor aprova o nível 1 e o pedido passa ao financeiro', async () => {
       const r = await decide(reqId, 'ges', 'APPROVED', 'Ok').expect(201);
-      expect(r.body.decisions).toMatchObject([{ level: 1, decision: 'APPROVED', approverName: 'U Gestor_Comercial' }]);
+      expect(r.body.decisions).toMatchObject([{ level: 1, decision: 'APPROVED', approverName: 'gestor' }]);
       expect(await status(id)).toBe('PENDING_APPROVAL');
       expect((await inbox('fin')).map((x) => x.id)).toEqual([reqId]);
       expect(await inbox('ges')).toEqual([]);
@@ -245,13 +236,11 @@ run('workflow, aprovações e integridade', () => {
       const reqId = (await h.prisma.approvalRequest.findFirstOrThrow({ where: { proposalId: id } })).id;
       await decide(reqId, 'sub', 'APPROVED').expect(403); // ainda sem delegação
 
-      const gestor = await h.prisma.user.findFirstOrThrow({ where: { entraOid: DEV_USER_OIDS.Gestor_Comercial } });
-      const subst = await h.prisma.user.findFirstOrThrow({ where: { entraOid: SUBST_OID } });
-      const d = await h.http().post('/api/v1/delegations').set(A('ges')).send({ toUserId: subst.id, validFrom: '2026-01-01', validTo: '2099-01-01' }).expect(201);
-      await h.http().post('/api/v1/delegations').set(A('ges')).send({ toUserId: gestor.id, validFrom: '2026-01-01', validTo: '2099-01-01' }).expect(422);
+      const d = await h.http().post('/api/v1/delegations').set(A('ges')).send({ toUserId: ids['substId'], validFrom: '2026-01-01', validTo: '2099-01-01' }).expect(201);
+      await h.http().post('/api/v1/delegations').set(A('ges')).send({ toUserId: ids['gestorId'], validFrom: '2026-01-01', validTo: '2099-01-01' }).expect(422);
       expect((await inbox('sub')).map((x) => x.id)).toEqual([reqId]);
       const r = await decide(reqId, 'sub', 'APPROVED').expect(201);
-      expect(r.body.decisions[0]).toMatchObject({ approverName: 'U Comercial', onBehalfOfName: 'U Gestor_Comercial' });
+      expect(r.body.decisions[0]).toMatchObject({ approverName: 'substituto', onBehalfOfName: 'gestor' });
       await h.http().delete(`/api/v1/delegations/${d.body.id}`).set(A('ges')).expect(204);
     });
 

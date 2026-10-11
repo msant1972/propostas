@@ -12,11 +12,19 @@ export function isRole(value: unknown): value is Role {
   return typeof value === 'string' && (ROLES as readonly string[]).includes(value);
 }
 
-/** Identificadores fixos dos utilizadores de desenvolvimento (seed e login em modo dev). */
-export const DEV_USER_OIDS: Record<Role, string> = {
-  Comercial: '00000000-0000-4000-8000-000000000001',
-  Gestor_Comercial: '00000000-0000-4000-8000-000000000002',
-  Aprovador_Financeiro: '00000000-0000-4000-8000-000000000003',
-  Juridico: '00000000-0000-4000-8000-000000000004',
-  Administrador: '00000000-0000-4000-8000-000000000005',
-};
+/**
+ * Utilizadores de demonstração, criados pelo seed no ambiente de testes: um por papel.
+ * A palavra-passe é conhecida e serve só para desenvolvimento e testes; em produção os utilizadores
+ * são criados pelo administrador, com palavra-passe temporária.
+ */
+export const DEMO_PASSWORD = 'Demo-Pass-2026!';
+
+export const DEMO_USERS: ReadonlyArray<{ role: Role; email: string; name: string }> = [
+  { role: 'Comercial', email: 'comercial@exemplo.pt', name: 'Carla Comercial' },
+  { role: 'Gestor_Comercial', email: 'gestor@exemplo.pt', name: 'Gonçalo Gestor' },
+  { role: 'Aprovador_Financeiro', email: 'financeiro@exemplo.pt', name: 'Filipa Financeira' },
+  { role: 'Juridico', email: 'juridico@exemplo.pt', name: 'Joana Jurídica' },
+  { role: 'Administrador', email: 'admin@exemplo.pt', name: 'Artur Administrador' },
+];
+
+export const demoEmail = (role: Role): string => DEMO_USERS.find((u) => u.role === role)!.email;

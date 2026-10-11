@@ -1,7 +1,7 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
+import type { SessionUser } from '../users/users.service.js';
 import type { AuthedRequest } from './auth.guard.js';
-import type { Principal } from './principal.js';
 
-export const CurrentPrincipal = createParamDecorator((_: unknown, ctx: ExecutionContext): Principal => {
-  return ctx.switchToHttp().getRequest<AuthedRequest>().principal!;
+export const CurrentUser = createParamDecorator((_: unknown, ctx: ExecutionContext): SessionUser => {
+  return ctx.switchToHttp().getRequest<AuthedRequest>().user!;
 });

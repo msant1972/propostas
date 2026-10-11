@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { DEV_USER_OIDS, ROLES, uuidv7 } from '@cpq/shared';
+import { DEMO_PASSWORD, DEMO_USERS, hashPassword, uuidv7 } from '@cpq/shared';
 import { createPrisma } from '../src/index.js';
 import { SEED_BLOCKS, SEED_PRODUCTS } from './content.js';
 
@@ -36,20 +36,12 @@ async function main() {
   for (const [name, id] of [['Norte', teamIds.norte], ['Sul', teamIds.sul]] as const) {
     await prisma.team.upsert({ where: { id }, update: { name }, create: { id, name } });
   }
-  for (const role of ROLES) {
-    const entraOid = DEV_USER_OIDS[role];
+  const passwordHash = await hashPassword(DEMO_PASSWORD);
+  for (const u of DEMO_USERS) {
     await prisma.user.upsert({
-      where: { entraOid },
-      update: { rolesJson: [role] },
-      create: {
-        id: uuidv7(),
-        entraOid,
-        email: `${role.toLowerCase()}@exemplo.pt`,
-        displayName: `Utilizador ${role}`,
-        teamId: teamIds.norte,
-        region: 'PT',
-        rolesJson: [role],
-      },
+      where: { email: u.email },
+      update: { displayName: u.name, rolesJson: [u.role] },
+      create: { id: uuidv7(), email: u.email, displayName: u.name, rolesJson: [u.role], teamId: teamIds.norte, region: 'PT', passwordHash, passwordChangedAt: new Date() },
     });
   }
   for (const [sku, name, billingModel, billingPeriod, unitOfMeasure, unitCost] of products) {
@@ -107,7 +99,7 @@ async function main() {
   }
 
   // Biblioteca de conteúdos de exemplo: versões já aprovadas, para se poderem usar de imediato.
-  const owner = await prisma.user.findFirstOrThrow({ where: { entraOid: DEV_USER_OIDS.Administrador } });
+  const owner = await prisma.user.findFirstOrThrow({ where: { email: DEMO_USERS.find((u) => u.role === 'Administrador')!.email } });
   const reviewDue = new Date(Date.now() + 365 * 864e5);
   for (const b of SEED_BLOCKS) {
     if (await prisma.contentBlock.findUnique({ where: { code: b.code } })) continue;
@@ -146,7 +138,7 @@ async function main() {
     });
   }
 
-  console.log(`seed: ${products.length + SEED_PRODUCTS.length} produtos, ${SEED_BLOCKS.length} blocos de conteúdo, 2 políticas de aprovação, ${ROLES.length} utilizadores, 2 equipas`);
+  console.log(`seed: ${products.length + SEED_PRODUCTS.length} produtos, ${SEED_BLOCKS.length} blocos de conteúdo, 2 políticas de aprovação, ${DEMO_USERS.length} utilizadores, 2 equipas`);
 }
 
 await main().finally(() => prisma.$disconnect());

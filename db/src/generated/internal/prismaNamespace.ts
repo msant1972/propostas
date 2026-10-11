@@ -2409,14 +2409,20 @@ export type TeamScalarFieldEnum = (typeof TeamScalarFieldEnum)[keyof typeof Team
 
 export const UserScalarFieldEnum = {
   id: 'id',
-  entraOid: 'entraOid',
   email: 'email',
   displayName: 'displayName',
   teamId: 'teamId',
   region: 'region',
   isActive: 'isActive',
   rolesJson: 'rolesJson',
-  lastSeenAt: 'lastSeenAt'
+  lastSeenAt: 'lastSeenAt',
+  passwordHash: 'passwordHash',
+  mustChangePassword: 'mustChangePassword',
+  passwordChangedAt: 'passwordChangedAt',
+  failedLogins: 'failedLogins',
+  lockedUntil: 'lockedUntil',
+  tokenVersion: 'tokenVersion',
+  lastLoginAt: 'lastLoginAt'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
@@ -2907,11 +2913,11 @@ export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
 
 export const UserOrderByRelevanceFieldEnum = {
   id: 'id',
-  entraOid: 'entraOid',
   email: 'email',
   displayName: 'displayName',
   teamId: 'teamId',
-  region: 'region'
+  region: 'region',
+  passwordHash: 'passwordHash'
 } as const
 
 export type UserOrderByRelevanceFieldEnum = (typeof UserOrderByRelevanceFieldEnum)[keyof typeof UserOrderByRelevanceFieldEnum]
@@ -3258,6 +3264,13 @@ export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel
 
 
 /**
+ * Reference to a field of type 'Int'
+ */
+export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
+    
+
+
+/**
  * Reference to a field of type 'BillingModel'
  */
 export type EnumBillingModelFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BillingModel'>
@@ -3275,13 +3288,6 @@ export type EnumBillingPeriodFieldRefInput<$PrismaModel> = FieldRefInputType<$Pr
  * Reference to a field of type 'Decimal'
  */
 export type DecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal'>
-    
-
-
-/**
- * Reference to a field of type 'Int'
- */
-export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
     
 
 

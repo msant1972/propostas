@@ -29,7 +29,7 @@ import { HealthController } from './health.controller.js';
         throttlers: [{ ttl: 60_000, limit: env.THROTTLE_LIMIT }],
         // Limite por utilizador autenticado; por IP enquanto anónimo.
         getTracker: (req: Record<string, unknown>) =>
-          (req['principal'] as { oid?: string } | undefined)?.oid ?? (req['ip'] as string | undefined) ?? 'anon',
+          (req['principal'] as { userId?: string } | undefined)?.userId ?? (req['ip'] as string | undefined) ?? 'anon',
       }),
     }),
     PrismaModule,

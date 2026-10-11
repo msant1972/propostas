@@ -130,7 +130,35 @@ function pricingXml(ctx: DocumentContext): string {
   return tableXml([head, ...body, ...foot], widths);
 }
 
-export function blocksToXml(blocks: Block[], ctx: DocumentContext): string {
+/** Imagem a gravar em `word/media/`; o `rId` liga-a ao desenho no corpo. */
+export interface MediaItem { rId: string; fileName: string; mime: 'image/png' | 'image/jpeg'; bytes: Buffer }
+
+const EMU_PER_PX = 9525; // 96 dpi
+const MAX_WIDTH_EMU = 5_715_000; // 6,25" = largura útil (A4 com margens de 1")
+const MAX_HEIGHT_EMU = 7_620_000; // 8"
+
+function imageXml(b: Extract<Block, { type: 'image' }>, media: MediaItem[]): string {
+  const n = media.length + 1;
+  const ext = b.mime === 'image/png' ? 'png' : 'jpeg';
+  const item: MediaItem = { rId: `rIdImg${n}`, fileName: `image${n}.${ext}`, mime: b.mime, bytes: Buffer.from(b.dataBase64, 'base64') };
+  media.push(item);
+  const scale = Math.min(1, MAX_WIDTH_EMU / (b.widthPx * EMU_PER_PX), MAX_HEIGHT_EMU / (b.heightPx * EMU_PER_PX));
+  const cx = Math.max(1, Math.round(b.widthPx * EMU_PER_PX * scale));
+  const cy = Math.max(1, Math.round(b.heightPx * EMU_PER_PX * scale));
+  const alt = xmlEsc(b.alt);
+  return (
+    '<w:p><w:pPr><w:keepNext w:val="0"/><w:jc w:val="center"/></w:pPr><w:r><w:drawing>' +
+    `<wp:inline distT="0" distB="0" distL="0" distR="0" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"><wp:extent cx="${cx}" cy="${cy}"/><wp:docPr id="${1000 + n}" name="Imagem ${n}" descr="${alt}"/>` +
+    '<wp:cNvGraphicFramePr><a:graphicFrameLocks xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" noChangeAspect="1"/></wp:cNvGraphicFramePr>' +
+    '<a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">' +
+    `<pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:nvPicPr><pic:cNvPr id="${n}" name="${item.fileName}" descr="${alt}"/><pic:cNvPicPr/></pic:nvPicPr>` +
+    `<pic:blipFill><a:blip xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" r:embed="${item.rId}"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill>` +
+    `<pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="${cx}" cy="${cy}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic>` +
+    '</a:graphicData></a:graphic></wp:inline></w:drawing></w:r></w:p>'
+  );
+}
+
+export function blocksToXml(blocks: Block[], ctx: DocumentContext, media: MediaItem[] = []): string {
   let ordered = 0;
   return blocks
     .map((b) => {
@@ -146,6 +174,7 @@ export function blocksToXml(blocks: Block[], ctx: DocumentContext): string {
           const w = Math.floor(9000 / cols);
           return tableXml(b.rows.map((r, ri) => Array.from({ length: cols }, (_, ci) => ({ runs: r[ci] ?? [], width: w, header: ri === 0 }))), Array(cols).fill(w) as number[]);
         }
+        case 'image': return imageXml(b, media);
         case 'pricing_table': return pricingXml(ctx);
         case 'page_break': return '<w:p><w:r><w:br w:type="page"/></w:r></w:p>';
       }
@@ -157,9 +186,24 @@ export function blocksToXml(blocks: Block[], ctx: DocumentContext): string {
 export async function buildDocx(blocks: Block[], ctx: DocumentContext): Promise<Buffer> {
   baseTemplate ??= createBaseTemplate();
   const doc = new Docxtemplater(new PizZip(await baseTemplate), { paragraphLoop: true, linebreaks: false });
-  doc.render({ titulo: ctx.proposal.title, cliente: ctx.client.name, codigo: ctx.proposal.code, conteudo: blocksToXml(blocks, ctx) });
+  const media: MediaItem[] = [];
+  doc.render({ titulo: ctx.proposal.title, cliente: ctx.client.name, codigo: ctx.proposal.code, conteudo: blocksToXml(blocks, ctx, media) });
 
   const zip = doc.getZip();
+  if (media.length) {
+    // imagens: ficheiros em word/media, relações do documento e tipos de conteúdo (png/jpeg)
+    for (const m of media) zip.file(`word/media/${m.fileName}`, m.bytes);
+    const relsPath = 'word/_rels/document.xml.rels';
+    const rels = zip.file(relsPath)!.asText();
+    zip.file(relsPath, rels.replace('</Relationships>', media.map((m) => `<Relationship Id="${m.rId}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/${m.fileName}"/>`).join('') + '</Relationships>'));
+    let types = zip.file('[Content_Types].xml')!.asText();
+    for (const [ext, mime] of [['png', 'image/png'], ['jpeg', 'image/jpeg']] as const) {
+      if (media.some((m) => m.mime === mime) && !new RegExp(`Extension="${ext}"`, 'i').test(types)) {
+        types = types.replace('<Override', `<Default Extension="${ext}" ContentType="${mime}"/><Override`);
+      }
+    }
+    zip.file('[Content_Types].xml', types);
+  }
   const orderedLists = blocks.filter((b) => b.type === 'list' && b.ordered).length;
   zip.file('word/numbering.xml', numberingXml(orderedLists));
   return zip.generate({ type: 'nodebuffer', compression: 'DEFLATE' });

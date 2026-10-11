@@ -99,6 +99,18 @@ export function buildPdf(blocks: Block[], ctx: DocumentContext): Promise<Buffer>
           table(doc, b.rows.map((r) => Array.from({ length: cols }, (_, ci) => ({ runs: r[ci] ?? [] }))), Array(cols).fill(width / cols) as number[]);
           break;
         }
+        case 'image': {
+          const maxH = doc.page.height - doc.page.margins.top - doc.page.margins.bottom;
+          const w = Math.min(width, b.widthPx * 0.75); // px a 96 dpi → pontos
+          const h = Math.min(maxH, (w * b.heightPx) / b.widthPx);
+          if (doc.y + h > doc.page.height - doc.page.margins.bottom) doc.addPage();
+          const y = doc.y;
+          doc.image(Buffer.from(b.dataBase64, 'base64'), left + (width - w) / 2, y, { fit: [w, h] });
+          doc.x = left;
+          doc.y = y + h;
+          doc.moveDown(0.8);
+          break;
+        }
         case 'pricing_table': {
           const { header, rows, footer } = pricingRows(ctx);
           const w = [0.06, 0.34, 0.08, 0.12, 0.13, 0.09, 0.18].map((p) => p * width);

@@ -31,7 +31,7 @@ export async function boot(): Promise<Harness> {
   await migrate(url, 'up');
   process.env['DATABASE_URL'] = url;
   const mod = await Test.createTestingModule({ imports: [AppModule] }).compile();
-  const app = mod.createNestApplication();
+  const app = mod.createNestApplication({ bodyParser: false });
   configureApp(app);
   await app.init();
   const prisma = createPrisma(url);

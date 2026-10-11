@@ -122,6 +122,13 @@ Custos, preços de lista, taxas de imposto e câmbio são **copiados para a linh
 - **Secções de proposta**: referenciam uma versão concreta do bloco. Se o comercial alterar um bloco marcado como jurídico, a secção fica `is_modified` e a proposta exige aprovação do perfil Jurídico.
 - **Merge tags tipadas**: catálogo fechado de variáveis (`{{cliente.nome}}`, `{{cotacao.total_tcv}}`, `{{proposta.validade}}`), validadas na compilação; uma variável em falta bloqueia a geração em vez de produzir texto vazio. A tabela de preços entra como elemento estruturado, não como texto.
 - **Edição**: TipTap, limitado ao subconjunto de formatação que o documento suporta; cada secção tem `row_version` (bloqueio otimista): quem grava com uma versão antiga recebe um aviso de conflito e recarrega.
+- **Conteúdo rico (texto, tabelas e imagens)**: os blocos da biblioteca e as secções aceitam o que se cola de um editor de texto como o Word, o Excel ou o Google Docs, e não apenas texto simples.
+  - *Formatação suportada*: títulos (H1–H3), negrito, itálico, sublinhado, ligações `http(s)`/`mailto`, listas com marcas e numeradas, tabelas e imagens. O editor tem ferramentas de tabela (linhas, colunas, unir células, linha de cabeçalho) e um botão para inserir imagens de um ficheiro; também aceita imagens coladas sozinhas (captura de ecrã) e largadas no texto.
+  - *Colar do Word*: o editor converte o HTML da área de transferência para o subconjunto suportado e descarta classes `Mso`, estilos, `colgroup` e marcas `o:p`; as tabelas mantêm a estrutura, incluindo células unidas (`colspan`/`rowspan`). As imagens ficam embebidas no conteúdo; as que o browser não consegue ler (ligações `file:///` do Word, ou URLs externos bloqueados por CORS) são removidas com um aviso, e o utilizador volta a inseri-las pelo botão.
+  - *Imagens*: guardam-se **embebidas no próprio HTML** do bloco (`data:image/png|jpeg;base64`, em `MEDIUMTEXT`), para a versão aprovada ficar autocontida (sem ficheiros soltos, sem ligações externas e com o mesmo *hash* sempre). O browser converte GIF/WebP/BMP para PNG ou JPEG e reduz a largura a 1600 px antes de enviar; o servidor recusa qualquer outra coisa, mais de 3 MB por imagem, ou ficheiros cujo conteúdo não corresponda ao tipo declarado (as dimensões vêm do ficheiro, não do HTML).
+  - *Sanitização no servidor* (lista de permissões, ao gravar e outra vez ao compilar): só `img` com `src` em base64 validado e `alt`; nada de `style`, `class`, SVG, URLs externos ou `file:`. Isto impede que o conteúdo faça pedidos a terceiros ao abrir o documento ou o portal.
+  - *Modelo de documento*: o HTML sanitizado converte-se em blocos (`heading`, `paragraph`, `list`, `table`, `image`); uma imagem dentro de um parágrafo passa a bloco próprio, na mesma ordem. As imagens ficam ao nível do bloco (não dentro de células de tabela nem de listas). No DOCX entram como `word/media/*` com relação e tipo de conteúdo, centradas e limitadas à largura útil (6,25") e a 8" de altura; no PDF são desenhadas ajustadas à largura da página, com quebra de página se não couberem.
+  - *Limites de pedido*: o corpo JSON é de 100 kB em geral, mas as rotas de blocos de conteúdo e de secções aceitam até 12 MB (para as imagens), e só leem um corpo grande com um *bearer token* presente; o texto de cada bloco ou secção tem no máximo 12 milhões de caracteres.
 - **Compilação** (job assíncrono): montar secções → sanitizar o HTML e resolver as *merge tags* → preencher o modelo base `.docx` com Docxtemplater (o corpo entra em OOXML gerado pela aplicação) → gerar o PDF → gravar ambos em `01_Trabalho` → calcular o SHA-256 → registar em `documents`, com a impressão digital dos dados da cotação usados.
 
 ### Documentos (repositório local)
@@ -731,7 +738,7 @@ As metas abaixo são propostas de partida, a validar com o negócio; cada uma é
 - **Transporte**: TLS 1.2 no mínimo, 1.3 preferido; HSTS; certificado autoassinado (ver «Certificado do portal»); limites de pedidos no Nginx e na API.
 - **Repouso**: disco de dados cifrado (LUKS) e encriptação InnoDB de tabelas, *redo* e *binlogs* com o plugin `file_key_management`; o ficheiro de chaves é cifrado e a sua palavra-passe só `root` lê. As cópias de segurança herdam a cifra (mariabackup lê tabelas já cifradas; o destino também é cifrado).
 - **Portal do cliente**: token aleatório de 256 bits (só o hash fica guardado), validade, revogação, limite de tentativas por IP e resposta única por ligação.
-- **Aplicação**: validação de entrada com DTOs, sanitização do HTML do editor antes de entrar no DOCX, CSP rigorosa, proteção contra *mass assignment*, *rate limiting* por utilizador.
+- **Aplicação**: validação de entrada com DTOs, sanitização do HTML do editor (incluindo validação do conteúdo das imagens embebidas) antes de entrar no DOCX e no PDF, CSP rigorosa, proteção contra *mass assignment*, *rate limiting* por utilizador.
 - **Cadeia de fornecimento**: análise de dependências e SAST no CI.
 
 ### Integração com o CRM
@@ -782,7 +789,7 @@ A ordem proposta entrega primeiro o núcleo que dá valor sozinho (cotar com pre
 
 | Risco | Probabilidade | Impacto | Mitigação |
 | --- | --- | --- | --- |
-| O PDF gerado pela aplicação não reproduz tudo o que o Word faz | Média | Médio | Limitar o editor a um subconjunto de formatação suportado; permitir carregar um PDF/DOCX revisto à mão |
+| O PDF gerado pela aplicação não reproduz tudo o que o Word faz (cores, tamanhos de letra, imagens dentro de tabelas, texto à volta de imagens) | Média | Médio | Limitar o editor a um subconjunto de formatação suportado (texto, tabelas, imagens PNG/JPEG); permitir carregar um PDF/DOCX revisto à mão |
 | Servidor único como ponto único de falha | Média | Alto | Backups contínuos para fora do servidor, reinício automático, reconstrução por Ansible, restauro testado |
 | Perda do disco de documentos | Baixa | Alto | Cópia incremental frequente para o destino de backup e verificação periódica dos hashes |
 | Regras de preço do negócio mais complexas do que o modelo prevê | Média | Alto | Workshop com financeiro antes da fase 2; condições JSONLogic dão margem de extensão |

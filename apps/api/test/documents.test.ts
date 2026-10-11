@@ -47,6 +47,22 @@ run('conteúdos, secções e documentos', () => {
       await h.http().post('/api/v1/content/blocks').set(A(ges)).send(body).expect(409);
     });
 
+    it('blocos com imagens coladas (corpo grande) e tabelas: aceites com Bearer, sanitizados, e o limite de 100 kB mantém-se noutras rotas', async () => {
+      const src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAIAAAD91JpzAAAAEElEQVR4nGP4z8AARAwQCgAf7gP9i18U1AAAAABJRU5ErkJggg==';
+      const big = Buffer.alloc(300_000, 7).toString('base64'); // JPEG falso: tem de ser recusado pela validação, não pelo tamanho do corpo
+      const html = `<h2>Rico</h2><table><tr><th>A</th><th>B</th></tr><tr><td>1</td><td>2</td></tr></table><img src="${src}" alt="logo"><img src="https://exemplo.pt/x.png"><img src="data:image/jpeg;base64,${big}"><p>fim</p>`;
+      const r = await h.http().post('/api/v1/content/blocks').set(A(ges)).send({ code: 'RICO', title: 'Rico', language: 'pt-PT', reviewDueDate: '2027-01-01', bodyHtml: html }).expect(201);
+      const stored = r.body.versions[0].bodyHtml as string;
+      expect(stored).toContain('<table>');
+      expect(stored).toContain(`<img src="${src}" alt="logo">`);
+      expect(stored).not.toContain('exemplo.pt');
+      expect(stored).not.toContain('image/jpeg');
+      // sem Bearer, um corpo grande nem chega a ser lido
+      await h.http().post('/api/v1/content/blocks').send({ code: 'X', bodyHtml: 'x'.repeat(300_000) }).expect(413);
+      // fora das rotas de conteúdo, o limite continua a ser pequeno
+      await h.http().post('/api/v1/clients').set(A(com)).send({ code: 'GRANDE', name: 'x'.repeat(300_000), countryCode: 'PT' }).expect(413);
+    });
+
     it('etiquetas fora do catálogo são recusadas', async () => {
       const r = await h.http().post('/api/v1/content/blocks').set(A(ges)).send({ code: 'X', title: 'X', language: 'pt-PT', reviewDueDate: '2027-01-01', bodyHtml: '<p>{{cliente.segredo}}</p>' }).expect(422);
       expect(JSON.stringify(r.body)).toContain('cliente.segredo');

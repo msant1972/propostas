@@ -240,6 +240,11 @@ input[type='checkbox']:disabled { cursor: not-allowed; }
 .prose-editor table, .prose-view table { border-collapse: collapse; margin: .5rem 0; }
 .prose-editor td, .prose-editor th, .prose-view td, .prose-view th { border: 1px solid var(--border); padding: .25rem .5rem; min-width: 3rem; }
 .prose-editor th, .prose-view th { background: var(--muted); font-weight: 600; }
+.prose-editor img, .prose-view img { display: block; max-width: 100%; height: auto; margin: .6rem auto; border-radius: 6px; }
+.prose-editor img.ProseMirror-selectednode { outline: 2px solid var(--primary); }
+.prose-editor .tableWrapper, .prose-view .tableWrapper { overflow-x: auto; }
+.prose-editor .selectedCell { background: var(--primary-soft); }
+.prose-editor td p, .prose-editor th p { margin: 0; }
 
 /* Linhas de tabela que continuam na linha seguinte (atributos/avisos da cotação) */
 .table-card tr.merge-next > td { border-bottom: 0; }

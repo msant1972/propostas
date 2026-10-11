@@ -6,7 +6,7 @@ import type { Env } from './config/env.js';
 import { configureApp } from './setup.js';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { bodyParser: false });
   configureApp(app);
   const env = app.get<Env>(ENV);
   await app.listen(env.PORT);

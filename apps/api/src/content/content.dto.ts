@@ -8,7 +8,7 @@ export class CreateBlockDto {
   @ApiPropertyOptional() @IsOptional() @IsBoolean() isLegal?: boolean;
   @ApiPropertyOptional({ type: [String] }) @IsOptional() @IsArray() @ArrayMaxSize(20) @IsString({ each: true }) tags?: string[];
   @ApiProperty({ default: 'pt-PT' }) @IsString() @Length(2, 5) language!: string;
-  @ApiProperty({ description: 'HTML do editor (é sanitizado)' }) @IsString() @Length(1, 200000) bodyHtml!: string;
+  @ApiProperty({ description: 'HTML do editor (é sanitizado)' }) @IsString() @Length(1, 12000000) bodyHtml!: string;
   @ApiProperty({ description: 'AAAA-MM-DD: data da próxima revisão obrigatória' }) @Matches(/^\d{4}-\d{2}-\d{2}$/) reviewDueDate!: string;
 }
 
@@ -19,7 +19,7 @@ export class UpdateBlockDto {
 
 export class CreateBlockVersionDto {
   @ApiProperty() @IsString() @Length(2, 5) language!: string;
-  @ApiProperty() @IsString() @Length(1, 200000) bodyHtml!: string;
+  @ApiProperty() @IsString() @Length(1, 12000000) bodyHtml!: string;
   @ApiProperty() @Matches(/^\d{4}-\d{2}-\d{2}$/) reviewDueDate!: string;
 }
 

@@ -148,3 +148,47 @@ describe('comprovativo de aceitação', () => {
     expect(certificateFingerprint(undefined)).toBeNull();
   });
 });
+
+// PNG 2×2 válido (vermelho), gerado à parte
+const PNG = 'iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAIAAAD91JpzAAAAEElEQVR4nGP4z8AARAwQCgAf7gP9i18U1AAAAABJRU5ErkJggg==';
+const SRC = `data:image/png;base64,${PNG}`;
+
+describe('imagens', () => {
+  it('a sanitização mantém PNG/JPEG em base64 e remove o resto', () => {
+    expect(sanitizeHtml(`<p>a</p><img src="${SRC}" alt="logo" onerror="x()">`)).toBe(`<p>a</p><img src="${SRC}" alt="logo">`);
+    expect(sanitizeHtml('<img src="file:///C:/Users/x/imagem.png">')).toBe('');
+    expect(sanitizeHtml('<img src="https://exemplo.pt/a.png">')).toBe('');
+    expect(sanitizeHtml('<img src="data:image/svg+xml;base64,PHN2Zz48L3N2Zz4=">')).toBe('');
+    expect(sanitizeHtml('<img src="data:image/png;base64,AAAA">')).toBe(''); // não é um PNG de verdade
+    expect(sanitizeHtml('<img src="data:image/png;base64,AAAA" onerror="x">')).not.toContain('onerror');
+  });
+  it('uma imagem dentro de um parágrafo vira bloco próprio, pela ordem', () => {
+    const blocks = htmlToBlocks(`<p>antes <img src="${SRC}" alt="logo"> depois</p>`);
+    expect(blocks.map((b) => b.type)).toEqual(['paragraph', 'image', 'paragraph']);
+    expect(blocks[1]).toMatchObject({ type: 'image', mime: 'image/png', widthPx: 2, heightPx: 2, alt: 'logo' });
+  });
+  it('o DOCX leva a imagem em word/media, com relação e tipo de conteúdo', async () => {
+    const docx = await buildDocx(htmlToBlocks(`<p>Logo:</p><img src="${SRC}" alt="logo">`), ctx);
+    const zip = new PizZip(docx);
+    expect(Object.keys(zip.files).some((f) => /^word\/media\/image1\.png$/.test(f))).toBe(true);
+    expect(zip.file('word/_rels/document.xml.rels')!.asText()).toContain('Target="media/image1.png"');
+    expect(zip.file('[Content_Types].xml')!.asText()).toMatch(/Extension="png"/);
+    const body = zip.file('word/document.xml')!.asText();
+    expect(body).toContain('r:embed="rIdImg1"');
+    expect(() => new XMLParser().parse(body)).not.toThrow();
+  });
+  it('o PDF com imagem gera-se e é maior que sem imagem', async () => {
+    const com = await buildPdf(htmlToBlocks(`<p>Logo:</p><img src="${SRC}">`), ctx);
+    const sem = await buildPdf(htmlToBlocks('<p>Logo:</p>'), ctx);
+    expect(com.subarray(0, 5).toString()).toBe('%PDF-');
+    expect(com.length).toBeGreaterThan(sem.length);
+  });
+  it('tabelas coladas do Word (estilos, classes, colgroup, parágrafos nas células) ficam limpas', () => {
+    const word = '<table class="MsoTableGrid" style="border:1px solid"><colgroup><col width="100"></colgroup><tr><td style="width:100px"><p class="MsoNormal"><span style="font-size:11pt">A<o:p></o:p></span></p></td><td colspan="2"><p><b>B</b></p></td></tr></table>';
+    const out = sanitizeHtml(word);
+    expect(out).not.toMatch(/style|class|colgroup|o:p/);
+    expect(out).toContain('colspan="2"');
+    const [t] = htmlToBlocks(word);
+    expect(t).toMatchObject({ type: 'table' });
+  });
+});

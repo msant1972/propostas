@@ -8,7 +8,7 @@ export class AddSectionDto {
 
 export class UpdateSectionDto {
   @ApiPropertyOptional() @IsOptional() @IsString() @Length(1, 255) title?: string;
-  @ApiPropertyOptional({ description: 'HTML do editor (é sanitizado)' }) @IsOptional() @IsString() @Length(0, 200000) html?: string;
+  @ApiPropertyOptional({ description: 'HTML do editor (é sanitizado)' }) @IsOptional() @IsString() @Length(0, 12000000) html?: string;
   @ApiProperty({ description: 'Bloqueio otimista: versão da secção que o cliente viu' }) @IsInt() @Min(1) rowVersion!: number;
 }
 

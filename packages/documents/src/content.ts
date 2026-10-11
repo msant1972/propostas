@@ -1,3 +1,4 @@
+import { imageSize } from 'image-size';
 import { HTMLElement, parse, TextNode } from 'node-html-parser';
 
 // ---------------------------------------------------------------------------------------------
@@ -15,15 +16,39 @@ export type Block =
   | { type: 'paragraph'; runs: Run[] }
   | { type: 'list'; ordered: boolean; items: Run[][] }
   | { type: 'table'; rows: Run[][][] } // linhas → células → runs; a 1.ª linha é o cabeçalho
+  | { type: 'image'; mime: 'image/png' | 'image/jpeg'; dataBase64: string; widthPx: number; heightPx: number; alt: string }
   | { type: 'pricing_table' }
   | { type: 'page_break' };
 
 // ---------------------------------------------------------------------------------------------
 // Sanitização do HTML do editor (antes de entrar no documento): lista de permissões estrita.
 // ---------------------------------------------------------------------------------------------
-const ALLOWED = new Set(['p', 'h1', 'h2', 'h3', 'strong', 'b', 'em', 'i', 'u', 'ul', 'ol', 'li', 'br', 'table', 'thead', 'tbody', 'tr', 'th', 'td', 'a', 'span', 'div']);
+const ALLOWED = new Set(['img', 'p', 'h1', 'h2', 'h3', 'strong', 'b', 'em', 'i', 'u', 'ul', 'ol', 'li', 'br', 'table', 'thead', 'tbody', 'tr', 'th', 'td', 'a', 'span', 'div']);
 const DROP_WITH_CONTENT = new Set(['script', 'style', 'iframe', 'object', 'embed', 'noscript', 'template']);
-const VOID = new Set(['br']);
+const VOID = new Set(['br', 'img']);
+
+/** Imagens: só PNG/JPEG em base64 (o que o DOCX e o PDF aceitam), até 3 MB cada. Nada de URLs externas nem `file:`. */
+export const MAX_IMAGE_BYTES = 3 * 1024 * 1024;
+const DATA_IMG = /^data:(image\/png|image\/jpeg);base64,([A-Za-z0-9+/]+={0,2})$/;
+
+export interface ParsedImage { mime: 'image/png' | 'image/jpeg'; dataBase64: string; widthPx: number; heightPx: number }
+
+/** Valida o `src` de uma imagem: tipo, tamanho e conteúdo real (as dimensões vêm do próprio ficheiro, não do HTML). */
+export function parseImageSrc(src: string): ParsedImage | null {
+  const m = DATA_IMG.exec(src.trim());
+  if (!m) return null;
+  const dataBase64 = m[2]!;
+  if (Math.floor((dataBase64.length * 3) / 4) > MAX_IMAGE_BYTES) return null;
+  try {
+    const bytes = Buffer.from(dataBase64, 'base64');
+    const magicOk = m[1] === 'image/png' ? bytes.subarray(0, 4).toString('hex') === '89504e47' : bytes.subarray(0, 2).toString('hex') === 'ffd8';
+    const { width, height } = imageSize(bytes);
+    if (!magicOk || !width || !height || width > 20000 || height > 20000) return null;
+    return { mime: m[1] as ParsedImage['mime'], dataBase64, widthPx: width, heightPx: height };
+  } catch {
+    return null;
+  }
+}
 
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const escAttr = (s: string) => esc(s).replace(/"/g, '&quot;');
@@ -36,19 +61,26 @@ function serialize(node: HTMLElement | TextNode): string {
   if (!tag) return inner; // raiz
   if (DROP_WITH_CONTENT.has(tag)) return '';
   if (!ALLOWED.has(tag)) return inner; // etiqueta desconhecida: mantém só o conteúdo
+  if (tag === 'img') {
+    const img = parseImageSrc(node.getAttribute('src') ?? '');
+    if (!img) return ''; // imagem inválida, externa ou grande demais: removida
+    const alt = escAttr((node.getAttribute('alt') ?? '').slice(0, 200));
+    return `<img src="data:${img.mime};base64,${img.dataBase64}" alt="${alt}">`;
+  }
   if (VOID.has(tag)) return `<${tag}>`;
   let attrs = '';
   if (tag === 'a') {
     const href = node.getAttribute('href');
     if (href && safeHref(href)) attrs = ` href="${escAttr(href.trim())}"`;
   }
-  if ((tag === 'td' || tag === 'th') && /^\d{1,2}$/.test(node.getAttribute('colspan') ?? '')) {
-    attrs = ` colspan="${node.getAttribute('colspan')}"`;
+  if (tag === 'td' || tag === 'th') {
+    if (/^\d{1,2}$/.test(node.getAttribute('colspan') ?? '')) attrs += ` colspan="${node.getAttribute('colspan')}"`;
+    if (/^\d{1,2}$/.test(node.getAttribute('rowspan') ?? '')) attrs += ` rowspan="${node.getAttribute('rowspan')}"`;
   }
   return `<${tag}${attrs}>${inner}</${tag}>`;
 }
 
-/** Remove scripts, estilos, atributos (exceto href seguro e colspan) e etiquetas fora da lista permitida. */
+/** Remove scripts, estilos, atributos (exceto href seguro, colspan/rowspan e imagens PNG/JPEG em base64) e etiquetas fora da lista permitida. */
 export function sanitizeHtml(html: string): string {
   return serialize(parse(html, { comment: false }));
 }
@@ -83,7 +115,38 @@ function trimRuns(runs: Run[]): Run[] {
   return out;
 }
 
-const BLOCK_TAGS = new Set(['p', 'h1', 'h2', 'h3', 'ul', 'ol', 'table', 'div']);
+const BLOCK_TAGS = new Set(['p', 'h1', 'h2', 'h3', 'ul', 'ol', 'table', 'div', 'img']);
+
+type ImageBlock = Extract<Block, { type: 'image' }>;
+const imageBlock = (el: HTMLElement): ImageBlock | null => {
+  const img = parseImageSrc(el.getAttribute('src') ?? '');
+  return img ? { type: 'image', ...img, alt: el.getAttribute('alt') ?? '' } : null;
+};
+
+/** Texto e imagens de um parágrafo pela ordem em que aparecem: o texto fica em parágrafos, cada imagem num bloco próprio. */
+function paragraphBlocks(el: HTMLElement): Block[] {
+  const out: Block[] = [];
+  let pending: Run[] = [];
+  const flush = () => {
+    const runs = trimRuns(pending);
+    if (runs.length) out.push({ type: 'paragraph', runs });
+    pending = [];
+  };
+  const walk = (node: HTMLElement | TextNode, style: Style) => {
+    if (node instanceof TextNode) { pending.push(...inlineRuns(node, style)); return; }
+    const tag = node.rawTagName?.toLowerCase();
+    if (tag === 'img') { flush(); const b = imageBlock(node); if (b) out.push(b); return; }
+    if (tag === 'br') { pending.push({ text: '\n', ...style }); return; }
+    const next: Style = { ...style };
+    if (tag === 'strong' || tag === 'b') next.bold = true;
+    if (tag === 'em' || tag === 'i') next.italic = true;
+    if (tag === 'u' || tag === 'a') next.underline = true;
+    node.childNodes.forEach((c) => walk(c as HTMLElement | TextNode, next));
+  };
+  walk(el, {});
+  flush();
+  return out;
+}
 
 function blocksOf(nodes: Array<HTMLElement | TextNode>): Block[] {
   const blocks: Block[] = [];
@@ -102,9 +165,11 @@ function blocksOf(nodes: Array<HTMLElement | TextNode>): Block[] {
     }
     flush();
     const el = node as HTMLElement;
-    if (tag === 'p') {
-      const runs = trimRuns(inlineRuns(el));
-      if (runs.length) blocks.push({ type: 'paragraph', runs });
+    if (tag === 'img') {
+      const b = imageBlock(el);
+      if (b) blocks.push(b);
+    } else if (tag === 'p') {
+      blocks.push(...paragraphBlocks(el));
     } else if (tag === 'h1' || tag === 'h2' || tag === 'h3') {
       const runs = trimRuns(inlineRuns(el));
       if (runs.length) blocks.push({ type: 'heading', level: Number(tag[1]) as 1 | 2 | 3, runs });
